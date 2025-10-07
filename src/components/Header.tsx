@@ -11,7 +11,7 @@ import {
   FaBars,
   FaSearch,
 } from "react-icons/fa";
-import "./header.css";
+import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
