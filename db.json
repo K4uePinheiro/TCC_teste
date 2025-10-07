@@ -1,0 +1,102 @@
+{
+  "categories":[
+    {"idCategory": 1, "nameCategory": "Todos os Produtos"},
+    {"idCategory": 2, "nameCategory": "Notebooks"},
+    {"idCategory": 3, "nameCategory": "Smartphones"},
+    {"idCategory": 4, "nameCategory": "Móveis"},
+    {"idCategory": 4, "nameCategory": "Periféricos"},
+    {"idCategory": 4, "nameCategory": "Periféricos"}
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Notebook Gamer",
+      "price": 4500,
+      "oldPrice": 5000,
+      "discount": 10,
+      "image": "https://m.media-amazon.com/images/I/51Wv-tEUn6L._AC_SX679_.jpg",
+      "images":[
+        "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages5.kabum.com.br%2Fprodutos%2Ffotos%2F617805%2Fnotebook-gamer-acer-nitro-v15-intel-core-i7-13620h-16gb-ram-rtx-3050-ssd-512gb-15-6-full-hd-ips-144hz-linux-preto-anv15-51-73e9_1722888804_gg.jpg&w=1920&q=75"
+        ],
+      "seller": "TechStore"
+    },
+    {
+      "id": 2,
+      "name": "Smartphone X",
+      "price": 2200,
+      "oldPrice": 2500,
+      "discount": 12,
+      "image": "https://d3qoj2c6mu9s8x.cloudfront.net/Custom/Content/Products/40/06/4006975_smartphone-apple-iphone-x-5-8-camera-12mp-dual-frontal-7mp-com-ios-11-prata-256gb_m2_637223855454369999.webp",
+      "images":[
+        "https://cdn.awsli.com.br/600x700/35/35541/produto/15356101702dc988468.jpg"
+      ],
+      "seller": "PhoneShop"
+    },
+    {
+      "id": 3,
+      "name": "Fone de Ouvido Bluetooth",
+      "price": 150,
+      "oldPrice": 200,
+      "discount": 25,
+      "image": "https://m.media-amazon.com/images/I/51olNZRjn+L._AC_SY300_SX300_.jpg",
+      "seller": "SoundPlus"
+    },
+    {
+      "id": 4,
+      "name": "Jogo Battlefield 6 PS5",
+      "price": 351.47,
+      "oldPrice": 7,
+      "discount": 25,
+      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
+      "seller": "KaBuM!"
+    }
+    ,
+    {
+      "id": 5,
+      "name": "Jogo Battlefield 6 PS5",
+      "price": 351.47,
+      "oldPrice": 7,
+      "discount": 25,
+      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
+      "seller": "KaBuM!"
+    }
+    ,
+    {
+      "id": 6,
+      "name": "Jogo Battlefield 6 PS5",
+      "price": 351.47,
+      "oldPrice": 7,
+      "discount": 25,
+      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
+      "seller": "KaBuM!"
+    },
+    {
+      "id": 7,
+      "name": "Jogo Battlefield 6 PS5",
+      "price": 351.47,
+      "oldPrice": 7,
+      "discount": 25,
+      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
+      "seller": "KaBuM!"
+    },
+    {
+      "id": 8,
+      "name": "Jogo Battlefield 6 PS5",
+      "price": 351.47,
+      "oldPrice": 7,
+      "discount": 25,
+      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
+      "seller": "KaBuM!"
+    },
+    {
+      "id": 9,
+      "name": "Jogo Battlefield 6 PS5",
+      "price": 351.47,
+      "oldPrice": 7,
+      "discount": 25,
+      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
+      "seller": "KaBuM!"
+    }
+
+  ]
+}
