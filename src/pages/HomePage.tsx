@@ -7,10 +7,11 @@ interface Product {
   id: number;
   name: string;
   price: number;
-  oldPrice: number;
-  discount: number;
-  image: string;
-  seller: string;
+  description: string;
+  discount?: number;
+  imgUrl: string;
+  //seller: string;
+  categories?: [{}];
 }
 
 const HomePage: React.FC = () => {
@@ -20,9 +21,10 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     api
-      .get<Product[]>("products")
+      .get<Product[]>("product")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
+      console.log(products);
   }, []);
 
   const paginatedProducts = products.slice(

@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import "../components/ProductPage.css";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
@@ -13,7 +13,7 @@ interface Product {
   displayOldPrice: string | null;
   oldPrice: number;
   discount: number;
-  image: string;
+  imgUrl: string;
   images?: string[];
   seller: string;
   category?: string;
@@ -26,16 +26,15 @@ function ProductPage() {
   const [frete, setFrete] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const { addToCart } = useCart();
-  
+
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:3001/products/${id}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Erro ao buscar produto");
-          return res.json();
-        })
-        .then((data: Product) => {
+      const fetchProduct = async () => {
+        try {
+          const res = await api.get(`/product/${id}`);
+          const data: Product = res.data;
+
           const formattedProduct = {
             ...data,
             displayPrice: new Intl.NumberFormat("pt-BR", {
@@ -47,34 +46,42 @@ function ProductPage() {
               currency: "BRL",
             }).format(data.oldPrice),
           };
+
           setProduct(formattedProduct);
-          setSelectedImage(data.image);
-        })
-        .catch(() => setProduct(null));
+          setSelectedImage(data.imgUrl);
+        } catch (err) {
+          console.error("Erro ao buscar produto:", err);
+          setProduct(null);
+        }
+      };
+
+      fetchProduct();
     }
   }, [id]);
 
   // Função para buscar CEP na API ViaCEP
   const calcularFrete = async () => {
-    if (cep.length !== 8) {
-      setFrete("Digite um CEP válido.");
-      return;
-    }
+  if (cep.length !== 8) {
+    setFrete("Digite um CEP válido.");
+    return;
+  }
 
-    try {
-      const res = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      if (res.data.erro) {
-        setFrete("CEP não encontrado.");
-      } else {
-        // Frete fake fixo só para exemplo
-        setFrete(
-          `Entrega para ${res.data.localidade} - ${res.data.uf}: R$ 20,00 (5 dias úteis)`
-        );
-      }
-    } catch (err) {
-      setFrete("Erro ao buscar o CEP.");
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const data = await res.json();
+
+    if (data.erro) {
+      setFrete("CEP não encontrado.");
+    } else {
+      // Frete fixo fake só de exemplo
+      setFrete(
+        `Entrega para ${data.localidade} - ${data.uf}: R$ 20,00 (5 dias úteis)`
+      );
     }
-  };
+  } catch (err) {
+    setFrete("Erro ao buscar o CEP.");
+  }
+};
 
   if (!product) return <h2> Produto não encontrado</h2>;
 
@@ -85,7 +92,7 @@ function ProductPage() {
           <span>Você está em:</span>
           <Link to="/"> Página Inicial</Link>
           <span> &gt; </span>
-          <Link to={`/products?category=${product.category || "Todos"}`}>
+          <Link to={`/product?category=${product.category || "Todos"}`}>
             {product.category || "Produtos "}
           </Link>
           <span> &gt; </span>
@@ -94,7 +101,7 @@ function ProductPage() {
 
         <div className="image-gallery">
           <div className="thumbnails">
-            {[product.image, ...(product.images || [])].map((img, idx) => (
+            {[product.imgUrl, ...(product.images || [])].map((img, idx) => (
               <div
                 key={idx}
                 className={`thumb ${img === selectedImage ? "active" : ""}`}
@@ -109,7 +116,7 @@ function ProductPage() {
           </div>
           <div className="main-image-wrapper">
             <img
-              src={selectedImage || product.image}
+              src={selectedImage || product.imgUrl}
               alt={product.name}
               className="main-image"
             />
@@ -123,7 +130,23 @@ function ProductPage() {
         <span className="discount">-{product.discount}%</span>
         <p className="seller">Fornecedor: {product.seller}</p>
         <button className="buy-btn">Comprar 🛒</button>
-         <button className="cart-btn"onClick={() => addToCart(product)}>Adicionar ao carrinho</button>
+        <button
+          className="cart-btn"
+          onClick={() =>
+            product &&
+            addToCart({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              oldPrice: product.oldPrice,
+              discount: product.discount,
+              image: product.imgUrl,
+              seller: product.seller,
+            })
+          }
+        >
+          Adicionar ao carrinho
+        </button>
 
         <div className="frete">
           <p>Consultar Frete:</p>

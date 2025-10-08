@@ -1,4 +1,4 @@
-import type { FC } from "react";
+
 import {
   FaSun,
   FaHeart,
@@ -14,10 +14,10 @@ import {
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useCart } from "../context/CartContext";
 
-const Header: FC = () => {
+const Header = () => {
   type Categories = {
     idCategory: number;
     nameCategory: string;
@@ -36,11 +36,18 @@ const Header: FC = () => {
   const { cart } = useCart();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/categories")
-      .then((res) => setCategories(res.data))
-      .catch((err) => console.error("Erro ao buscar categorias", err));
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get("/categories");
+        setCategories(res.data);
+      } catch (err) {
+        console.error("Erro ao buscar categorias", err);
+      }
+    };
+    fetchCategories();
   }, []);
+
+
 
   // detectar se está em mobile
   useEffect(() => {
@@ -78,12 +85,21 @@ const Header: FC = () => {
   };
 
   // função para enviar a busca
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (search.trim()) {
-      navigate(`/products?search=${encodeURIComponent(search)}`);
+  const handleSearch = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (search.trim()) {
+    try {
+      const res = await api.get("/product", {
+        params: { search },
+      });
+      console.log("Produtos encontrados:", res.data);
+      navigate(`/product?search=${encodeURIComponent(search)}`);
+    } catch (err) {
+      console.error("Erro na busca:", err);
     }
-  };
+  }
+};
+
 
   return (
     <header className="header">
@@ -142,7 +158,7 @@ const Header: FC = () => {
             <ul className="dropdown-menu">
               {categories.map((cat) => (
                 <li key={cat.idCategory}>
-                  <Link to={`/products?category=${cat.idCategory}`}>
+                  <Link to={`/product?category=${cat.idCategory}`}>
                     {cat.nameCategory}
                   </Link>
                 </li>
@@ -175,5 +191,6 @@ const Header: FC = () => {
     </header>
   );
 };
+
 
 export default Header;
