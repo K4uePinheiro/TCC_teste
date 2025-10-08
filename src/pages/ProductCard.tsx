@@ -18,6 +18,15 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
     product.price !== undefined
       ? product.price - product.price * ((product.discount ?? 0) / 100)
       : undefined;
+  const newPriceFormatted = newPrice?.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+  const oldPrice = product.price.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   return (
     <Link to={`/product/${product.id}`} className="product-card">
@@ -25,11 +34,11 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       <div className="product-info">
         <h3 className="product-name">{product.name}</h3>
         {/*<p className="seller">Vendido por: {product.seller}</p>*/}
-        <p className="old-price">R$ {product.price.toFixed(2)}</p>
+        <p className="old-price">{oldPrice}</p>
         {/* <p className="old-price">R$ {product.oldPrice.toFixed(2)}</p> */}
         <div className="price-row">
           <p className="price">
-            R$ {newPrice !== undefined ? newPrice.toFixed(2) : "--"}
+          {newPrice !== undefined ? newPriceFormatted : "--"}
           </p>
           <span className="discount">-{product.discount}%</span>
         </div>

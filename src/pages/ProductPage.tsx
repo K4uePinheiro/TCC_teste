@@ -8,16 +8,16 @@ import { useCart } from "../context/CartContext";
 interface Product {
   id: number;
   name: string;
-  displayPrice: string | null;
   price: number;
-  displayOldPrice: string | null;
-  oldPrice: number;
   discount: number;
+  displayPrice: string;
   imgUrl: string;
-  images?: string[];
-  seller: string;
+  images?: string[]; // pode ter várias imagens
+  seller?: string;   // opcional
   category?: string;
+  oldPrice?: number; // opcional
 }
+
 
 function ProductPage() {
   const { id } = useParams();
@@ -27,6 +27,19 @@ function ProductPage() {
   const [selectedImage, setSelectedImage] = useState<string>("");
   const { addToCart } = useCart();
 
+  const oldPrice = product?.price.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+  const newPrice =
+    product && product.price !== undefined
+      ? product.price - product.price * ((product.discount ?? 0) / 100)
+      : undefined;
+  const newPriceFormatted = newPrice?.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   useEffect(() => {
     if (id) {
@@ -41,10 +54,6 @@ function ProductPage() {
               style: "currency",
               currency: "BRL",
             }).format(data.price),
-            displayOldPrice: new Intl.NumberFormat("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            }).format(data.oldPrice),
           };
 
           setProduct(formattedProduct);
@@ -61,27 +70,27 @@ function ProductPage() {
 
   // Função para buscar CEP na API ViaCEP
   const calcularFrete = async () => {
-  if (cep.length !== 8) {
-    setFrete("Digite um CEP válido.");
-    return;
-  }
-
-  try {
-    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-    const data = await res.json();
-
-    if (data.erro) {
-      setFrete("CEP não encontrado.");
-    } else {
-      // Frete fixo fake só de exemplo
-      setFrete(
-        `Entrega para ${data.localidade} - ${data.uf}: R$ 20,00 (5 dias úteis)`
-      );
+    if (cep.length !== 8) {
+      setFrete("Digite um CEP válido.");
+      return;
     }
-  } catch (err) {
-    setFrete("Erro ao buscar o CEP.");
-  }
-};
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+
+      if (data.erro) {
+        setFrete("CEP não encontrado.");
+      } else {
+        // Frete fixo fake só de exemplo
+        setFrete(
+          `Entrega para ${data.localidade} - ${data.uf}: R$ 20,00 (5 dias úteis)`
+        );
+      }
+    } catch (err) {
+      setFrete("Erro ao buscar o CEP.");
+    }
+  };
 
   if (!product) return <h2> Produto não encontrado</h2>;
 
@@ -125,8 +134,8 @@ function ProductPage() {
       </div>
       <div className="detils">
         <h1>{product.name}</h1>
-        <p className="old-price">De: R${product.displayOldPrice}</p>
-        <h2 className="price">Por: R${product.displayPrice}</h2>
+        {oldPrice && <p className="old-price">De: {oldPrice}</p>}
+        <h2 className="price">Por: {newPriceFormatted}</h2>
         <span className="discount">-{product.discount}%</span>
         <p className="seller">Fornecedor: {product.seller}</p>
         <button className="buy-btn">Comprar 🛒</button>
@@ -138,12 +147,13 @@ function ProductPage() {
               id: product.id,
               name: product.name,
               price: product.price,
-              oldPrice: product.oldPrice,
+              oldPrice: product.oldPrice ?? product.price,
               discount: product.discount,
               image: product.imgUrl,
-              seller: product.seller,
+              seller: product.seller ?? "Fornecedor desconhecido",
             })
           }
+
         >
           Adicionar ao carrinho
         </button>
