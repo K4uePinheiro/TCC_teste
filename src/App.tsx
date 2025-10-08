@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import CartPage from "./pages/CartPage";
 
 
+
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
@@ -24,6 +25,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/cadastro" element={<RegisterForm />} />
         </Routes>
+
         <Footer />
       </Router>
     </ErrorBoundary>

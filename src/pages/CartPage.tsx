@@ -18,6 +18,7 @@ const CartPage: React.FC = () => {
         )}
       </div>
 
+        <div className="linhas">
       {cart.length === 0 ? (
         <p>Seu carrinho está vazio.</p>
       ) : (
@@ -60,10 +61,10 @@ const CartPage: React.FC = () => {
             Total a pagar: <span className="price">R$ {total.toFixed(2)}</span>
           </p>
           <button className="continue-btn">Continuar</button>
-          <button className="back-btn">Voltar</button>
         </div>
       )}
     </div>
+      </div>
   );
 };
 

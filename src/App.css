@@ -1,36 +1,58 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* ========== LAYOUT BASE ========== */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* ocupa toda a altura da janela */
+}
+
+.main-content {
+  flex: 1; /* empurra o footer para o final da tela */
+  width: 100%;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  background: #f9fafb;
+  padding: 20px;
+  text-align: center;
+  border-top: 1px solid #e5e7eb;
+  width: 100%;
+}
+
+/* ========== AJUSTE DO HEADER E CONTEÚDO ========== */
+header, main, footer {
+  width: 100%;
+}
+
+/* Remove restrições antigas */
+#root {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* ========== OPCIONAL: ANIMAÇÕES DA LOGO ========== */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
-}
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.main-content {
-  flex: 1; /* Faz o conteúdo crescer e empurra o footer pra baixo */
-}
-
-footer {
-  background: #f9f9f9;
-  padding: 20px;
-  text-align: center;
 }
 
 @keyframes logo-spin {
@@ -48,6 +70,7 @@ footer {
   }
 }
 
+/* ========== TEXTO AUXILIAR ========== */
 .card {
   padding: 2em;
 }

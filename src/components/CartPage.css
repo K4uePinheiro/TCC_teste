@@ -1,8 +1,10 @@
 .cart-container {
   max-width: 1000px;
+  max-height: 1030px;
   margin: 30px auto;
-  padding: 20px;
+  padding: 10.rem;
   font-family: Arial, sans-serif;
+  
 }
 
 .cart-header {
@@ -118,7 +120,8 @@
   padding: 20px;
   background: #fff;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  gap: 15px;
+  gap: 17px;
+  margin-top: 10px;
   
 }
 
@@ -156,3 +159,5 @@
 .back-btn:hover {
   background: #f9f9f9;
 }
+
+
