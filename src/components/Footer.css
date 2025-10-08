@@ -3,19 +3,23 @@
   color: #333;
   border-top: 1px solid #e5e7eb;
   margin-top: 5rem;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  position: relative; /* evita sobreposição em telas pequenas */
 }
 
 .footer-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2.7rem 1.5rem;
+  padding: 2.5rem 1.2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.5rem;
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: #f97316;
 }
@@ -26,7 +30,7 @@
 
 .footer-title {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .footer-list {
@@ -37,7 +41,7 @@
 
 .footer-list li {
   font-size: 0.875rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
   cursor: pointer;
 }
 
@@ -48,20 +52,20 @@
 .payment-security {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .payment-icons img,
 .security-icons img {
-  height: 24px;
-  margin-right: 0.5rem;
+  height: 20px;
+  margin-right: 0.4rem;
 }
 
 .payment-icons,
 .security-icons {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .footer-bottom {
@@ -70,9 +74,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  font-size: 0.875rem;
+  justify-content: center;
+  font-size: 0.8rem;
   color: #6b7280;
+  text-align: center;
 }
 
 .footer-bottom p {
@@ -81,8 +86,8 @@
 
 .social-icons {
   display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
 }
 
 .social-icons a {
@@ -94,8 +99,53 @@
   color: #f97316;
 }
 
+/* ===== Responsividade para 390x844 (celulares) ===== */
+@media (max-width: 480px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 1.8rem 1rem;
+  }
+
+  .footer {
+    margin-top: 3rem;
+    position: relative;
+  }
+
+  .payment-security {
+    align-items: center;
+  }
+
+  .payment-icons img,
+  .security-icons img {
+    height: 18px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .footer-title {
+    font-size: 1rem;
+  }
+
+  .footer-list li {
+    font-size: 0.8rem;
+  }
+
+  .footer-bottom {
+    padding: 0.8rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .social-icons {
+    justify-content: center;
+  }
+}
+
 @media (min-width: 768px) {
   .footer-bottom {
     flex-direction: row;
+    justify-content: space-between;
   }
 }

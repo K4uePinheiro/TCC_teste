@@ -53,50 +53,50 @@
     ,
     {
       "id": 5,
-      "name": "Jogo Battlefield 6 PS5",
-      "price": 351.47,
-      "oldPrice": 7,
-      "discount": 25,
-      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
-      "seller": "KaBuM!"
+      "name": "Controle sem fio DualSense Midnight Black",
+      "price": 389.00,
+      "oldPrice": 499.99,
+      "discount": 22,
+      "image": "https://m.media-amazon.com/images/I/61GNEp3auhL._AC_SX679_.jpg",
+      "seller": "PlayStation"
     }
     ,
     {
       "id": 6,
-      "name": "Jogo Battlefield 6 PS5",
-      "price": 351.47,
-      "oldPrice": 7,
-      "discount": 25,
-      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
+      "name": "Mortal Kombat 11 - PlayStation 4",
+      "price": 89.90,
+      "oldPrice": 129.90,
+      "discount": 30,
+      "image": "https://m.media-amazon.com/images/I/81SWea6S2XL._AC_SX569_.jpg",
       "seller": "KaBuM!"
     },
     {
-      "id": 7,
-      "name": "Jogo Battlefield 6 PS5",
-      "price": 351.47,
-      "oldPrice": 7,
-      "discount": 25,
-      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
-      "seller": "KaBuM!"
-    },
-    {
-      "id": 8,
-      "name": "Jogo Battlefield 6 PS5",
-      "price": 351.47,
-      "oldPrice": 7,
-      "discount": 25,
-      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
-      "seller": "KaBuM!"
-    },
-    {
-      "id": 9,
-      "name": "Jogo Battlefield 6 PS5",
-      "price": 351.47,
-      "oldPrice": 7,
-      "discount": 25,
-      "image": "https://www.kabum.com.br/_next/image?url=https%3A%2F%2Fimages9.kabum.com.br%2Fprodutos%2Ffotos%2F926599%2Fjogo-battlefield-6-ps5-ea000014ps5_1758056741_gg.jpg&w=640&q=75",
-      "seller": "KaBuM!"
-    }
+  "id": 8,
+  "name": "Jogo Spider-Man 2 PS5",
+  "price": 299.90,
+  "oldPrice": 399.90,
+  "discount": 25,
+  "image": "https://m.media-amazon.com/images/I/81RfcW3Ml-L._AC_SX342_SY445_QL70_ML2_.jpg",
+  "seller": "KaBuM!"
+},
+{
+  "id": 9,
+  "name": "Jogo God of War Ragnarök PS5",
+  "price": 279.99,
+  "oldPrice": 349.99,
+  "discount": 20,
+  "image": "https://m.media-amazon.com/images/I/8136lnf0n2L._AC_SX679_.jpg",
+  "seller": "KaBuM!"
+},
+{
+  "id": 10,
+  "name": "Jogo Horizon Forbidden West PS5",
+  "price": 249.90,
+  "oldPrice": 319.90,
+  "discount": 22,
+  "image": "https://m.media-amazon.com/images/I/81gBZ6RwUnL._AC_SX679_.jpg",
+  "seller": "KaBuM!"
+}
 
   ]
 }
