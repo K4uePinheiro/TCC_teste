@@ -1,12 +1,16 @@
 import { useState } from "react"; 
 import type { ChangeEvent, FormEvent, FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "/src/pages/login.css";
 
 const LoginForm: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
   const [errors, setErrors] = useState({ email: "", senha: "" });
+
+  const {login} = useAuth();
+  const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors = { email: "", senha: "" };
@@ -27,10 +31,17 @@ const LoginForm: FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (validateForm()) {
-      console.log("Login válido", { email, senha });
+      const success = login(email, senha);
+      if (success) {
+        navigate("/account"); // Redireciona para o dashboard após login bem-sucedido
     } else {
-      console.log("Login inválido", errors);
+      setErrors((prev) => ({
+        ...prev,
+        auth: "Email ou senha incorretos.Tente novamente.",
+      }));
+    }
     }
   };
 
