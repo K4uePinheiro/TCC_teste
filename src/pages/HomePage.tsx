@@ -19,6 +19,8 @@ const HomePage: React.FC = () => {
   const [page, setPage] = useState(0);
   const perPage = 4;
 
+  
+
   useEffect(() => {
     api
       .get<Product[]>("product")
@@ -33,7 +35,7 @@ const HomePage: React.FC = () => {
   );
 
   return (
-    <div className="homepage">
+  <div className="homepage">
       {/* Banner */}
       <section className="promo-banner">
         <div className="promo-left">
@@ -64,28 +66,34 @@ const HomePage: React.FC = () => {
       <section className="products-section">
         <h2>Mais Vendidos</h2>
         <div className="carousel-container">
-          {page > 0 && (
-            <button
-              className="carousel-btn prev"
-              onClick={() => setPage(page - 1)}
-            >
-              <img src="/arrow_back.png" alt="voltar" />
-            </button>
-          )}
+          {products.length === 0 ? (
+            <div className="no-products-message">Não há produtos</div>
+          ) : (
+            <>
+              {page > 0 && (
+                <button
+                  className="carousel-btn prev"
+                  onClick={() => setPage(page - 1)}
+                >
+                  <img src="/arrow_back.png" alt="voltar" />
+                </button>
+              )}
 
-          <div className="carousel">
-            {paginatedProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+              <div className="carousel">
+                {paginatedProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
 
-          {(page + 1) * perPage < products.length && (
-            <button
-              className="carousel-btn next"
-              onClick={() => setPage(page + 1)}
-            >
-              <img src="/arrow_forward.png" alt="avançar" />
-            </button>
+              {(page + 1) * perPage < products.length && (
+                <button
+                  className="carousel-btn next"
+                  onClick={() => setPage(page + 1)}
+                >
+                  <img src="/arrow_forward.png" alt="avançar" />
+                </button>
+              )}
+            </>
           )}
         </div>
       </section>

@@ -1,4 +1,3 @@
-
 import {
   FaSun,
   FaHeart,
@@ -10,6 +9,7 @@ import {
   FaHeadphones,
   FaBars,
   FaSearch,
+  FaMoon,
 } from "react-icons/fa";
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -34,6 +34,8 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(false);
   const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { cart } = useCart();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -47,7 +49,21 @@ const Header = () => {
     fetchCategories();
   }, []);
 
+  const toggleTheme = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsDarkMode((prev) => !prev);
+      setIsAnimating(false);
+    }, 300); // Duração da animação
+  };
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
 
   // detectar se está em mobile
   useEffect(() => {
@@ -86,20 +102,19 @@ const Header = () => {
 
   // função para enviar a busca
   const handleSearch = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (search.trim()) {
-    try {
-      const res = await api.get("/product", {
-        params: { search },
-      });
-      console.log("Produtos encontrados:", res.data);
-      navigate(`/product?search=${encodeURIComponent(search)}`);
-    } catch (err) {
-      console.error("Erro na busca:", err);
+    e.preventDefault();
+    if (search.trim()) {
+      try {
+        const res = await api.get("/product", {
+          params: { search },
+        });
+        console.log("Produtos encontrados:", res.data);
+        navigate(`/product?search=${encodeURIComponent(search)}`);
+      } catch (err) {
+        console.error("Erro na busca:", err);
+      }
     }
-  }
-};
-
+  };
 
   return (
     <header className="header">
@@ -125,15 +140,18 @@ const Header = () => {
         </form>
 
         <div className="top-icons">
-          <button className="icon-btn">
-            <FaSun className="icon" />
+          <button
+            className={`icon-btn ${isAnimating ? "animating" : ""}`}
+            onClick={toggleTheme}
+          >
+            {isDarkMode ? <FaMoon className="icon" /> : <FaSun className="icon" />}
           </button>
           <button className="icon-btn">
             <FaHeart className="icon" />
           </button>
           <Link to="/cart" className="icon-btn">
-          <FaShoppingCart className="icon" />
-          {cart.length > 0 && <span>{cart.length}</span>}
+            <FaShoppingCart className="icon" />
+            {cart.length > 0 && <span>{cart.length}</span>}
           </Link>
 
           <Link to="/login" className="login-btn">
@@ -191,6 +209,5 @@ const Header = () => {
     </header>
   );
 };
-
 
 export default Header;

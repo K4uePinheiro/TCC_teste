@@ -198,3 +198,102 @@
 
     }
 }
+
+/* Animação para o botão de alternância de tema */
+.icon-btn.animating {
+    animation: rotate-icon 0.3s ease-in-out;
+}
+
+@keyframes rotate-icon {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Estilos para os ícones de sol e lua */
+.icon-btn .icon {
+    transition: color 0.3s ease;
+}
+
+body.dark-mode .icon-btn .icon {
+    color: #ffffff; /* Cor do ícone no modo escuro */
+}
+
+/* Estilos para o tema escuro */
+body.dark-mode {
+    background-color: #2e2e38;
+    color: #ffffff;
+}
+
+body.dark-mode .header {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+body.dark-mode .top-bar {
+    background-color: #1d1d2b;
+}
+
+body.dark-mode .search-box {
+    background: #444444;
+}
+
+body.dark-mode .search-box input {
+    background-color: #444444;
+    color: #af9b9b;
+}
+
+body.dark-mode .search-btn {
+    background: #555555;
+}
+
+body.dark-mode .search-btn:hover {
+    background: #666666;
+}
+
+body.dark-mode .top-icons .icon-btn {
+    color: #ffffff;
+}
+
+body.dark-mode .bottom-bar {
+    background: #1d1d2b;
+}
+
+body.dark-mode .nav-btn {
+    color: #ffffff;
+}
+
+body.dark-mode .nav-btn:hover {
+    color: #bbbbbb;
+}
+
+body.dark-mode .dropdown-menu {
+    background: #333333;
+    color: #ffffff;
+}
+
+body.dark-mode .dropdown-menu li:hover {
+    background: #444444;
+}
+body.dark-mode .footer{
+    background: #1d1d2b;
+    color: #ffffff;
+}
+body.dark-mode  .input-busca::placeholder{
+    color: #ff7300;
+}
+body.dark-mode .input-busca{
+    color: #ffffff;
+}
+body.dark-mode .no-products-message{
+    color: #ffffff;
+}
+body.dark-mode .promobox-a{
+    color: #000000;
+}

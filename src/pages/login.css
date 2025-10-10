@@ -183,3 +183,68 @@
 .microsoft-btn h3{
     margin-top: -20px;
 }
+
+/* Estilos para o tema escuro */
+body.dark-mode .login-container {
+    background: #2e2e38;
+}
+
+body.dark-mode .login-box {
+    background: #333333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .login-form h2 {
+    color: #ffffff;
+}
+
+body.dark-mode .login-form .highlight {
+    color: #ffffff;
+}
+
+body.dark-mode .login-form input {
+    background: #444444;
+    color: #ffffff;
+    border: 1px solid #555555;
+}
+
+body.dark-mode .btn-login {
+    background: #555555;
+    color: #ffffff;
+}
+
+body.dark-mode .btn-login:hover {
+    background: #666666;
+}
+
+body.dark-mode .forgot-password a {
+    color: #ff5100;
+}
+
+body.dark-mode .divider {
+    color: #bbbbbb;
+}
+
+body.dark-mode .divider::before,
+body.dark-mode .divider::after {
+    background: #555555;
+}
+
+body.dark-mode .social-login button {
+    background: #444444;
+    color: #ffffff;
+    border: 1px solid #555555;
+}
+
+body.dark-mode .login-banner {
+    background: #444444;
+}
+
+body.dark-mode .banner-content h2 span {
+    color: #ffffff;
+}
+
+body.dark-mode .btn-cadastrar {
+    background-color: #555555;
+    color: #ff5100;
+}

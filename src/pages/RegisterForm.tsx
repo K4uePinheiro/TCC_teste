@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 
 
@@ -25,6 +25,49 @@ export default function RegisterForm() {
     receberNovidades: false,
   });
 
+  const [, setIsDarkMode] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme");
+    const body = document.body;
+
+    if (storedTheme === "dark") {
+      body.classList.add("dark-mode");
+    } else {
+      body.classList.remove("dark-mode");
+      localStorage.setItem("theme", "light");
+    }
+
+    const updateTheme = () => {
+      if (body.classList.contains("dark-mode")) {
+        body.style.setProperty("--bg-color", "#2e2e38");
+        body.style.setProperty("--text-color", "#ffffff");
+        body.style.setProperty("--input-bg", "#444444");
+        body.style.setProperty("--input-border", "#555555");
+        body.style.setProperty("--button-bg", "#555555");
+        body.style.setProperty("--button-hover-bg", "#666666");
+        body.style.setProperty("--placeholder-color", "#ff7300");
+      } else {
+        body.style.setProperty("--bg-color", "#f9f9f9");
+        body.style.setProperty("--text-color", "#000000");
+        body.style.setProperty("--input-bg", "#ffffff");
+        body.style.setProperty("--input-border", "#dddddd");
+        body.style.setProperty("--button-bg", "#ff6600");
+        body.style.setProperty("--button-hover-bg", "#e65500");
+        body.style.setProperty("--placeholder-color", "#ff6600");
+      }
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(body, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
@@ -41,13 +84,20 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div
+      className="flex items-center justify-center min-h-screen"
+      style={{ backgroundColor: "var(--bg-color, #f9f9f9)", color: "var(--text-color, #000000)" }}
+    >
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-9 rounded-x1 shadow-md w-full max-w-2xl"
+        className="p-9 rounded-x1 shadow-md w-full max-w-2xl"
+        style={{ backgroundColor: "var(--bg-color, #ffffff)", color: "var(--text-color, #000000)" }}
       >
-        <h2 className="text-center text-x1 font-semibold mb-6">
-          Cadastre uma <span className="text-orange-500">Conta</span>
+        <h2
+          className="text-center text-x1 font-semibold mb-6"
+          style={{ color: "var(--text-color, #000000)" }}
+        >
+          Cadastre uma <span style={{ color: "var(--button-bg, #ff6600)" }}>Conta</span>
         </h2>
 
         <div className="grid grid-cols-2 gap-4">
@@ -58,6 +108,7 @@ export default function RegisterForm() {
             value={formData.nome}
             onChange={handleChange}
             className="border p-2 rounded-md"
+            style={{ color: "var(--placeholder-color, #ff6600)" }}
           />
           <input
             type="text"

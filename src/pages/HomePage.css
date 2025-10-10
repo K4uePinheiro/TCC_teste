@@ -178,3 +178,9 @@
     grid-template-columns: 1fr; /* 1 card */
   }
 }
+.no-products-message{
+  
+  font-size: 1.2rem;
+  color: black;
+  margin-top: 30px;
+}
