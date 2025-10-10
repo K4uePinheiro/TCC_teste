@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "../services/api";
 import ProductCard from "./ProductCard";
 import "./HomePage.css";
@@ -14,19 +14,40 @@ interface Product {
   categories?: [{}];
 }
 
+interface Supplier {
+  id: number;
+  name: string;
+  imgUrl: string;
+}
+
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [promotions, setPromotions] = useState<Product[]>([]);
   const [page, setPage] = useState(0);
   const perPage = 4;
-
-  
+  const partnersSectionRef = useRef<HTMLDivElement>(null);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   useEffect(() => {
     api
       .get<Product[]>("product")
       .then((res) => setProducts(res.data))
       .catch((err) => console.error(err));
-      console.log(products);
+    console.log(products);
+  }, []);
+
+  useEffect(() => {
+    api
+      .get<Product[]>("promotions")
+      .then((res) => setPromotions(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    api
+      .get("/suppliers")
+      .then((res) => setSuppliers(res.data))
+      .catch((err) => console.error("Erro ao buscar fornecedores", err));
   }, []);
 
   const paginatedProducts = products.slice(
@@ -35,7 +56,7 @@ const HomePage: React.FC = () => {
   );
 
   return (
-  <div className="homepage">
+    <div className="homepage">
       {/* Banner */}
       <section className="promo-banner">
         <div className="promo-left">
@@ -94,6 +115,37 @@ const HomePage: React.FC = () => {
                 </button>
               )}
             </>
+          )}
+        </div>
+      </section>
+
+      {/* Promoções */}
+      <section className="promotions-section">
+        <h2>Promoções</h2>
+        <div className="carousel-container">
+          {promotions.length === 0 ? (
+            <div className="no-products-message">Sem promoções</div>
+          ) : (
+            <div className="carousel">
+              {promotions.map((promo) => (
+                <ProductCard key={promo.id} product={promo} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+      <section className="partners-section" ref={partnersSectionRef}>
+        <h2>Fornecedores</h2>
+        <div className="partners-grid">
+          {suppliers.length === 0 ? (
+            <div className="no-suppliers-message">Sem fornecedores</div>
+          ) : (
+            suppliers.map((supplier) => (
+              <div className="partner-card" key={supplier.id}>
+                <img src={supplier.imgUrl} alt={supplier.name} />
+                <h3>{supplier.name}</h3>
+              </div>
+            ))
           )}
         </div>
       </section>

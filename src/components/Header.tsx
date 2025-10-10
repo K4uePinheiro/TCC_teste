@@ -36,6 +36,8 @@ const Header = () => {
   const { cart } = useCart();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const promoSectionRef = useRef<HTMLDivElement>(null);
+  const partnersSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -116,97 +118,110 @@ const Header = () => {
     }
   };
 
+  const scrollToPromotions = () => {
+    promoSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToPartners = () => {
+    if (partnersSectionRef.current) {
+      partnersSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <header className="header">
-      <div className="top-bar">
-        <Link to="/">
-          <div className="logo">
-            <img src="/ikommerce.png" alt="Logo" className="logo" />
+    <>
+      <header className="header">
+        <div className="top-bar">
+          <Link to="/">
+            <div className="logo">
+              <img src="/ikommerce.png" alt="Logo" className="logo" />
+            </div>
+          </Link>
+
+          {/* Conectar com Java */}
+          <form onSubmit={handleSearch} className="search-box">
+            <input
+              type="text"
+              className="input-busca"
+              placeholder="Buscar Produtos"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <button type="submit" className="search-btn">
+              <FaSearch />
+            </button>
+          </form>
+
+          <div className="top-icons">
+            <button
+              className={`icon-btn ${isAnimating ? "animating" : ""}`}
+              onClick={toggleTheme}
+            >
+              {isDarkMode ? <FaMoon className="icon" /> : <FaSun className="icon" />}
+            </button>
+            <button className="icon-btn">
+              <FaHeart className="icon" />
+            </button>
+            <Link to="/cart" className="icon-btn">
+              <FaShoppingCart className="icon" />
+              {cart.length > 0 && <span>{cart.length}</span>}
+            </Link>
+
+            <Link to="/login" className="login-btn">
+              <FaUser /> Entrar
+            </Link>
           </div>
-        </Link>
+        </div>
 
-        {/* Conectar com Java */}
-        <form onSubmit={handleSearch} className="search-box">
-          <input
-            type="text"
-            className="input-busca"
-            placeholder="Buscar Produtos"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button type="submit" className="search-btn">
-            <FaSearch />
-          </button>
-        </form>
-
-        <div className="top-icons">
-          <button
-            className={`icon-btn ${isAnimating ? "animating" : ""}`}
-            onClick={toggleTheme}
+        <nav className="bottom-bar">
+          {/*cattegorias*/}
+          <div
+            className="nav-dropdown"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
-            {isDarkMode ? <FaMoon className="icon" /> : <FaSun className="icon" />}
+            <button className="nav-btn" onClick={handleClick}>
+              <FaBars />
+              Categorias
+            </button>
+
+            {isOpen && (
+              <ul className="dropdown-menu">
+                {categories.map((cat) => (
+                  <li key={cat.idCategory}>
+                    <Link to={`/product?category=${cat.idCategory}`}>
+                      {cat.nameCategory}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <button className="nav-btn" onClick={scrollToPromotions}>
+            <FaTags />
+            Promoções
           </button>
-          <button className="icon-btn">
-            <FaHeart className="icon" />
+          <button className="nav-btn" onClick={scrollToPartners}>
+            <FaUsers />
+            Fornecedores
           </button>
-          <Link to="/cart" className="icon-btn">
-            <FaShoppingCart className="icon" />
-            {cart.length > 0 && <span>{cart.length}</span>}
-          </Link>
-
-          <Link to="/login" className="login-btn">
-            <FaUser /> Entrar
-          </Link>
-        </div>
-      </div>
-
-      <nav className="bottom-bar">
-        {/*cattegorias*/}
-        <div
-          className="nav-dropdown"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <button className="nav-btn" onClick={handleClick}>
-            <FaBars />
-            Categorias
+        
+          <button className="nav-btn">
+            <FaGift />
+            Sobre Nós
           </button>
+          <button className="nav-btn">
+            <FaHeadphones />
+            Atendimento
+          </button>
+        </nav>
+      </header>
 
-          {isOpen && (
-            <ul className="dropdown-menu">
-              {categories.map((cat) => (
-                <li key={cat.idCategory}>
-                  <Link to={`/product?category=${cat.idCategory}`}>
-                    {cat.nameCategory}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <button className="nav-btn">
-          <FaTags />
-          Promoções
-        </button>
-        <button className="nav-btn">
-          <FaUsers />
-          Parcerias
-        </button>
-        <button className="nav-btn">
-          <FaGift />
-          Fornecedores
-        </button>
-        <button className="nav-btn">
-          <FaGift />
-          Sobre Nós
-        </button>
-        <button className="nav-btn">
-          <FaHeadphones />
-          Atendimento
-        </button>
-      </nav>
-    </header>
+      {/* Referência para a seção de promoções */}
+      <div ref={promoSectionRef} />
+      <div ref={partnersSectionRef} />
+    </>
   );
 };
 

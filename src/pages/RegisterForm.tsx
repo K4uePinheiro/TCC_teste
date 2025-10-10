@@ -25,7 +25,7 @@ export default function RegisterForm() {
     receberNovidades: false,
   });
 
-  const [, setIsDarkMode] = useState(() => {
+  const [] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
@@ -33,11 +33,10 @@ export default function RegisterForm() {
     const storedTheme = localStorage.getItem("theme");
     const body = document.body;
 
-    if (storedTheme === "dark") {
+    if (!body.classList.contains("dark-mode") && storedTheme === "dark") {
       body.classList.add("dark-mode");
-    } else {
+    } else if (body.classList.contains("dark-mode") && storedTheme !== "dark") {
       body.classList.remove("dark-mode");
-      localStorage.setItem("theme", "light");
     }
 
     const updateTheme = () => {
@@ -78,9 +77,41 @@ export default function RegisterForm() {
     });
   };
 
+  const validateForm = () => {
+    if (formData.nome.length < 3) {
+      alert("O nome deve ter pelo menos 3 caracteres.");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert("Digite um email válido.");
+      return false;
+    }
+
+    if (formData.cpf.length !== 11) {
+      alert("O CPF deve ter 11 dígitos.");
+      return false;
+    }
+
+    if (formData.senha.length < 6) {
+      alert("A senha deve ter pelo menos 6 caracteres.");
+      return false;
+    }
+
+    if (formData.senha !== formData.confirmarSenha) {
+      alert("As senhas não coincidem.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    if (validateForm()) {
+      console.log("Formulário válido", formData);
+    }
   };
 
   return (
@@ -91,7 +122,7 @@ export default function RegisterForm() {
       <form
         onSubmit={handleSubmit}
         className="p-9 rounded-x1 shadow-md w-full max-w-2xl"
-        style={{ backgroundColor: "var(--bg-color, #ffffff)", color: "var(--text-color, #000000)" }}
+        style={{ backgroundColor: "var(--input-bg, #ffffff)", color: "var(--text-color, #000000)", borderRadius: "12px" }}
       >
         <h2
           className="text-center text-x1 font-semibold mb-6"
@@ -101,55 +132,85 @@ export default function RegisterForm() {
         </h2>
 
         <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="nome"
-            placeholder="Nome Completo"
-            value={formData.nome}
-            onChange={handleChange}
-            className="border p-2 rounded-md"
-            style={{ color: "var(--placeholder-color, #ff6600)" }}
-          />
-          <input
-            type="text"
-            name="nascimento"
-            placeholder="Data de nascimento"
-            value={formData.nascimento}
-            onChange={handleChange}
-            className="border p-2 rounded-md"
-          />
-          <input
-            type="text"
-            name="email"
-            placeholder="Digite seu email"
-            value={formData.email}
-            onChange={handleChange}
-            className="border p-2 rounded-md col-span-1"
-          />
-          <input
-            type="text"
-            name="cpf"
-            placeholder="Digite seu CPF"
-            value={formData.cpf}
-            onChange={handleChange}
-            className="border p-2 rounded-md col-span-1"
-          />
-          <input
-            type="password"
-            name="senha"
-            placeholder="Senha"
-            value={formData.senha}
-            onChange={handleChange}
-            className="border p-2 rounded-md"
-          />
-          <input
-            type="password"
-            name="confirmarSenha"
-            placeholder="Confirme sua senha"
-            value={formData.confirmarSenha}
-            onChange={handleChange}
-            className="border p-2 rounded-md"
-          />
+          <div>
+            <input
+              type="text"
+              name="nome"
+              placeholder="Nome Completo"
+              value={formData.nome}
+              onChange={handleChange}
+              className="border p-2 rounded-md"
+              style={{ width: "100%" }}
+              required
+              minLength={3}
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              name="nascimento"
+              placeholder="Data de nascimento"
+              value={formData.nascimento}
+              onChange={handleChange}
+              className="border p-2 rounded-md"
+              style={{ width: "100%" }}
+            />
+          </div>
+
+          <div>
+            <input
+              type="email"
+              name="email"
+              placeholder="Digite seu email"
+              value={formData.email}
+              onChange={handleChange}
+              className="border p-2 rounded-md col-span-1"
+              style={{ width: "100%" }}
+              required
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              name="cpf"
+              placeholder="Digite seu CPF"
+              value={formData.cpf}
+              onChange={handleChange}
+              className="border p-2 rounded-md col-span-1"
+              style={{ width: "100%" }}
+              required
+              pattern="\d{11}"
+            />
+          </div>
+
+          <div>
+            <input
+              type="password"
+              name="senha"
+              placeholder="Senha"
+              value={formData.senha}
+              onChange={handleChange}
+              className="border p-2 rounded-md"
+              style={{ width: "100%" }}
+              required
+              minLength={6}
+            />
+          </div>
+
+          <div>
+            <input
+              type="password"
+              name="confirmarSenha"
+              placeholder="Confirme sua senha"
+              value={formData.confirmarSenha}
+              onChange={handleChange}
+              className="border p-2 rounded-md"
+              style={{ width: "100%" }}
+              required
+            />
+          </div>
         </div>
 
         {/* Divider */}

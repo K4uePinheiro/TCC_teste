@@ -6,11 +6,32 @@ import "/src/pages/login.css";
 const LoginForm: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
+  const [errors, setErrors] = useState({ email: "", senha: "" });
+
+  const validateForm = () => {
+    const newErrors = { email: "", senha: "" };
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      newErrors.email = "Digite um email válido.";
+    }
+
+    if (senha.trim() === "") {
+      newErrors.senha = "A senha não pode estar vazia.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.values(newErrors).every((error) => error === "");
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login enviado:", { email, senha });
-    // aqui você vai conectar a API
+    if (validateForm()) {
+      console.log("Login válido", { email, senha });
+    } else {
+      console.log("Login inválido", errors);
+    }
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) =>
@@ -28,21 +49,27 @@ const LoginForm: FC = () => {
             Acesse sua <span className="highlight">Conta</span>
           </h2>
           <form onSubmit={handleSubmit}>
-            <input
-              type="email"
-              placeholder="Digite seu email:"
-              value={email}
-              onChange={handleEmailChange}
-              required
-            />
+            <div>
+              <input
+                type="email"
+                placeholder="Digite seu email:"
+                value={email}
+                onChange={handleEmailChange}
+                required
+              />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            </div>
 
-            <input
-              type="password"
-              placeholder="Digite sua senha:"
-              value={senha}
-              onChange={handleSenhaChange}
-              required
-            />
+            <div>
+              <input
+                type="password"
+                placeholder="Digite sua senha:"
+                value={senha}
+                onChange={handleSenhaChange}
+                required
+              />
+              {errors.senha && <p className="text-red-500 text-sm">{errors.senha}</p>}
+            </div>
 
             <button type="submit" className="btn-login">
               Entrar
@@ -58,8 +85,13 @@ const LoginForm: FC = () => {
           </div>
 
           <div className="social-login">
-            <button className="google-btn"><img src="/google.png" alt="" /> <h3>Continuar com Google </h3></button>
-            <button className="microsoft-btn"><img src="/microsoft.png" alt="" /><h3>Continuar com Microsoft</h3></button>
+            <button className="google-btn">
+              <img src="/google.png" alt="" /> <h3>Continuar com Google </h3>
+            </button>
+            <button className="microsoft-btn">
+              <img src="/microsoft.png" alt="" />
+              <h3>Continuar com Microsoft</h3>
+            </button>
           </div>
 
           <p className="terms text-sm">
