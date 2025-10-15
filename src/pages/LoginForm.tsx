@@ -101,7 +101,7 @@ const LoginForm: FC = () => {
             <div>
               <input
                 type="email"
-                placeholder="Digite seu email:"
+                placeholder="Digite seu Email"
                 value={email}
                 onChange={handleEmailChange}
                 required

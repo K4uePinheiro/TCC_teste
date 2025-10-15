@@ -2,7 +2,8 @@ import axios from "axios";
 
 
 const api = axios.create({
-  baseURL: "https://w6m310s8-8080.brs.devtunnels.ms", // ajuste aqui
+  baseURL: "https://w6m310s8-8080.brs.devtunnels.ms", 
+  timeout: 10000,// ajuste aqui
   });
   api.interceptors.response.use(
   (response) => response,

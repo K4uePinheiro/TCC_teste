@@ -18,16 +18,35 @@ import api from "../services/api";
 import { useCart } from "../context/CartContext";
 
 const Header = () => {
-  type Categories = {
-    idCategory: number;
-    nameCategory: string;
+  type Category = {
+    id: number;
+    name: string;
+    subCategories: Category[];
   };
   // state da busca. Substituir isso depois pelo java samu
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
   //category
-  const [categories, setCategories] = useState<Categories[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const renderCategories = (cats: Category[]) => {
+    return (
+      <ul className="dropdown-menu">
+        {cats.map((cat) => (
+          <li key={cat.id}>
+            <Link to={`/product?category=${cat.id}`}>{cat.name}</Link>
+
+            {/* Se tiver subcategorias, renderiza dentro */}
+            {cat.subCategories && cat.subCategories.length > 0 && (
+              <ul className="dropdown-submenu">
+                {renderCategories(cat.subCategories)}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   //handlemouse
   const [isOpen, setIsOpen] = useState(false);
@@ -107,7 +126,7 @@ const Header = () => {
     e.preventDefault();
     if (search.trim()) {
       try {
-        const res = await api.get("/product", {
+        const res = await api.get("/product/name/", {
           params: { search },
         });
         console.log("Produtos encontrados:", res.data);
@@ -117,6 +136,7 @@ const Header = () => {
       }
     }
   };
+
 
   const scrollToPromotions = () => {
     promoSectionRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -185,36 +205,26 @@ const Header = () => {
               Categorias
             </button>
 
-            {isOpen && (
-              <ul className="dropdown-menu">
-                {categories.map((cat) => (
-                  <li key={cat.idCategory}>
-                    <Link to={`/product?category=${cat.idCategory}`}>
-                      {cat.nameCategory}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+              {isOpen && categories.length > 0 && renderCategories(categories)}
+            </div>
 
-          <button className="nav-btn" onClick={scrollToPromotions}>
-            <FaTags />
-            Promoções
-          </button>
-          <button className="nav-btn" onClick={scrollToPartners}>
-            <FaUsers />
-            Fornecedores
-          </button>
-        
-          <button className="nav-btn">
-            <FaGift />
-            Sobre Nós
-          </button>
-          <button className="nav-btn">
-            <FaHeadphones />
-            Atendimento
-          </button>
+            <button className="nav-btn" onClick={scrollToPromotions}>
+              <FaTags />
+              Promoções
+            </button>
+            <button className="nav-btn" onClick={scrollToPartners}>
+              <FaUsers />
+              Fornecedores
+            </button>
+
+            <button className="nav-btn">
+              <FaGift />
+              Sobre Nós
+            </button>
+            <button className="nav-btn">
+              <FaHeadphones />
+              Atendimento
+            </button>
         </nav>
       </header>
 

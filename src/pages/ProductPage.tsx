@@ -45,7 +45,7 @@ function ProductPage() {
     if (id) {
       const fetchProduct = async () => {
         try {
-          const res = await api.get(`/product/${id}`);
+          const res = await api.get(`/product/id/${id}`);
           const data: Product = res.data;
 
           const formattedProduct = {

@@ -12,6 +12,8 @@ interface Product {
   discount: number;
   image: string;
   seller: string;
+  description: string;
+  imgUrl: string;
 }
 
 const ProductsPage = () => {
