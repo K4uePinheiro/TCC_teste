@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockDatabase } from "../services/mockDatabase";
-
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 // Interface para os dados do formulário
 interface FormData {
   nome: string;
@@ -37,13 +38,7 @@ export default function RegisterForm() {
   const navigate = useNavigate();
 
   // Tema escuro/claro
-  const [isDarkTheme, setIsDarkTheme] = useState(() => localStorage.getItem("theme") === "dark");
-  const toggleTheme = () => {
-    const newTheme = isDarkTheme ? "light" : "dark";
-    localStorage.setItem("theme", newTheme);
-    setIsDarkTheme(!isDarkTheme);
-    document.body.classList.toggle("dark-mode", !isDarkTheme);
-  };
+
 
   // Efeito para atualizar o tema
   useEffect(() => {
@@ -140,6 +135,9 @@ export default function RegisterForm() {
     }
   };
 
+  //google
+
+
   return (
     <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: "var(--bg-color, #f9f9f9)", color: "var(--text-color, #000000)" }}>
       <form onSubmit={handleSubmit} className="p-9 rounded-x1 shadow-md w-full max-w-2xl" style={{ backgroundColor: "var(--input-bg, #ffffff)", color: "var(--text-color, #000000)", borderRadius: "12px" }}>
@@ -180,17 +178,26 @@ export default function RegisterForm() {
         </div>
 
         {/* Botões de login social */}
-        <div className="flex flex-col gap-3">
-          <button type="button" className="flex items-center justify-center gap-2 border rounded-full py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 cursor-pointer active:scale-95 transition duration-150">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="google" className="w-5 h-5" />
-            Continuar com Google
-          </button>
-          <button type="button" className="flex items-center justify-center gap-2 border rounded-full py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 cursor-pointer active:scale-95 transition duration-150">
-            <img src="/microsoft.png" alt="microsoft" className="w-4 h-4" />
-            Continuar com Microsoft
-          </button>
-        </div>
+        <GoogleOAuthProvider
+          clientId="587997109351-ro6laoog3jm33rfc6h6rmsl40mm8m90e.apps.googleusercontent.com">
+          <div className="googlebtn">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                const token = credentialResponse.credential;
+                if (!token) {
+                  console.error("Token do Google não encontrado!");
+                  return;
+                }
 
+                const user = jwtDecode(token);
+                console.log("Usuário:", user);
+              }}
+              onError={() => {
+                console.error("Erro no login com Google");
+              }}
+            />
+          </div>
+        </GoogleOAuthProvider>
         {/* caixas de checagem */}
         <div className="mt-6 space-y-2 text-sm">
           <label className="flex items-center gap-2">

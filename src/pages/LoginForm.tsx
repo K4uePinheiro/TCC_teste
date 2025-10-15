@@ -3,6 +3,8 @@ import type { ChangeEvent, FormEvent, FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "/src/pages/login.css";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 const LoginForm: FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -95,16 +97,28 @@ const LoginForm: FC = () => {
             <span>Continuar com</span>
           </div>
 
-          <div className="social-login">
-            <button className="google-btn">
-              <img src="/google.png" alt="" /> <h3>Continuar com Google </h3>
-            </button>
-            <button className="microsoft-btn">
-              <img src="/microsoft.png" alt="" />
-              <h3>Continuar com Microsoft</h3>
-            </button>
-          </div>
+          {/* Botões de login social */}
+        <GoogleOAuthProvider
+          clientId="587997109351-ro6laoog3jm33rfc6h6rmsl40mm8m90e.apps.googleusercontent.com">
+          <div className="googlebtn">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                const token = credentialResponse.credential;
+                if (!token) {
+                  console.error("Token do Google não encontrado!");
+                  return;
+                }
 
+                const user = jwtDecode(token);
+                console.log("Usuário:", user);
+              }}
+              onError={() => {
+                console.error("Erro no login com Google");
+              }}
+            />
+          </div>
+        </GoogleOAuthProvider>
+          
           <p className="terms text-sm">
             <a href="#" className="text-orange-500">
               Termos de Uso
@@ -120,7 +134,7 @@ const LoginForm: FC = () => {
         <div className="login-banner">
           <div className="banner-content">
             <h2>
-            Não Possui <span>Conta?</span>
+              Não Possui <span>Conta?</span>
             </h2>
             <Link to="/cadastro">
               <button className="btn-cadastrar">CADASTRAR-SE</button>
@@ -130,6 +144,6 @@ const LoginForm: FC = () => {
       </div>
     </div>
   );
-};
+}
 
 export default LoginForm;
