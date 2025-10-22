@@ -5,6 +5,7 @@ import { useAuth } from "../AuthContext";
 import "./login.css";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { config } from "../config";
 
 const LoginForm: FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -158,7 +159,7 @@ const LoginForm: FC = () => {
           </div>
 
           {/* Botão de login com Google */}
-          <GoogleOAuthProvider clientId="587997109351-ro6laoog3jm33rfc6h6rmsl40mm8m90e.apps.googleusercontent.com">
+          <GoogleOAuthProvider clientId={config.googleClientId}>
             <div className="googlebtn">
               <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
             </div>

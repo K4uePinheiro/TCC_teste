@@ -3,18 +3,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 90vh;
   background-color: var(--bg-color, #f9f9f9);
   color: var(--text-color, #000000);
 }
 
 /* Formulário principal */
 .register-form {
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 50px;
+  border-radius: 5px;
+  box-shadow: 0 6px 40px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 512px;
+  max-width: 612px;
   background-color: var(--input-bg, #ffffff);
   color: var(--text-color, #000000);
 }

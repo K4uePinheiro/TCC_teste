@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import "../components/RegisterForm.css";
+import { config } from "../config";
 
 interface FormData {
   nome: string;
@@ -340,7 +341,7 @@ export default function RegisterForm() {
           <hr className="flex-grow border-gray-300" />
         </div>
 
-        <GoogleOAuthProvider clientId="587997109351-ro6laoog3jm33rfc6h6rmsl40mm8m90e.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={config.googleClientId}>
           <div className="google-container">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
