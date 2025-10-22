@@ -43,21 +43,39 @@ const LoginForm: FC = () => {
   };
 
   // ✅ login tradicional com verificação de sucesso
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      const success = login(email, senha);
-      if (success) {
-        navigate("/account");
-      } else {
-        setErrors((prev) => ({
-          ...prev,
-          auth: "Email ou senha incorretos.",
-        }));
-      }
+    if (!validateForm()) return ;
+
+    try {
+      const response  = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+           email, 
+           password: senha 
+          }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Erro no login");
     }
-  };
+    const data = await response.json();
+    
+    localStorage.setItem("acesstoken", data.acesstoken);
+    localStorage.setItem("refreshtoken", data.refreshtoken);
+    navigate("/account");
+    } catch (error: any) {
+      setErrors((prev) => ({
+        ...prev,
+        auth: error. message || "Erro ao fazer login. Tente novamente.",
+      }));
+    }};
+
 
   // ✅ login com Google integrado ao AuthContext
   const handleGoogleSuccess = (credentialResponse: any) => {
