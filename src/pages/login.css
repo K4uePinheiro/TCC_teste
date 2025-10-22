@@ -248,3 +248,58 @@ body.dark-mode .btn-cadastrar {
     background-color: #555555;
     color: #ff5100;
 }
+
+/* Estilos para o botão do olhinho */
+.password-field-container {
+    position: relative;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    top: 45%;
+    right: 15px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-size: 18px;
+    color: #666;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.password-toggle-btn:hover {
+    color: #333;
+}
+
+.password-toggle-btn.animating {
+    transform: translateY(-50%) scale(0.8);
+}
+
+.password-toggle-icon {
+    display: inline-block;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.password-toggle-icon.showing {
+    transform: rotateY(180deg) scale(1.2);
+    filter: hue-rotate(30deg) brightness(1.1);
+}
+
+.password-toggle-icon.animating {
+    text-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+}
+
+/* Tema escuro para o botão do olhinho */
+body.dark-mode .password-toggle-btn {
+    color: #bbbbbb;
+}
+
+body.dark-mode .password-toggle-btn:hover {
+    color: #ffffff;
+}

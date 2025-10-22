@@ -10,9 +10,19 @@ const LoginForm: FC = () => {
   const [email, setEmail] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
   const [errors, setErrors] = useState({ email: "", senha: "", auth: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordAnimating, setPasswordAnimating] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const togglePassword = () => {
+    setPasswordAnimating(true);
+    setTimeout(() => {
+      setShowPassword(!showPassword);
+      setPasswordAnimating(false);
+    }, 150);
+  };
 
   // ✅ validação simples de e-mail e senha
   const validateForm = () => {
@@ -109,14 +119,26 @@ const LoginForm: FC = () => {
               {errors.email && <p className="error-message">{errors.email}</p>}
             </div>
 
-            <div>
+            <div className="password-field-container">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Digite sua senha:"
                 value={senha}
                 onChange={handleSenhaChange}
                 required
+                style={{ paddingRight: "40px" }}
               />
+              <button
+                type="button"
+                onClick={togglePassword}
+                className={`password-toggle-btn ${passwordAnimating ? 'animating' : ''}`}
+              >
+                <span 
+                  className={`password-toggle-icon ${showPassword ? 'showing' : ''} ${passwordAnimating ? 'animating' : ''}`}
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </span>
+              </button>
               {errors.senha && <p className="error-message">{errors.senha}</p>}
             </div>
 

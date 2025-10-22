@@ -1,0 +1,282 @@
+/* Container principal do formulário de registro */
+.register-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-color, #f9f9f9);
+  color: var(--text-color, #000000);
+}
+
+/* Formulário principal */
+.register-form {
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 512px;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--text-color, #000000);
+}
+
+/* Título do formulário */
+.register-title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--text-color, #000000);
+}
+
+/* Span destacado no título */
+.register-title-highlight {
+  color: var(--button-bg, #ff6600);
+}
+
+/* Grid dos campos */
+.register-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Container dos campos de entrada */
+.register-field {
+  position: relative;
+}
+
+/* Campos de entrada */
+.register-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Botão do olhinho - Senha */
+.password-toggle-btn {
+  position: absolute;
+  top: 45%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 18px;
+  color: #666;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.password-toggle-btn:hover {
+  color: #333;
+}
+
+.password-toggle-btn.animating {
+  transform: translateY(-50%) scale(0.8);
+}
+
+.password-toggle-icon {
+  display: inline-block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.password-toggle-icon.showing {
+  transform: rotateY(180deg) scale(1.2);
+  filter: hue-rotate(30deg) brightness(1.1);
+}
+
+.password-toggle-icon.animating {
+  text-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+}
+
+/* Botão do olhinho - Confirmar Senha */
+.confirm-password-toggle-btn {
+  position: absolute;
+  top: 45%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 18px;
+  color: #666;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.confirm-password-toggle-btn:hover {
+  color: #333;
+}
+
+.confirm-password-toggle-btn.animating {
+  transform: translateY(-50%) scale(0.8);
+}
+
+.confirm-password-toggle-icon {
+  display: inline-block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.confirm-password-toggle-icon.showing {
+  transform: rotateY(180deg) scale(1.2);
+  filter: hue-rotate(30deg) brightness(1.1);
+}
+
+.confirm-password-toggle-icon.animating {
+  text-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+}
+
+/* Divisor "Continue com" */
+.register-divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.register-divider hr {
+  flex-grow: 1;
+  border-color: #d1d5db;
+}
+
+.register-divider span {
+  padding: 0 8px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Container do Google */
+.google-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Checkboxes */
+.register-checkboxes {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.register-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.register-checkbox-label a {
+  color: #f97316;
+  text-decoration: none;
+}
+
+/* Botão de submit */
+.register-submit-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 8px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 150ms;
+  font-weight: 500;
+}
+
+.register-submit-btn:active {
+  transform: scale(0.95);
+}
+
+.register-submit-btn:disabled {
+  background-color: #d1d5db;
+  color: #6b7280;
+}
+
+.register-submit-btn:not(:disabled) {
+  background-color: #f97316;
+  color: white;
+  border: none;
+}
+
+.register-submit-btn:not(:disabled):hover {
+  background-color: #ea580c;
+}
+
+/* Mensagens de erro e sucesso */
+.register-error {
+  margin-bottom: 16px;
+  color: #dc2626;
+  text-align: center;
+}
+
+.register-success {
+  margin-bottom: 16px;
+  color: #16a34a;
+  text-align: center;
+}
+
+/* Tema escuro */
+body.dark-mode .register-container {
+  background-color: #2e2e38;
+  color: #ffffff;
+}
+
+body.dark-mode .register-form {
+  background-color: #444444;
+  color: #ffffff;
+}
+
+body.dark-mode .register-title {
+  color: #ffffff;
+}
+
+body.dark-mode .register-input {
+  background-color: #444444;
+  color: #ffffff;
+  border-color: #555555;
+}
+
+body.dark-mode .password-toggle-btn,
+body.dark-mode .confirm-password-toggle-btn {
+  color: #bbbbbb;
+}
+
+body.dark-mode .password-toggle-btn:hover,
+body.dark-mode .confirm-password-toggle-btn:hover {
+  color: #ffffff;
+}
+
+body.dark-mode .register-divider span {
+  color: #bbbbbb;
+}
+
+body.dark-mode .register-divider hr {
+  border-color: #555555;
+}
+
+body.dark-mode .register-checkbox-label a {
+  color: #ff7300;
+}
+
+body.dark-mode .register-submit-btn:disabled {
+  background-color: #666666;
+  color: #999999;
+}
+
+body.dark-mode .register-submit-btn:not(:disabled) {
+  background-color: #555555;
+}
+
+body.dark-mode .register-submit-btn:not(:disabled):hover {
+  background-color: #666666;
+}

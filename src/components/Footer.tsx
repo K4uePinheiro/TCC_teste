@@ -1,17 +1,18 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { Facebook, Instagram, Linkedin, Youtube, Music2 } from "lucide-react";
 import "./Footer.css"
 import { Link } from "react-router-dom";
 
 
 const Footer: FC = () => {
+    const [isDarkMode, setIsDarkMode] = useState(false);
     return (
         <footer className="footer">
             <div className="footer-container">
                 {/*logo */}
                 <Link to="/">
                     <div className="logo">
-                        <img src="/iko.png" alt="Logo" className="logo" />
+                        {isDarkMode ? <img src="/iko.png" alt="Logo" className="logo" /> : <img src="/iko.png" alt="Logo" className="logo" />}
                     </div>
                 </Link>
 

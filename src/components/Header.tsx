@@ -126,16 +126,14 @@ const Header = () => {
     e.preventDefault();
     if (search.trim()) {
       try {
-        const res = await api.get("/product/name/", {
-          params: { search },
-        });
+        const res = await api.get(`/product/name/${encodeURIComponent(search)}`);
         console.log("Produtos encontrados:", res.data);
-        navigate(`/product?search=${encodeURIComponent(search)}`);
+        navigate(`/product/name/${encodeURIComponent(search)}`);
       } catch (err) {
         console.error("Erro na busca:", err);
       }
     }
-  };
+  }; 
 
 
   const scrollToPromotions = () => {
