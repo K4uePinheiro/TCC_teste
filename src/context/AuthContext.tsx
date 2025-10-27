@@ -1,47 +1,197 @@
-import { createContext, useContext, useState } from "react";
-import { mockDatabase } from "../services/mockDatabase";
+// src/context/AuthContext.tsx
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { auth, provider } from "../firebase.ts";
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  type User as FirebaseUser,
+} from "firebase/auth";
 
-interface AutoContextType {
-    user: any;
-    login: (email: string, password: string) => boolean;
-    logout: () => void;
-    register: (name: string, email: string, password: string) => void;
-
+// Interface do usuário
+export interface User {
+  uid?: string;
+  name: string;
+  email: string;
+  picture?: string;
+  email_verified?: boolean;
+  loginDate?: string;
+  cart?: any[];
+  favorites?: any[];
+  orders?: any[];
 }
 
-const AuthContext = createContext<AutoContextType>({} as AutoContextType);
+// Interface do contexto
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  loginWithGoogle: () => Promise<void>;
+  login: (email: string, password: string) => boolean;
+  logout: () => Promise<void>;
+}
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const[user, setUser] = useState<any>(() => {
-        const saved = localStorage.getItem('logged_user');
-        return saved ? JSON.parse(saved) : null;
-    });
-    const login = (email: string, password: string) => {
-        const found = mockDatabase.findUser(email, password);
-        if (found) {
-            setUser(found);
-            localStorage.setItem('logged_user', JSON.stringify(found));
-            return true;
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+
+// localStorage helpers
+const USER_STORAGE_KEY = "user";
+
+const saveUserToStorage = (userData: User) => {
+  const dataToSave = {
+    ...userData,
+    loginDate: new Date().toISOString(),
+    cart: userData.cart || [],
+    favorites: userData.favorites || [],
+    orders: userData.orders || [],
+  };
+  try {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(dataToSave));
+  } catch (err) {
+    console.warn("Não foi possível salvar user no localStorage:", err);
+  }
+};
+
+const getUserFromStorage = (): User | null => {
+  try {
+    const saved = localStorage.getItem(USER_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+};
+
+const clearUserFromStorage = () => {
+  try {
+    localStorage.removeItem(USER_STORAGE_KEY);
+  } catch (err) {
+    console.warn("Erro ao limpar localStorage:", err);
+  }
+};
+
+// Provider
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(() => {
+    // quick init from storage (sync)
+    return getUserFromStorage();
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    // define persistência global ao montar — tenta local; se falhar, usa session
+    (async () => {
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        if (mounted) console.debug("[Auth] setPersistence: browserLocalPersistence");
+      } catch (err) {
+        // fallback: sessão (por exemplo, se browser bloquear localStorage)
+        try {
+          await setPersistence(auth, browserSessionPersistence);
+          if (mounted) console.debug("[Auth] setPersistence: browserSessionPersistence (fallback)");
+        } catch (err2) {
+          console.warn("[Auth] Não foi possível setPersistence:", err2);
         }
-        return false;
-    };
+      }
+    })();
 
-    const register = (name: string, email: string, password: string) => {
-        const newUser = mockDatabase.addUser({ name, email, password });
-        setUser(newUser);
-        localStorage.setItem('logged_user', JSON.stringify(newUser));
+    // observer para mudanças de autenticação
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      if (!mounted) return;
+      try {
+        if (firebaseUser) {
+          const userData: User = {
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName || "",
+            email: firebaseUser.email || "",
+            picture: firebaseUser.photoURL || "",
+            email_verified: firebaseUser.emailVerified,
+          };
+          setUser(userData);
+          saveUserToStorage(userData);
+          console.debug("[Auth] onAuthStateChanged: usuário logado", userData.email);
+        } else {
+          // sem usuário no Firebase — limpamos storage e estado
+          setUser(null);
+          clearUserFromStorage();
+          console.debug("[Auth] onAuthStateChanged: usuário deslogado");
+        }
+      } catch (err) {
+        console.error("[Auth] erro no onAuthStateChanged:", err);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
+  }, []);
+
+  // Login com Google
+  const loginWithGoogle = async () => {
+    try {
+      // garante persistência antes do login — redundante com o set do useEffect, mas seguro
+      await setPersistence(auth, browserLocalPersistence);
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+      const userData: User = {
+        uid: firebaseUser.uid,
+        name: firebaseUser.displayName || "",
+        email: firebaseUser.email || "",
+        picture: firebaseUser.photoURL || "",
+        email_verified: firebaseUser.emailVerified,
+      };
+      setUser(userData);
+      saveUserToStorage(userData);
+      console.debug("[Auth] loginWithGoogle: sucesso", userData.email);
+    } catch (err: any) {
+      console.error("[Auth] Erro no loginWithGoogle:", err);
+      // se for popup closed by user ou blocked, trate apropriadamente aqui
+      throw err;
     }
+  };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('logged_user');
-    };
+  // Login tradicional (mock)
+  const login = (email: string, password: string): boolean => {
+    const mockUsers = [
+      { email: "teste@email.com", password: "123456", name: "Kaue", picture: "" },
+    ];
+    const found = mockUsers.find(u => u.email === email && u.password === password);
+    if (found) {
+      const userData: User = {
+        name: found.name,
+        email: found.email,
+        picture: found.picture,
+        email_verified: true,
+      };
+      setUser(userData);
+      saveUserToStorage(userData);
+      return true;
+    }
+    return false;
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, login, logout, register }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  // Logout
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.warn("[Auth] signOut erro:", err);
+    } finally {
+      setUser(null);
+      clearUserFromStorage();
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, loginWithGoogle, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

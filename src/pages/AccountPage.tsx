@@ -1,4 +1,5 @@
-import { useAuth } from "../AuthContext";
+import { type FC, type JSX } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../components/AccountPage.css";
 import {
@@ -10,7 +11,14 @@ import {
   LogOut
 } from "lucide-react";
 
-const AccountPage = () => {
+interface Card {
+  icon: JSX.Element;
+  title: string;
+  action?: () => void;
+  path?: string;
+}
+
+const AccountPage: FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -19,12 +27,12 @@ const AccountPage = () => {
     navigate("/login");
   };
 
-  const cards = [
-    { icon: <ShoppingCart size={36} />, title: "Carrinho" },
-    { icon: <Heart size={36} />, title: "Favoritos" },
-    { icon: <Package size={36} />, title: "Seus Pedidos" },
-    { icon: <Headphones size={36} />, title: "Atendimento" },
-    { icon: <Shield size={36} />, title: "Privacidade" },
+  const cards: Card[] = [
+    { icon: <ShoppingCart size={36} />, title: "Carrinho", path: "/cart" },
+    { icon: <Heart size={36} />, title: "Favoritos", path: "/favorites" },
+    { icon: <Package size={36} />, title: "Seus Pedidos", path: "/orders" },
+    { icon: <Headphones size={36} />, title: "Atendimento", path: "/support" },
+    { icon: <Shield size={36} />, title: "Privacidade", path: "/privacy" },
     { icon: <LogOut size={36} />, title: "Sair da conta", action: handleLogout },
   ];
 
@@ -40,7 +48,10 @@ const AccountPage = () => {
           <div
             key={index}
             className="account-card"
-            onClick={card.action ? card.action : undefined}
+            onClick={() => {
+              if (card.action) card.action();
+              else if (card.path) navigate(card.path);
+            }}
           >
             <div className="icon">{card.icon}</div>
             <p>{card.title}</p>

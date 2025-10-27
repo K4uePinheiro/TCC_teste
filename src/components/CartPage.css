@@ -158,5 +158,31 @@
 .back-btn:hover {
   background: #f9f9f9;
 }
+.continuer-btn{
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 2px solid #f56600;
+  font-weight: bold;
+  cursor: pointer;
+  background-color:#f56600;
+}
+.continuer-btn:button{
+  color: #383636;
+}
 
-
+.continuer-btn:hover{
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 2px solid #eed1bc;
+  font-weight: bold;
+  cursor: pointer;
+  background-color:#e26002;
+  transition: 0.6s;
+  transform: matrix3d();
+}

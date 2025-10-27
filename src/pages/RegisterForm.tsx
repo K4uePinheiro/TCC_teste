@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
 import "../components/RegisterForm.css";
-import { config } from "../config";
+import { useAuth } from "../context/AuthContext"; // ✅ usa o mesmo AuthContext
 
 interface FormData {
   nome: string;
@@ -31,13 +29,13 @@ export default function RegisterForm() {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [, setErrors] = useState({ email: "", senha: "", auth: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordAnimating, setPasswordAnimating] = useState(false);
   const [confirmPasswordAnimating, setConfirmPasswordAnimating] = useState(false);
 
   const navigate = useNavigate();
+  const { loginWithGoogle } = useAuth(); // ✅ usa o mesmo método do login
 
   const togglePassword = () => {
     setPasswordAnimating(true);
@@ -63,69 +61,24 @@ export default function RegisterForm() {
     } else if (body.classList.contains("dark-mode") && storedTheme !== "dark") {
       body.classList.remove("dark-mode");
     }
-    const updateTheme = () => {
-      if (body.classList.contains("dark-mode")) {
-        body.style.setProperty("--bg-color", "#2e2e38");
-        body.style.setProperty("--text-color", "#ffffff");
-        body.style.setProperty("--input-bg", "#444444");
-        body.style.setProperty("--input-border", "#555555");
-        body.style.setProperty("--button-bg", "#555555");
-        body.style.setProperty("--button-hover-bg", "#666666");
-        body.style.setProperty("--placeholder-color", "#ff7300");
-      } else {
-        body.style.setProperty("--bg-color", "#f9f9f9");
-        body.style.setProperty("--text-color", "#000000");
-        body.style.setProperty("--input-bg", "#ffffff");
-        body.style.setProperty("--input-border", "#dddddd");
-        body.style.setProperty("--button-bg", "#ff6600");
-        body.style.setProperty("--button-hover-bg", "#e65500");
-        body.style.setProperty("--placeholder-color", "#ff6600");
-      }
-    };
-    updateTheme();
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(body, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    
     let processedValue = value;
-    
-    // Formatação automática da data de nascimento
+
     if (name === "nascimento") {
-      // Remove caracteres não numéricos
-      const numbersOnly = value.replace(/\D/g, '');
-      
-      // Adiciona barras automaticamente enquanto digita
-      if (numbersOnly.length <= 2) {
-        processedValue = numbersOnly;
-      } else if (numbersOnly.length <= 4) {
+      const numbersOnly = value.replace(/\D/g, "");
+      if (numbersOnly.length <= 2) processedValue = numbersOnly;
+      else if (numbersOnly.length <= 4)
         processedValue = `${numbersOnly.slice(0, 2)}/${numbersOnly.slice(2)}`;
-      } else {
-        processedValue = `${numbersOnly.slice(0, 2)}/${numbersOnly.slice(2, 4)}/${numbersOnly.slice(4, 8)}`;
-      }
-      
-      // Converte para formato americano quando completo (DD/MM/AAAA -> AAAA-MM-DD)
-      if (processedValue.length === 10) {
-        const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-        const match = processedValue.match(dateRegex);
-        if (match) {
-          const [, day, month, year] = match;
-          // Armazena no formato americano para envio à API
-          const americanFormat = `${year}-${month}-${day}`;
-          setFormData((prev) => ({
-            ...prev,
-            [name]: americanFormat,
-          }));
-          setError(null);
-          setSuccess(null);
-          return;
-        }
-      }
+      else
+        processedValue = `${numbersOnly.slice(0, 2)}/${numbersOnly.slice(
+          2,
+          4
+        )}/${numbersOnly.slice(4, 8)}`;
     }
-    
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : processedValue,
@@ -135,31 +88,15 @@ export default function RegisterForm() {
   };
 
   const validateForm = () => {
-    if (formData.nome.length < 3) {
-      setError("O nome deve ter pelo menos 3 caracteres.");
-      return false;
-    }
+    if (formData.nome.length < 3) return setError("O nome deve ter pelo menos 3 caracteres."), false;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Digite um email válido.");
-      return false;
-    }
-    if (formData.cpf.length !== 11) {
-      setError("O CPF deve ter 11 dígitos.");
-      return false;
-    }
-    if (formData.senha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
-      return false;
-    }
-    if (formData.senha !== formData.confirmarSenha) {
-      setError("As senhas não coincidem.");
-      return false;
-    }
-    if (!formData.aceitarTermos) {
-      setError("Você deve aceitar os termos para criar a conta.");
-      return false;
-    }
+    if (!emailRegex.test(formData.email)) return setError("Digite um email válido."), false;
+    if (formData.cpf.length !== 11) return setError("O CPF deve ter 11 dígitos."), false;
+    if (formData.senha.length < 6) return setError("A senha deve ter pelo menos 6 caracteres."), false;
+    if (formData.senha !== formData.confirmarSenha)
+      return setError("As senhas não coincidem."), false;
+    if (!formData.aceitarTermos)
+      return setError("Você deve aceitar os termos para criar a conta."), false;
     return true;
   };
 
@@ -169,7 +106,7 @@ export default function RegisterForm() {
     setSuccess(null);
 
     if (!validateForm()) return;
-    
+
     try {
       const response = await fetch("http://localhost:8080/user", {
         method: "POST",
@@ -183,12 +120,12 @@ export default function RegisterForm() {
           birthDate: formData.nascimento,
         }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao criar conta.");   
+        throw new Error(errorData.message || "Erro ao criar conta.");
       }
-      
+
       setSuccess("Conta criada com sucesso!");
       setTimeout(() => navigate("/login"), 1500);
     } catch (err: any) {
@@ -196,50 +133,29 @@ export default function RegisterForm() {
     }
   };
 
-  // ✅ LOGIN COM GOOGLE
-  const handleGoogleSuccess = (credentialResponse: any) => {
-    const token = credentialResponse.credential;
-    if (!token) {
-      console.error("Token do Google não encontrado!");
-      return;
+  // ✅ botão de login com Google igual ao LoginForm
+  const handleGoogleRegister = async () => {
+    try {
+      await loginWithGoogle(); // usa o mesmo método Firebase
+      navigate("/account");
+    } catch (err) {
+      console.error("Erro no login com Google:", err);
+      setError("Erro ao criar conta com o Google. Tente novamente.");
     }
-
-    const googleUser: any = jwtDecode(token);
-
-    // Simula salvar no banco/localStorage
-    localStorage.setItem("user", JSON.stringify(googleUser));
-
-    console.log("Usuário logado com Google:", googleUser);
-
-    // ✅ Redireciona para a página da conta
-    navigate("/account");
-  };
-
-  const handleGoogleError = () => {
-    console.error("Erro no login com Google");
-    setErrors((prev) => ({
-      ...prev,
-      auth: "Erro ao fazer login com Google. Tente novamente.",
-    }));
   };
 
   return (
     <div className="register-container">
-      <form
-        onSubmit={handleSubmit}
-        className="register-form"
-      >
+      <form onSubmit={handleSubmit} className="register-form">
         <h2 className="register-title">
-          Cadastre uma{" "}
-          <span className="register-title-highlight">Conta</span>
+          Cadastre uma <span className="register-title-highlight">Conta</span>
         </h2>
 
         {error && <div className="register-error">{error}</div>}
-        {success && (
-          <div className="register-success">{success}</div>
-        )}
+        {success && <div className="register-success">{success}</div>}
 
         <div className="register-grid">
+          {/* campos padrão */}
           <div className="register-field">
             <input
               type="text"
@@ -249,7 +165,6 @@ export default function RegisterForm() {
               onChange={handleChange}
               className="register-input"
               required
-              minLength={3}
             />
           </div>
           <div className="register-field">
@@ -257,9 +172,7 @@ export default function RegisterForm() {
               type="text"
               name="nascimento"
               placeholder="DD/MM/AAAA"
-              value={formData.nascimento.includes('-') ? 
-                formData.nascimento.split('-').reverse().join('/') : 
-                formData.nascimento}
+              value={formData.nascimento}
               onChange={handleChange}
               className="register-input"
               maxLength={10}
@@ -285,9 +198,9 @@ export default function RegisterForm() {
               onChange={handleChange}
               className="register-input"
               required
-              pattern="\d{11}"
             />
           </div>
+
           <div className="register-field">
             <input
               type={showPassword ? "text" : "password"}
@@ -297,20 +210,16 @@ export default function RegisterForm() {
               onChange={handleChange}
               className="register-input"
               required
-              minLength={6}
             />
             <button
               type="button"
               onClick={togglePassword}
-              className={`password-toggle-btn ${passwordAnimating ? 'animating' : ''}`}
+              className={`password-toggle-btn ${passwordAnimating ? "animating" : ""}`}
             >
-              <span 
-                className={`password-toggle-icon ${showPassword ? 'showing' : ''} ${passwordAnimating ? 'animating' : ''}`}
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </span>
+              {showPassword ? "🙈" : "👁️"}
             </button>
           </div>
+
           <div className="register-field">
             <input
               type={showConfirmPassword ? "text" : "password"}
@@ -324,31 +233,29 @@ export default function RegisterForm() {
             <button
               type="button"
               onClick={toggleConfirmPassword}
-              className={`confirm-password-toggle-btn ${confirmPasswordAnimating ? 'animating' : ''}`}
+              className={`confirm-password-toggle-btn ${
+                confirmPasswordAnimating ? "animating" : ""
+              }`}
             >
-              <span 
-                className={`confirm-password-toggle-icon ${showConfirmPassword ? 'showing' : ''} ${confirmPasswordAnimating ? 'animating' : ''}`}
-              >
-                {showConfirmPassword ? "🙈" : "👁️"}
-              </span>
+              {showConfirmPassword ? "🙈" : "👁️"}
             </button>
           </div>
         </div>
 
+        {/* Divider + Google */}
         <div className="register-divider">
           <hr className="flex-grow border-gray-300" />
           <span className="px-2 text-gray-500 text-sm">Continue com</span>
           <hr className="flex-grow border-gray-300" />
         </div>
 
-        <GoogleOAuthProvider clientId={config.googleClientId}>
-          <div className="google-container">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-            />
-          </div>
-        </GoogleOAuthProvider>
+        <button
+          type="button"
+          className="googlee-btn"
+          onClick={handleGoogleRegister}
+        >
+           <FcGoogle size={24} />Criar conta com Google
+        </button>
 
         <div className="register-checkboxes">
           <label className="register-checkbox-label">
@@ -367,6 +274,7 @@ export default function RegisterForm() {
               Políticas de privacidade
             </a>
           </label>
+
           <label className="register-checkbox-label">
             <input
               type="checkbox"
@@ -381,7 +289,9 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={!formData.aceitarTermos}
-          className={`register-submit-btn ${formData.aceitarTermos ? 'enabled' : 'disabled'}`}
+          className={`register-submit-btn ${
+            formData.aceitarTermos ? "enabled" : "disabled"
+          }`}
         >
           Criar Conta
         </button>

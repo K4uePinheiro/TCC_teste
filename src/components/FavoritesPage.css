@@ -1,0 +1,95 @@
+.favorites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  margin-top: 40px;
+  
+}
+
+.favorites-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.remove-all {
+  background: none;
+  border: 1px solid #ccc;
+  color: #999;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-all:hover {
+  background: #f5f5f5;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.favorites-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1vw;
+}
+
+.btn-continue-shopping,
+.btn-go-cart {
+  padding: 12px 24px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+  width: 100vw;
+}
+
+.btn-continue-shopping {
+  background-color: #ff6700;
+  color: white;
+}
+
+.btn-go-cart {
+  border: 1px solid #ff6700;
+  color: #ff6700;
+  background-color: transparent;
+}
+
+.btn-go-cart:hover {
+  background-color: #fff2e6;
+}
+.no-favorites-message {
+  display: flex;
+  justify-content: center; /* centraliza horizontalmente */
+  align-items: center;     /* centraliza verticalmente */
+  height: 30vh;            /* ocupa altura suficiente para centralizar no meio da tela */
+  font-size: 1.2rem;
+  color: #555;
+  text-align: center;      /* caso seja texto longo */
+  padding: 0 10px;         /* evita cortar o texto em telas menores */
+}
+.btn-back-account {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 6px 12px;
+  background-color: #eee;
+  color: #333;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-back-account:hover {
+  background-color: #ddd;
+}
+.btn-back-account{
+    color: #ff6700;
+}

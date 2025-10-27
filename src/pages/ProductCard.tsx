@@ -6,7 +6,7 @@ interface Product {
   id: number;
   name: string;
   price: number;
-  description: string;
+  description?: string;
   discount?: number;
   imgUrl: string;
   //seller: string;

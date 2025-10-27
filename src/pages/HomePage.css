@@ -90,6 +90,7 @@
   margin-top: 40px;
   align-items: center;
   gap: 20px;
+  padding: 20px;
 }
 
 .products-section h2 {
@@ -97,7 +98,7 @@
   font-size: 1.8rem;
   font-weight: bold;
   text-align: start;/* Centraliza o título */
-  margin-left: 11vw; /* Remove o deslocamento forçado */
+  margin-left: 10vw; /* Remove o deslocamento forçado */
 }
 .carousel-container {
   position: relative;
@@ -236,8 +237,8 @@
 
 .partners-section {
 
-  margin-top: 60px;
-  padding: 40px 20px;
+  margin-top: 10px;
+  padding: 60px 20px;
   background-color: #ffffff;
 }
 
@@ -252,7 +253,7 @@
   align-items: center;
   font-size: 1.2rem;
   color: #ff6600;
-  margin-top: 20px;
+  margin-top: 10px;
   margin-left: 27vw;
 }
 

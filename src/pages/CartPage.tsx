@@ -1,10 +1,27 @@
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { FiTrash2 } from "react-icons/fi"; // ícone de lixeira
 import "../components/CartPage.css";
+import { useNavigate } from "react-router-dom";
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
+  
+  if(!user) {
+    return (
+      <div className="cart-container">
+        <h1>🛒 Carrinho</h1>
+        <p>Você precisa estar logado para acessar o carrinho.</p>
+        <button onClick={() => navigate("/login")} className="continuer-btn">
+          Fazer login
+        </button>
+      </div>
+    );
+  }
+  
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
