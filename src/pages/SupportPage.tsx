@@ -188,41 +188,43 @@ const FormAtendimento: React.FC = () => {
           <div className="radio-group">
             <p>Qual o motivo do seu contato?</p>
 
-            <label>
-              <input
-                type="radio"
-                name="motivoContato"
-                value="duvida"
-                checked={formData.motivoContato === "duvida"}
-                onChange={handleChange}
-                required
-              />
-              Dúvida
-            </label>
+            <div className="radios">
+              <label>
+                <input
+                  type="radio"
+                  name="motivoContato"
+                  value="duvida"
+                  checked={formData.motivoContato === "duvida"}
+                  onChange={handleChange}
+                  required
+                />
+                Dúvida
+              </label>
 
-            <label>
-              <input
-                type="radio"
-                name="motivoContato"
-                value="reclamacao"
-                checked={formData.motivoContato === "reclamacao"}
-                onChange={handleChange}
-                required
-              />
-              Reclamação
-            </label>
+              <label>
+                <input
+                  type="radio"
+                  name="motivoContato"
+                  value="reclamacao"
+                  checked={formData.motivoContato === "reclamacao"}
+                  onChange={handleChange}
+                  required
+                />
+                Reclamação
+              </label>
 
-            <label>
-              <input
-                type="radio"
-                name="motivoContato"
-                value="devolucao"
-                checked={formData.motivoContato === "devolucao"}
-                onChange={handleChange}
-                required
-              />
-              Solicitar Devolução
-            </label>
+              <label>
+                <input
+                  type="radio"
+                  name="motivoContato"
+                  value="devolucao"
+                  checked={formData.motivoContato === "devolucao"}
+                  onChange={handleChange}
+                  required
+                />
+                Solicitar Devolução
+              </label>
+            </div>
           </div>
 
           {renderCampos()}

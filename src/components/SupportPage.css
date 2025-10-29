@@ -11,9 +11,10 @@
   background: #fff;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-.form-content h2{
+
+.form-content h2 {
   font-size: 1.7rem;
   margin-bottom: 1.5rem;
   font-weight: bold;
@@ -37,7 +38,8 @@ label {
   margin-bottom: 0.4rem;
 }
 
-input, textarea {
+input,
+textarea {
   border: 1px solid #ccc;
   border-radius: 0.5rem;
   padding: 0.6rem;
@@ -46,13 +48,23 @@ input, textarea {
 }
 
 .radio-group {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
   margin-top: 1.5rem;
+}
+
+.radio-group .radios {
+  width: fit-content;
+  text-align: left;
 }
 
 .radio-group label {
   display: block;
   margin: 0.3rem 0;
 }
+
 .radio-group p {
   font-weight: bold;
   margin-bottom: 0.5rem;
@@ -84,7 +96,7 @@ input, textarea {
   transition: all 0.3s ease;
 }
 
-.button-container button:hover{
+.button-container button:hover {
   background: #e65501;
   transform: translateY(-3px);
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
