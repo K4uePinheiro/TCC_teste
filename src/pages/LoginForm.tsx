@@ -88,7 +88,7 @@ const LoginForm: FC = () => {
                 onClick={togglePassword}
                 className={`password-toggle-btn ${passwordAnimating ? 'animating' : ''}`}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? <img src="../public/olhos2.png" alt="Show password" /> : <img src="../public/olhos1.png" alt="Show password" />}
               </button>
               {errors.senha && <p className="error-message">{errors.senha}</p>}
             </div>

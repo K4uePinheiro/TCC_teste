@@ -85,7 +85,7 @@ input, textarea {
 }
 
 .button-container button:hover{
-  background: #cf4c00;
-  box-shadow: black 0px 0.3px 5px;
+  background: #e65501;
   transform: translateY(-3px);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }

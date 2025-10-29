@@ -4,6 +4,7 @@ import ProductCard from "./ProductCard";
 import "./HomePage.css";
 import { productsMock } from "../mocks/productsMocks";
 import type { Product } from "../types";
+import { suppliersMock } from "../mocks/suppliers";
 
 
 interface Supplier {
@@ -51,10 +52,14 @@ const HomePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    api
-      .get("/suppliers")
-      .then((res) => setSuppliers(res.data))
-      .catch((err) => console.error("Erro ao buscar fornecedores", err));
+    if (USE_LOCAL_DATA) {
+      setSuppliers(suppliersMock);
+    } else {
+      api
+        .get("/suppliers")
+        .then((res) => setSuppliers(res.data))
+        .catch((err) => console.error("Erro ao buscar fornecedores", err));
+    }
   }, []);
 
   const paginatedProducts = products.slice(

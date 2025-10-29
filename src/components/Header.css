@@ -335,11 +335,16 @@ body.dark-mode .promobox-a{
   gap: 8px;
   color: var(--text-color, #333);
   background: none;
-  border: none;
+  border: 1px solid white;
+  border-radius: 7px;
+  padding: 5px 10px;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
   transition: 0.2s;
+}
+.profile-btn span{
+    color: white;
 }
 
 .profile-btn:hover {

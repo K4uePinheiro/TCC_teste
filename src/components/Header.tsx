@@ -124,7 +124,7 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
-      navigate(`/product?q=${encodeURIComponent(search.trim())}`);
+      navigate(`/produtos?q=${encodeURIComponent(search.trim())}`);
     }
   };
 
@@ -180,7 +180,7 @@ const Header = () => {
                   alt={user.name}
                   className="user-avatar"
                 />
-                <span>Bem-vindo {user.name}</span>
+                <span>Bem-vindo, <br></br> {user.name.split(" ")[0]}</span>
               </Link>
             ) : (
               <Link to="/login" className="login-btn">

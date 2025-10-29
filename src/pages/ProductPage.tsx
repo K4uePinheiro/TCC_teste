@@ -184,6 +184,7 @@ function ProductPage() {
           {frete && <p className="frete-result">{frete}</p>}
         </div>
       </div>
+      
     </div>
   );
 }
