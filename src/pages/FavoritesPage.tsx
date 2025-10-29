@@ -1,33 +1,40 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import "../components/FavoritesPage.css";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description?: string;
-  discount?: number;
-  imgUrl: string;
-  categories?: [{}];
-}
+import  type { Product } from "../types";
 
 const FavoritesPage = () => {
   // Usuário logado (simulação, poderia vir do contexto ou API)
   const user = true; // true = logado, false = não logado
-
+  const navigate = useNavigate()
   // Estado de favoritos (isso poderia vir do contexto ou API)
   const [favorites, setFavorites] = useState<Product[]>([
     // Adicione mais produtos se quiser testar
   ]);
+
+  const handleAddToFavorites = (product: Product) => {
+    if(!user) {
+      alert("Você precisa estar logado para adicionar produtos aos favoritos.");
+      navigate("/login");
+      return;
+    }
+
+    const alreadyFavorited = favorites.some((fav) => fav.id === product.id);
+    if (alreadyFavorited) {
+      alert("Produto já está nos favoritos.");
+      return;
+    }
+
+    setFavorites((prevFavorites) => [...prevFavorites, product]);
+  };
 
   const removeAll = () => setFavorites([]);
 
   return (
     <div className="favorites-container">
       <div className="favorites-header">
-        <h2>❤️ Seus itens favoritos</h2>
+        <h2><img src="../public/heart.png" alt="Coração" />Seus itens favoritos</h2>
         {user && (
           <Link to="/account" className="btn-back-account">
             <p>← Voltar à conta</p>
@@ -49,7 +56,9 @@ const FavoritesPage = () => {
       ) : (
         <div className="favorites-grid">
           {favorites.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} 
+            product={product}
+            onAddToFavorites={handleAddToFavorites} />
           ))}
         </div>
       )}

@@ -14,61 +14,75 @@ import {
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import api from "../services/api";
 import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext"; // 🔹 importa o contexto de autenticação
+import { useAuth } from "../context/AuthContext";
+import { productsMock, type Category, } from "../mocks/productsMocks";
 
 const Header = () => {
-  type Category = {
-    id: number;
-    name: string;
-    subCategories: Category[];
-  };
-
   const [search, setSearch] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const renderCategories = (cats: Category[]) => {
-    return (
-      <ul className="dropdown-menu">
-        {cats.map((cat) => (
-          <li key={cat.id}>
-            <Link to={`/product?category=${cat.id}`}>{cat.name}</Link>
-            {cat.subCategories && cat.subCategories.length > 0 && (
-              <ul className="dropdown-submenu">
-                {renderCategories(cat.subCategories)}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
-    );
-  };
+  const { cart } = useCart();
+  const { user } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { cart } = useCart();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const promoSectionRef = useRef<HTMLDivElement>(null);
   const partnersSectionRef = useRef<HTMLDivElement>(null);
 
-  const { user } = useAuth(); // 🔹 pega o usuário logado
+  // 🧠 Renderiza categorias recursivamente
+  const renderCategories = (cats: Category[]) => (
+    <ul className="dropdown-menu">
+      {cats.map((cat) => (
+        <li key={cat.id}>
+          <Link to={`/product?category=${cat.id}`}>{cat.name}</Link>
+          {cat.subCategories?.length > 0 && (
+            <ul className="dropdown-submenu">
+              {renderCategories(cat.subCategories)}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 
+  // 🟢 Buscar categorias — tenta API, senão usa mock
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await api.get("/categories");
-        setCategories(res.data);
-      } catch (err) {
-        console.error("Erro ao buscar categorias", err);
-      }
-    };
-    fetchCategories();
+    const allCategories: Category[] = [];
+
+    productsMock.forEach((product) => {
+      product.categories?.forEach((cat) => {
+        const existingCat = allCategories.find((c) => c.id === cat.id);
+
+        if (existingCat) {
+          cat.subCategories?.forEach((sub) => {
+            const alreadyExists = existingCat.subCategories?.some(
+              (s) => s.id === sub.id
+            );
+            if (!alreadyExists) {
+              existingCat.subCategories = [
+                ...(existingCat.subCategories || []),
+                sub,
+              ];
+            }
+          });
+        } else {
+          allCategories.push({
+            ...cat,
+            subCategories: cat.subCategories || [],
+          });
+        }
+      });
+    });
+
+    setCategories(allCategories);
   }, []);
 
+  // 🌙 Tema escuro
   const toggleTheme = () => {
     setIsAnimating(true);
     setTimeout(() => {
@@ -82,6 +96,7 @@ const Header = () => {
     else document.body.classList.remove("dark-mode");
   }, [isDarkMode]);
 
+  // 📱 Responsividade
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -89,32 +104,27 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // 🧭 Hover e clique menu
   const handleMouseEnter = () => {
     if (!isMobile) {
       if (timeoutId.current) clearTimeout(timeoutId.current);
       setIsOpen(true);
     }
   };
-
   const handleMouseLeave = () => {
     if (!isMobile) {
       timeoutId.current = setTimeout(() => setIsOpen(false), 200);
     }
   };
-
   const handleClick = () => {
     if (isMobile) setIsOpen((prev) => !prev);
   };
 
-  const handleSearch = async (e: React.FormEvent) => {
+  // 🔎 Busca
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
-      try {
-        await api.get(`/product/name/${encodeURIComponent(search)}`);
-        navigate(`/product/name/${encodeURIComponent(search)}`);
-      } catch (err) {
-        console.error("Erro na busca:", err);
-      }
+      navigate(`/product?q=${encodeURIComponent(search.trim())}`);
     }
   };
 
@@ -151,23 +161,18 @@ const Header = () => {
               className={`icon-btn ${isAnimating ? "animating" : ""}`}
               onClick={toggleTheme}
             >
-              {isDarkMode ? (
-                <FaMoon className="icon" />
-              ) : (
-                <FaSun className="icon" />
-              )}
+              {isDarkMode ? <FaMoon className="icon" /> : <FaSun className="icon" />}
             </button>
 
-              <Link to="/favorites" className="icon-btn">
+            <Link to="/favorites" className="icon-btn">
               <FaHeart className="icon" />
-              </Link>
+            </Link>
 
             <Link to="/cart" className="icon-btn">
               <FaShoppingCart className="icon" />
               {cart.length > 0 && <span>{cart.length}</span>}
             </Link>
 
-            {/* 🔹 Se o usuário estiver logado, mostra o avatar + perfil */}
             {user ? (
               <Link to="/account" className="profile-btn">
                 <img
@@ -175,8 +180,7 @@ const Header = () => {
                   alt={user.name}
                   className="user-avatar"
                 />
-                <span>Bem Vindo {user.name}</span>{" "}
-                {/* 🔹 Aqui está a mudança */}
+                <span>Bem-vindo {user.name}</span>
               </Link>
             ) : (
               <Link to="/login" className="login-btn">
@@ -214,7 +218,7 @@ const Header = () => {
             Sobre Nós
           </button>
 
-           <Link to="/support"className="nav-btn">
+          <Link to="/support" className="nav-btn">
             <FaHeadphones />
             Atendimento
           </Link>

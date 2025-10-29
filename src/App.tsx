@@ -30,7 +30,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/cart" element={<CartPage />} />
-              <Route path="/product" element={<ProductsPage />} />
+              <Route path="/produtos" element={<ProductsPage />} />
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/login" element={<LoginForm />} />
               <Route path="/cadastro" element={<RegisterForm />} />
@@ -38,6 +38,9 @@ const App: React.FC = () => {
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/support" element={<SupportPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
+
+
+
 
               {/* 🔒 Rota protegida */}
               <Route

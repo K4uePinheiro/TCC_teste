@@ -2,17 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import api from "../services/api";
 import ProductCard from "./ProductCard";
 import "./HomePage.css";
+import { productsMock } from "../mocks/productsMocks";
+import type { Product } from "../types";
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  discount?: number;
-  imgUrl: string;
-  //seller: string;
-  categories?: [{}];
-}
 
 interface Supplier {
   id: number;
@@ -20,11 +12,26 @@ interface Supplier {
   imgUrl: string;
 }
 
+const USE_LOCAL_DATA = true;// muda para false para usar a API
+
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [promotions, setPromotions] = useState<Product[]>([]);
   const [page, setPage] = useState(0);
   const perPage = 4;
+
+  useEffect(() => {
+    if (USE_LOCAL_DATA) {
+      setProducts(productsMock);
+      setPromotions(productsMock.filter((p) => p.discount));
+    } else {
+      api
+        .get<Product[]>("product")
+        .then((res) => setProducts(res.data))
+        .catch((err) => console.error(err));
+    }
+  }, []);
+
   const partnersSectionRef = useRef<HTMLDivElement>(null);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
