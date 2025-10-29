@@ -1,0 +1,91 @@
+.form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.form-content {
+  max-width: 700px;
+  width: 100%;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.form-content h2{
+  font-size: 1.7rem;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+input, textarea {
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.radio-group {
+  margin-top: 1.5rem;
+}
+
+.radio-group label {
+  display: block;
+  margin: 0.3rem 0;
+}
+.radio-group p {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+
+}
+
+.mensagem-box,
+#motivo-devolucao {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.button-container {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.button-container button {
+  background: #ff6600;
+  color: white;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button-container button:hover{
+  background: #cf4c00;
+  box-shadow: black 0px 0.3px 5px;
+  transform: translateY(-3px);
+}

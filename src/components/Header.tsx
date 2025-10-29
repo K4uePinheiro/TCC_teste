@@ -39,7 +39,7 @@ const Header = () => {
     <ul className="dropdown-menu">
       {cats.map((cat) => (
         <li key={cat.id}>
-          <Link to={`/product?category=${cat.id}`}>{cat.name}</Link>
+          <Link to={`/produtos?category=${cat.id}`}>{cat.name}</Link>
           {cat.subCategories?.length > 0 && (
             <ul className="dropdown-submenu">
               {renderCategories(cat.subCategories)}
