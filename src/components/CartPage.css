@@ -170,7 +170,7 @@
   background-color:#f56600;
 }
 .continuer-btn:button{
-  color: #383636;
+  color: #ffffff;
 }
 
 .continuer-btn:hover{
@@ -185,4 +185,7 @@
   background-color:#e26002;
   transition: 0.6s;
   transform: matrix3d();
+}
+.continuer-btn > p{
+  color: white;
 }

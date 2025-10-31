@@ -216,7 +216,7 @@ export default function RegisterForm() {
               onClick={togglePassword}
               className={`password-toggle-btn ${passwordAnimating ? "animating" : ""}`}
             >
-              {showPassword ? "🙈" : "👁️"}
+              {showPassword ? <img src="/olhos2.png" alt="Show password" /> : <img src="/olhos1.png" alt="Show password" />}
             </button>
           </div>
 
@@ -237,7 +237,7 @@ export default function RegisterForm() {
                 confirmPasswordAnimating ? "animating" : ""
               }`}
             >
-              {showConfirmPassword ? "🙈" : "👁️"}
+              {showPassword ? <img src="/olhos2.png" alt="Show password" /> : <img src="/olhos1.png" alt="Show password" />}
             </button>
           </div>
         </div>

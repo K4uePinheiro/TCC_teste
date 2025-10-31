@@ -15,7 +15,10 @@ import OrdersPage from "./pages/OrdersPage"
 import FavoritesPage from "./pages/FavoritesPage"
 import PrivacyPage from "./pages/PrivacyPage"
 import SupportPage from "./pages/SupportPage"
+import TermoUso from "./pages/TermoUso"
+import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import "./App.css";
+
 
 import { AuthProvider } from "./context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -38,9 +41,8 @@ const App: React.FC = () => {
               <Route path="/orders" element={<OrdersPage />} />
               <Route path="/support" element={<SupportPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
-
-
-
+              <Route path="/TermoUso" element={<TermoUso />} />
+              <Route path="/PoliticaPrivacidade" element={<PoliticaPrivacidade />} />
 
               {/* 🔒 Rota protegida */}
               <Route

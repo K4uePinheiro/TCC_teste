@@ -129,7 +129,7 @@
 }
 .banner-content {
   display: flex;
-  margin-top: 11.4rem;
+  margin-top: 12rem;
   margin-left: 7.9vh;
   flex-direction: column;  
   color: #ffffff;
@@ -139,7 +139,7 @@
 .banner-content h2 {
   font-size: 28px;
   line-height: 1;
-  margin-bottom: 3rem;
+  margin-bottom: 0.1rem;
   margin-left: -10px;
 }
 
@@ -156,7 +156,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 10px;
   width: auto;       /* botão fica só do tamanho do texto */
   align-self: flex-start; /* garante que não estique no flex */
 }

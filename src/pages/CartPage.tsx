@@ -13,10 +13,10 @@ const CartPage: React.FC = () => {
   if(!user) {
     return (
       <div className="cart-container">
-        <h1>🛒 Carrinho</h1>
+        <h1><img src="/shoppingcart.png" alt="shopping_cart" />Carrinho</h1>
         <p>Você precisa estar logado para acessar o carrinho.</p>
         <button onClick={() => navigate("/login")} className="continuer-btn">
-          Fazer login
+          <p>Fazer login</p>
         </button>
       </div>
     );
@@ -27,7 +27,7 @@ const CartPage: React.FC = () => {
   return (
     <div className="cart-container">
       <div className="cart-header">
-        <h1>🛒 Produtos no carrinho</h1>
+        <h1><img src="/shoppingcart.png" alt="shopping_cart" />Produtos no carrinho</h1>
         {cart.length > 0 && (
           <button className="clear-btn" onClick={clearCart}>
             <FiTrash2 /> Remover todos os produtos

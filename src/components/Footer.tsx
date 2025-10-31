@@ -19,10 +19,10 @@ const Footer: FC = () => {
                 <div>
                     <h2 className="footer-title">Sobre nós</h2>
                     <ul className="footer-list">
-                        <li><Link to="/quem-somos">Quem Somos</Link></li>
-                        <li><Link to="/politica-priv">Política de privacidade</Link></li>
-                        <li><Link to="/termos">Termos de uso.</Link></li>
-                        <li><Link to="/politica-co">Políticas de Cookies</Link></li>
+                        <li><a href="https://ikommercylanding.netlify.app/">Quem Somos</a></li>
+                        <li><a href="/src/pdfs/Política de Devolução.pdf">Política de Devolução</a></li>
+                        <li><Link to="/TermoUso">Termos de Uso</Link></li>
+                        <li><Link to="/PoliticaPrivacidade">Política de Privacidade</Link></li>
                     </ul>
                 </div>
 
@@ -32,8 +32,8 @@ const Footer: FC = () => {
                     <ul className="footer-list">
                         <li><Link to="/cadastro">Cadastre-se</Link></li>
                         <li><Link to="/login">Faça Login</Link></li>
-                        <li><Link to="/favs">Favoritos</Link></li>
-                        <li><Link to="/atendimento">Atendimento</Link></li>
+                        <li><Link to="/favorites">Favoritos</Link></li>
+                        <li><Link to="/support">Atendimento</Link></li>
                     </ul>
                 </div>
 

@@ -34,7 +34,7 @@ const FavoritesPage = () => {
   return (
     <div className="favorites-container">
       <div className="favorites-header">
-        <h2><img src="../public/heart.png" alt="Coração" />Seus itens favoritos</h2>
+        <h2><img src="/heart.png" alt="Coração" />Seus itens favoritos</h2>
         {user && (
           <Link to="/account" className="btn-back-account">
             <p>← Voltar à conta</p>
