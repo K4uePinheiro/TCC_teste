@@ -1,6 +1,7 @@
-import "../components/Termos.css";
+import "../components/TermosUso.css";
 
 const TermoUso = () => {
+  
 return (
     <section className="termos-uso" id="termos-uso">
       <div className="container">

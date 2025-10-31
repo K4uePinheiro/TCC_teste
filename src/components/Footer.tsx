@@ -19,8 +19,8 @@ const Footer: FC = () => {
                 <div>
                     <h2 className="footer-title">Sobre nós</h2>
                     <ul className="footer-list">
-                        <li><a href="https://ikommercylanding.netlify.app/">Quem Somos</a></li>
-                        <li><a href="/src/pdfs/Política de Devolução.pdf">Política de Devolução</a></li>
+                        <li><a href="https://ikommercylanding.netlify.app/" target="_blank">Quem Somos</a></li>
+                        <li><a href="/PoliticaDevolucao">Política de Devolução</a></li>
                         <li><Link to="/TermoUso">Termos de Uso</Link></li>
                         <li><Link to="/PoliticaPrivacidade">Política de Privacidade</Link></li>
                     </ul>

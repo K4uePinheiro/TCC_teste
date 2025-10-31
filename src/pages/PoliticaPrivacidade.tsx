@@ -1,11 +1,8 @@
-import "../components/Termos.css"
+import "../components/PoliticaPrivacidade.css";
 
 const PoliticaPrivacidade = () => {
 
     return(
-
-
-
         <section className="politica-privacidade" id="politica-privacidade">
         <div className="container">
         <h1>Política de Privacidade</h1>

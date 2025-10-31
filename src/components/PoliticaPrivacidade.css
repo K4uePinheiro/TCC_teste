@@ -1,0 +1,79 @@
+:root {
+  --cor-primaria: #fe6d24;
+  --cor-secundaria: #e65c1a;
+  --cor-terciaria: #d65b1d;
+  --cor-fundo: #f0f0f0;
+}
+
+body {
+  font-family: "Inter", Arial, sans-serif;
+  background-color: var(--cor-fundo);
+  color: #222;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+section.politica-privacidade {
+  max-width: 900px;
+  margin: 60px auto;
+  background-color: #fff;
+  padding: 40px 50px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+section.politica-privacidade h1 {
+  color: var(--cor-primaria);
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+section.politica-privacidade h2 {
+  color: var(--cor-secundaria);
+  font-size: 1.3rem;
+  margin-top: 35px;
+  margin-bottom: 10px;
+  border-left: 5px solid var(--cor-terciaria);
+  padding-left: 10px;
+}
+
+section.politica-privacidade p {
+  margin-bottom: 10px;
+}
+
+section.politica-privacidade ul {
+  list-style: disc;
+  padding-left: 25px;
+  margin-bottom: 20px;
+}
+
+section.politica-privacidade li {
+  margin-bottom: 8px;
+}
+
+section.politica-privacidade a {
+  color: var(--cor-primaria);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+section.politica-privacidade a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  section.politica-privacidade {
+    padding: 25px 20px;
+    margin: 30px 15px;
+  }
+
+  section.politica-privacidade h1 {
+    font-size: 1.6rem;
+  }
+
+  section.politica-privacidade h2 {
+    font-size: 1.1rem;
+  }
+}

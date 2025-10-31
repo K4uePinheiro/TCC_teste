@@ -16,6 +16,7 @@ import FavoritesPage from "./pages/FavoritesPage"
 import PrivacyPage from "./pages/PrivacyPage"
 import SupportPage from "./pages/SupportPage"
 import TermoUso from "./pages/TermoUso"
+import PoliticaDevolucao from "./pages/PoliticaDevolucao";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import "./App.css";
 
@@ -42,6 +43,7 @@ const App: React.FC = () => {
               <Route path="/support" element={<SupportPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/TermoUso" element={<TermoUso />} />
+              <Route path="/PoliticaDevolucao" element={<PoliticaDevolucao />} />
               <Route path="/PoliticaPrivacidade" element={<PoliticaPrivacidade />} />
 
               {/* 🔒 Rota protegida */}

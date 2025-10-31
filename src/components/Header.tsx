@@ -215,7 +215,7 @@ const Header = () => {
 
           <button className="nav-btn">
             <FaGift />
-            <a href="https://ikommercylanding.netlify.app/">Sobre Nós</a>
+            <a href="https://ikommercylanding.netlify.app/" target="_blank">Sobre Nós</a>
           </button>
 
           <Link to="/support" className="nav-btn">
