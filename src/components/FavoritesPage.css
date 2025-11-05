@@ -1,9 +1,9 @@
 .favorites-container {
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   margin-top: 40px;
-  
 }
 
 .favorites-header {
@@ -76,20 +76,26 @@
   padding: 0 10px;         /* evita cortar o texto em telas menores */
 }
 .btn-back-account {
-  display: inline-block;
-  margin-right: 10px;
-  padding: 6px 12px;
-  background-color: #eee;
-  color: #333;
-  border-radius: 6px;
-  text-decoration: none;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #f56600;
   font-weight: 500;
-  transition: background-color 0.2s;
+  text-decoration: none;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  padding: 5px 10px;
 }
 
 .btn-back-account:hover {
-  background-color: #ddd;
+  color: #d95500;
+  background-color: #dddcdc;
+  border-radius: 7px;
 }
-.btn-back-account{
-    color: #ff6700;
+
+.btn-back-account p {
+  margin: 0;
 }
