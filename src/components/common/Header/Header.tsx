@@ -14,9 +14,9 @@ import {
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
-import { productsMock, type Category, } from "../mocks/productsMocks";
+import { useCart } from "../../../context/CartContext";
+import { useAuth } from "../../../context/AuthContext";
+import { productsMock, type Category, } from "../../../mocks/productsMocks";
 
 const Header = () => {
   const [search, setSearch] = useState("");
