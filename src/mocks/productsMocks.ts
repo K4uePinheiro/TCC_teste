@@ -101,4 +101,88 @@ export const productsMock: ProductMock[] = [
       },
     ],
   },
+  {
+    id: 4,
+    name: "Smartphone X",
+    description: "Smartphone moderno com câmera avançada e alto desempenho",
+    price: 2200.0,
+    discount: 12.0,
+    imgUrl:
+      "https://d3qoj2c6mu9s8x.cloudfront.net/Custom/Content/Products/40/06/4006975_smartphone-apple-iphone-x-5-8-camera-12mp-dual-frontal-7mp-com-ios-11-prata-256gb_m2_637223855454369999.webp",
+    categories: [
+      {
+        id: 1,
+        name: "Eletrônicos",
+        subCategories: [
+          {
+            id: 4,
+            name: "Celulares",
+            subCategories: [
+              {
+                id: 5,
+                name: "Smartphones",
+                subCategories: [],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 5,
+    name: "Smartphone X",
+    description: "Smartphone moderno com câmera avançada e alto desempenho",
+    price: 2200.0,
+    discount: 12.0,
+    imgUrl:
+      "https://d3qoj2c6mu9s8x.cloudfront.net/Custom/Content/Products/40/06/4006975_smartphone-apple-iphone-x-5-8-camera-12mp-dual-frontal-7mp-com-ios-11-prata-256gb_m2_637223855454369999.webp",
+    categories: [
+      {
+        id: 1,
+        name: "Eletrônicos",
+        subCategories: [
+          {
+            id: 4,
+            name: "Celulares",
+            subCategories: [
+              {
+                id: 5,
+                name: "Smartphones",
+                subCategories: [],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 6,
+    name: "Smartphone X",
+    description: "Smartphone moderno com câmera avançada e alto desempenho",
+    price: 2200.0,
+    discount: 12.0,
+    imgUrl:
+      "https://d3qoj2c6mu9s8x.cloudfront.net/Custom/Content/Products/40/06/4006975_smartphone-apple-iphone-x-5-8-camera-12mp-dual-frontal-7mp-com-ios-11-prata-256gb_m2_637223855454369999.webp",
+    categories: [
+      {
+        id: 1,
+        name: "Eletrônicos",
+        subCategories: [
+          {
+            id: 4,
+            name: "Celulares",
+            subCategories: [
+              {
+                id: 5,
+                name: "Smartphones",
+                subCategories: [],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ];

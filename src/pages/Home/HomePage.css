@@ -105,8 +105,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 90%;
+  max-width: 89%;
   margin: 0 auto;
+  padding: 10px;
+
 }
 
 .carousel {
@@ -118,6 +120,7 @@
   justify-content: center;
   gap: 4px;
   width: 90%;
+  height: 0px 29px;
 }
 .carousel::-webkit-scrollbar {
   display: none;
