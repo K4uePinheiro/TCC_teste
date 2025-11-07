@@ -1,8 +1,8 @@
 import { FcGoogle } from "react-icons/fc";
 import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import "../components/RegisterForm.css";
-import { useAuth } from "../context/AuthContext"; // ✅ usa o mesmo AuthContext
+import "./RegisterForm.css";
+import { useAuth } from "../../context/AuthContext"; // ✅ usa o mesmo AuthContext
 
 interface FormData {
   nome: string;

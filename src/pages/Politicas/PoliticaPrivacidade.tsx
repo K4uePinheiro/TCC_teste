@@ -1,4 +1,4 @@
-import "../components/PoliticaPrivacidade.css";
+import "./PoliticaPrivacidade.css";
 
 const PoliticaPrivacidade = () => {
 

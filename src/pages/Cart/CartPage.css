@@ -189,3 +189,58 @@
 .continuer-btn > p{
   color: white;
 }
+
+.cart-containera {
+  max-width: 420px;
+  margin: 20vh auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
+}
+
+.cart-containera h1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.cart-containera h1 img {
+  width: 28px;
+  height: 28px;
+}
+
+.cart-containera p {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Botão estilizado */
+.continuer-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #f56600;
+  background-color: #f56600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.continuer-btn p {
+  color: #fff;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.continuer-btn:hover {
+  background-color: #d95500;
+  border-color: #d95500;
+}

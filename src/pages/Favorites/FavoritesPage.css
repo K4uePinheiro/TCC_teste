@@ -1,0 +1,172 @@
+.favorites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.favorites-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.favorites-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.6rem;
+  color: #222;
+}
+
+.favorites-header img {
+  width: 28px;
+  height: 28px;
+}
+
+.remove-all {
+  background: none;
+  border: 1px solid #ccc;
+  color: #999;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-all:hover {
+  background: #f5f5f5;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.no-favorites-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+  font-size: 1.2rem;
+  color: #555;
+  text-align: center;
+  padding: 0 10px;
+}
+
+.favorites-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1vw;
+  flex-wrap: wrap;
+}
+
+.btn-continue-shopping,
+.btn-go-cart {
+  padding: 12px 24px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+  flex: 1;
+  min-width: 200px;
+}
+
+.btn-continue-shopping {
+  background-color: #ff6700;
+  color: white;
+}
+
+.btn-go-cart {
+  border: 1px solid #ff6700;
+  color: #ff6700;
+  background-color: transparent;
+}
+
+.btn-go-cart:hover {
+  background-color: #fff2e6;
+}
+
+.btn-back-account {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 6px 12px;
+  background-color: #eee;
+  color: #ff6700;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-back-account:hover {
+  background-color: #ddd;
+}
+.favorites-login-required {
+  max-width: 420px;
+  margin: 20vh auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
+  animation: fadeIn 0.4s ease;
+}
+
+.favorites-login-required h2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.favorites-login-required p {
+  font-size: 15px;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+/* Botão igual ao do carrinho */
+.login-btna {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #f56600;
+  background-color: #f56600;
+  cursor: pointer;
+  transition: 0.3s;
+  color: white;
+}
+
+.login-btna p {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.login-btna:hover {
+  background-color: #d95500;
+  border-color: #d95500;
+}
+
+/* Suavidade ao aparecer */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

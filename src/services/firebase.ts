@@ -5,6 +5,7 @@ import {
   setPersistence,
   browserLocalPersistence
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -20,6 +21,7 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
+export const db = getFirestore(app)
 
 // Mantém login mesmo após atualizar ou fechar o navegador
 setPersistence(auth, browserLocalPersistence);

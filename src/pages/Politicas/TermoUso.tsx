@@ -1,4 +1,4 @@
-import "../components/TermosUso.css";
+import "./TermosUso.css";
 
 const TermoUso = () => {
   

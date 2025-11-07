@@ -1,24 +1,27 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import RegisterForm from "./pages/RegisterForm";
-import LoginForm from "./pages/LoginForm";
+import HomePage from "./pages/Home/HomePage";
+import RegisterForm from "./pages/Register/RegisterForm";
+import LoginForm from "./pages/Login/LoginForm";
 import Header from "./components/common/Header/Header";
-import ErrorBoundary from "./components/Error.Boundary";
-import ProductsPage from "./pages/ProductsPage";
-import ProductPage from "./pages/ProductPage";
+import ErrorBoundary from "./components/common/Error/Error.Boundary";
+import ProductsPage from "./pages/ProductsPage/ProductsPage";
+import ProductPage from "./pages/Product/ProductPage";
 import Footer from "./components/common/Footer/Footer";
-import CartPage from "./pages/CartPage";
-import AccountPage from "./pages/AccountPage";
-import PrivateRoute from "./components/PrivateRoute";
-import OrdersPage from "./pages/OrdersPage"
-import FavoritesPage from "./pages/FavoritesPage"
-import PrivacyPage from "./pages/PrivacyPage"
-import SupportPage from "./pages/SupportPage"
-import TermoUso from "./pages/TermoUso"
-import PoliticaDevolucao from "./pages/PoliticaDevolucao";
-import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
+import CartPage from "./pages/Cart/CartPage";
+import AccountPage from "./pages/Account/AccountPage";
+import PrivateRoute from "./Routes/PrivateRoute";
+import OrdersPage from "./pages/Orders/OrdersPage"
+import FavoritesPage from "./pages/Favorites/FavoritesPage"
+import PrivacyPage from "./pages/Orders/PrivacyPage"
+import SupportPage from "./pages/Support/SupportPage"
+import TermoUso from "./pages/Politicas/TermoUso"
+import PoliticaDevolucao from "./pages/Politicas/PoliticaDevolucao";
+import PoliticaPrivacidade from "./pages/Politicas/PoliticaPrivacidade";
+import { CartProvider } from "./context/CartContext";
+import { FavoritesProvider } from "./context/FavoritesContex";
 import "./App.css";
+
 
 
 import { AuthProvider } from "./context/AuthContext";
@@ -29,6 +32,8 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <GoogleOAuthProvider clientId="587997109351-ro6laoog3jm33rfc6h6rmsl40mm8m90e.apps.googleusercontent.com">
         <AuthProvider>
+          <CartProvider>
+            <FavoritesProvider>
           <Router>
             <Header />
             <Routes>
@@ -58,6 +63,8 @@ const App: React.FC = () => {
             </Routes>
             <Footer />
           </Router>
+          </FavoritesProvider>
+          </CartProvider>
         </AuthProvider>
       </GoogleOAuthProvider>
     </ErrorBoundary>

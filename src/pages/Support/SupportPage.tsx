@@ -1,5 +1,5 @@
 import React, { useState, type ChangeEvent, type FormEvent } from "react";
-import "../components/SupportPage.css";
+import "./SupportPage.css";
 
 interface FormData {
   nome: string;

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import "../components/UserPageLayout.css";
+import "./UserPageLayout.css";
 
 interface UserPageLayoutProps {
   title: string;

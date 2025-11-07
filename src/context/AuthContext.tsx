@@ -1,6 +1,12 @@
 // src/context/AuthContext.tsx
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { auth, provider } from "../firebase.ts";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import { auth, provider } from "../services/firebase.ts";
 import {
   signInWithPopup,
   signOut,
@@ -10,6 +16,8 @@ import {
   browserSessionPersistence,
   type User as FirebaseUser,
 } from "firebase/auth";
+import { db } from "../services/firebase.ts";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 // Interface do usuário
 export interface User {
@@ -85,12 +93,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     (async () => {
       try {
         await setPersistence(auth, browserLocalPersistence);
-        if (mounted) console.debug("[Auth] setPersistence: browserLocalPersistence");
+        if (mounted)
+          console.debug("[Auth] setPersistence: browserLocalPersistence");
       } catch (err) {
         // fallback: sessão (por exemplo, se browser bloquear localStorage)
         try {
           await setPersistence(auth, browserSessionPersistence);
-          if (mounted) console.debug("[Auth] setPersistence: browserSessionPersistence (fallback)");
+          if (mounted)
+            console.debug(
+              "[Auth] setPersistence: browserSessionPersistence (fallback)"
+            );
         } catch (err2) {
           console.warn("[Auth] Não foi possível setPersistence:", err2);
         }
@@ -98,32 +110,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })();
 
     // observer para mudanças de autenticação
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
-      if (!mounted) return;
-      try {
-        if (firebaseUser) {
-          const userData: User = {
-            uid: firebaseUser.uid,
-            name: firebaseUser.displayName || "",
-            email: firebaseUser.email || "",
-            picture: firebaseUser.photoURL || "",
-            email_verified: firebaseUser.emailVerified,
-          };
-          setUser(userData);
-          saveUserToStorage(userData);
-          console.debug("[Auth] onAuthStateChanged: usuário logado", userData.email);
-        } else {
-          // sem usuário no Firebase — limpamos storage e estado
-          setUser(null);
-          clearUserFromStorage();
-          console.debug("[Auth] onAuthStateChanged: usuário deslogado");
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (firebaseUser: FirebaseUser | null) => {
+        if (!mounted) return;
+        try {
+          if (firebaseUser) {
+            const userData: User = {
+              uid: firebaseUser.uid,
+              name: firebaseUser.displayName || "",
+              email: firebaseUser.email || "",
+              picture: firebaseUser.photoURL || "",
+              email_verified: firebaseUser.emailVerified,
+            };
+            setUser(userData);
+            saveUserToStorage(userData);
+            console.debug(
+              "[Auth] onAuthStateChanged: usuário logado",
+              userData.email
+            );
+          } else {
+            // sem usuário no Firebase — limpamos storage e estado
+            setUser(null);
+            clearUserFromStorage();
+            console.debug("[Auth] onAuthStateChanged: usuário deslogado");
+          }
+        } catch (err) {
+          console.error("[Auth] erro no onAuthStateChanged:", err);
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        console.error("[Auth] erro no onAuthStateChanged:", err);
-      } finally {
-        setLoading(false);
       }
-    });
+    );
 
     return () => {
       mounted = false;
@@ -138,16 +156,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await setPersistence(auth, browserLocalPersistence);
       const result = await signInWithPopup(auth, provider);
       const firebaseUser = result.user;
+
       const userData: User = {
         uid: firebaseUser.uid,
         name: firebaseUser.displayName || "",
         email: firebaseUser.email || "",
         picture: firebaseUser.photoURL || "",
         email_verified: firebaseUser.emailVerified,
+        cart: [],
+        favorites: [],
+        orders: [],
       };
+
+      //salva atualiza no firestore
+      await setDoc(
+        doc(db, "users", firebaseUser.uid),
+        {
+          name: firebaseUser.displayName,
+          email: firebaseUser.email,
+          picture: firebaseUser.photoURL,
+          email_verified: firebaseUser.emailVerified,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
       setUser(userData);
       saveUserToStorage(userData);
-      console.debug("[Auth] loginWithGoogle: sucesso", userData.email);
+
+      console.debug("[Auth] loginWithGoogle: FIreStore OK", userData.email);
     } catch (err: any) {
       console.error("[Auth] Erro no loginWithGoogle:", err);
       // se for popup closed by user ou blocked, trate apropriadamente aqui
@@ -158,9 +195,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Login tradicional (mock)
   const login = (email: string, password: string): boolean => {
     const mockUsers = [
-      { email: "teste@email.com", password: "123456", name: "Kaue", picture: "" },
+      {
+        email: "teste@email.com",
+        password: "123456",
+        name: "Kaue",
+        picture: "",
+      },
     ];
-    const found = mockUsers.find(u => u.email === email && u.password === password);
+    const found = mockUsers.find(
+      (u) => u.email === email && u.password === password
+    );
     if (found) {
       const userData: User = {
         name: found.name,
@@ -177,18 +221,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Logout
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (err) {
-      console.warn("[Auth] signOut erro:", err);
-    } finally {
-      setUser(null);
-      clearUserFromStorage();
-    }
+    await signOut(auth);
+
+    localStorage.removeItem("cart");
+    localStorage.removeItem("favorites");
+
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithGoogle, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, loginWithGoogle, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

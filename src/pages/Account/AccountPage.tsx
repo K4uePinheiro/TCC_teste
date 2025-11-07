@@ -1,14 +1,16 @@
 import { type FC, type JSX } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import "../components/AccountPage.css";
+import { signOut } from "firebase/auth";            // ✅ ADICIONADO
+import { auth } from "../../services/firebase";     // ✅ ADICIONADO
+import "./AccountPage.css";
 import {
   ShoppingCart,
   Heart,
   Package,
   Headphones,
   Shield,
-  LogOut
+  LogOut,
 } from "lucide-react";
 
 interface Card {
@@ -19,12 +21,15 @@ interface Card {
 }
 
 const AccountPage: FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+    signOut(auth).then(() => {
+      localStorage.removeItem("cart");       // limpa carrinho local
+      localStorage.removeItem("favorites");  // limpa favoritos local
+      window.location.reload();              // atualiza tudo
+    });
   };
 
   const cards: Card[] = [

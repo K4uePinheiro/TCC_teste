@@ -1,7 +1,7 @@
-import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
+import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import { FiTrash2 } from "react-icons/fi"; // ícone de lixeira
-import "../components/CartPage.css";
+import "./CartPage.css";
 import { useNavigate } from "react-router-dom";
 
 const CartPage: React.FC = () => {
@@ -12,7 +12,7 @@ const CartPage: React.FC = () => {
   
   if(!user) {
     return (
-      <div className="cart-container">
+      <div className="cart-containera">
         <h1><img src="/shoppingcart.png" alt="shopping_cart" />Carrinho</h1>
         <p>Você precisa estar logado para acessar o carrinho.</p>
         <button onClick={() => navigate("/login")} className="continuer-btn">

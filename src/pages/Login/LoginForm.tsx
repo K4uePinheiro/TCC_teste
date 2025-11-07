@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent, type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import "./login.css";
 import { FcGoogle } from "react-icons/fc";
 

@@ -1,7 +1,8 @@
 import type { FC } from "react";
-import "../components/ProductCard.css";
+import "./ProductCard.css";
 import { Link } from "react-router-dom";
-import { FaHeart } from "react-icons/fa";
+import { useFavorites } from "../../../context/FavoritesContex";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; 
 
 interface Category {
   id: number;
@@ -17,12 +18,10 @@ interface Product {
   categories?: Category[];
 }
 
-interface Props {
-  product: Product;
-  onAddToFavorites?: (product: Product) => void; // 👈 essa prop é opcional
-}
 
-const ProductCard: FC<Props> = ({ product, onAddToFavorites }) => {
+const ProductCard: FC<{ product: Product }> = ({ product }) => {
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const favorite = isFavorite(product.id);
   const newPrice =
     product.price !== undefined
       ? product.price - product.price * ((product.discount ?? 0) / 100)
@@ -54,14 +53,13 @@ const ProductCard: FC<Props> = ({ product, onAddToFavorites }) => {
         </div>
       </Link>
 
-      {onAddToFavorites && (
-        <button
-          className="favorite-button"
-          onClick={() => onAddToFavorites(product)}
-        >
-          <FaHeart color="red" /> Adicionar aos favoritos
-        </button>
-      )}
+      <button
+        className={`favorite-button ${favorite ? "active" : ""}`}
+        onClick={() => toggleFavorite(product)}
+      >
+        
+        {favorite ? <AiFillHeart /> : <AiOutlineHeart />}
+      </button>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import "../components/PoliticaDevolucao.css";
+import "./PoliticaDevolucao.css";
 
 const PoliticaDevolucao = () => {
     return (

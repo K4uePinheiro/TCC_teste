@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import api from "../services/api";
-import ProductCard from "./ProductCard";
+import api from "../../services/api";
+import ProductCard from "../../components/common/ProductCard/ProductCard";
 import "./HomePage.css";
-import { productsMock } from "../mocks/productsMocks";
-import type { Product } from "../types";
-import { suppliersMock } from "../mocks/suppliers";
+import { productsMock } from "../../mocks/productsMocks";
+import type { Product } from "../../types";
+import { suppliersMock } from "../../mocks/suppliers";
 
 
 interface Supplier {

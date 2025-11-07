@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import api from "../services/api";
-import ProductCard from "./ProductCard";
-import { productsMock } from "../mocks/productsMocks";
-import type { Product } from "../types";
-import "../components/ProductsPage.css";
+import api from "../../services/api";
+import ProductCard from "../../components/common/ProductCard/ProductCard";
+import { productsMock } from "../../mocks/productsMocks";
+import type { Product } from "../../types";
+import "./ProductsPage.css";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);

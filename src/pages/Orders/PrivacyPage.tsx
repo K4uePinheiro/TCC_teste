@@ -1,4 +1,4 @@
-import UserPageLayout from "../components/UserPageLayout"
+import UserPageLayout from "./UserPageLayout"
 
 const OrdersPage = () => (
   <UserPageLayout title="Favoritos">
