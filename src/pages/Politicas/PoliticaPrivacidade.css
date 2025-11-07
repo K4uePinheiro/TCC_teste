@@ -2,7 +2,7 @@
   --cor-primaria: #fe6d24;
   --cor-secundaria: #e65c1a;
   --cor-terciaria: #d65b1d;
-  --cor-fundo: #f0f0f0;
+  --cor-fundo:  white;
 }
 
 body {
@@ -17,7 +17,7 @@ body {
 section.politica-privacidade {
   max-width: 900px;
   margin: 60px auto;
-  background-color: #fff;
+  background-color: white;
   padding: 40px 50px;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
