@@ -6,14 +6,14 @@ import { productsMock } from "../../mocks/productsMocks";
 import type { Product } from "../../types";
 import { suppliersMock } from "../../mocks/suppliers";
 
-
 interface Supplier {
   id: number;
   name: string;
   imgUrl: string;
 }
 
-const USE_LOCAL_DATA = true;// muda para false para usar a API
+// muda para false para usar a API real
+const USE_LOCAL_DATA = false;
 
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
       api
         .get<Product[]>("product")
         .then((res) => setProducts(res.data))
-        .catch((err) => console.error(err));
+        .catch((err) => console.error("Erro ao buscar produtos:", err));
     }
   }, []);
 
@@ -37,24 +37,10 @@ const HomePage: React.FC = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   useEffect(() => {
-    api
-      .get<Product[]>("product")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error(err));
-    console.log(products);
-  }, []);
-
-  useEffect(() => {
-    api
-      .get<Product[]>("promotions")
-      .then((res) => setPromotions(res.data))
-      .catch((err) => console.error(err));
-  }, []);
-
-  useEffect(() => {
     if (USE_LOCAL_DATA) {
       setSuppliers(suppliersMock);
     } else {
+      // se sua API ainda não tiver fornecedores, comenta essa parte
       api
         .get("/suppliers")
         .then((res) => setSuppliers(res.data))
@@ -76,9 +62,7 @@ const HomePage: React.FC = () => {
             OFERTA DE LANÇAMENTO <span>IKOMMERCY</span>
           </h2>
           <p>
-            <strong>
-              Os menores preços <br />
-            </strong>
+            <strong>Os menores preços</strong> <br />
             teste o nosso site e <strong>COMPRE JÁ!</strong>
           </p>
         </div>
@@ -146,6 +130,8 @@ const HomePage: React.FC = () => {
           )}
         </div>
       </section>
+
+      {/* Fornecedores */}
       <section className="partners-section" ref={partnersSectionRef}>
         <h2>Fornecedores</h2>
         <div className="partners-grid">
