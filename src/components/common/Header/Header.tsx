@@ -10,13 +10,14 @@ import {
   FaSearch,
   FaMoon,
   FaUser,
+  FaBoxOpen,
 } from "react-icons/fa";
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "../../../context/CartContext";
 import { useAuth } from "../../../context/AuthContext";
-import { productsMock, type Category, } from "../../../mocks/productsMocks";
+import { productsMock, type Category } from "../../../mocks/productsMocks";
 import api from "../../../services/api";
 
 const Header = () => {
@@ -35,55 +36,58 @@ const Header = () => {
   const promoSectionRef = useRef<HTMLDivElement>(null);
   const partnersSectionRef = useRef<HTMLDivElement>(null);
 
-  // 🧠 Renderiza categorias recursivamente
-  const renderCategories = (cats: Category[]) => (
-    <ul className="dropdown-menu">
-      {cats.map((cat) => (
-        <li key={cat.id}>
-          <Link to={`/produtos?category=${cat.id}`}>{cat.name}</Link>
-          {cat.subCategories?.length > 0 && (
-            <ul className="dropdown-submenu">
-              {renderCategories(cat.subCategories)}
-            </ul>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
-
-  // 🟢 Buscar categorias — tenta API, senão usa mock
+  // DEBUG: ver estrutura vinda da API
   useEffect(() => {
-    const allCategories: Category[] = [];
+    console.log("Header: categorias atuais:", categories);
+  }, [categories]);
 
-    productsMock.forEach((product) => {
-      product.categories?.forEach((cat) => {
-        const existingCat = allCategories.find((c) => c.id === cat.id);
-
-        if (existingCat) {
-          cat.subCategories?.forEach((sub) => {
-            const alreadyExists = existingCat.subCategories?.some(
-              (s) => s.id === sub.id
-            );
-            if (!alreadyExists) {
-              existingCat.subCategories = [
-                ...(existingCat.subCategories || []),
-                sub,
-              ];
-            }
-          });
+  // Buscar categorias — API ou fallback mock
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const useApi = import.meta.env.VITE_USE_API === "true";
+        if (useApi) {
+          console.log("📡 Buscando categorias da API...");
+          const res = await api.get("/categories"); // endpoint do backend
+          console.log("📦 Resposta /categories:", res.data);
+          setCategories(res.data);
         } else {
-          allCategories.push({
-            ...cat,
-            subCategories: cat.subCategories || [],
+          console.log("🧩 Usando categorias do mock...");
+          // monta a lista a partir do mock (igual ao seu)
+          const allCategories: Category[] = [];
+          productsMock.forEach((product) => {
+            product.categories?.forEach((cat) => {
+              const existingCat = allCategories.find((c) => c.id === cat.id);
+              if (existingCat) {
+                cat.subCategories?.forEach((sub) => {
+                  const alreadyExists = existingCat.subCategories?.some(
+                    (s) => s.id === sub.id
+                  );
+                  if (!alreadyExists) {
+                    existingCat.subCategories = [
+                      ...(existingCat.subCategories || []),
+                      sub,
+                    ];
+                  }
+                });
+              } else {
+                allCategories.push({
+                  ...cat,
+                  subCategories: cat.subCategories || [],
+                });
+              }
+            });
           });
+          setCategories(allCategories);
         }
-      });
-    });
-
-    setCategories(allCategories);
+      } catch (error) {
+        console.error("❌ Erro ao buscar categorias:", error);
+      }
+    };
+    fetchCategories();
   }, []);
 
-  // 🌙 Tema escuro
+  // Tema escuro
   const toggleTheme = () => {
     setIsAnimating(true);
     setTimeout(() => {
@@ -91,13 +95,12 @@ const Header = () => {
       setIsAnimating(false);
     }, 300);
   };
-
   useEffect(() => {
     if (isDarkMode) document.body.classList.add("dark-mode");
     else document.body.classList.remove("dark-mode");
   }, [isDarkMode]);
 
-  // 📱 Responsividade
+  // Responsividade
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -105,7 +108,7 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 🧭 Hover e clique menu
+  // hover/clique menu
   const handleMouseEnter = () => {
     if (!isMobile) {
       if (timeoutId.current) clearTimeout(timeoutId.current);
@@ -121,29 +124,51 @@ const Header = () => {
     if (isMobile) setIsOpen((prev) => !prev);
   };
 
-  // 🔎 Busca
+  // Busca por texto
   const handleSearch = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const query = search.trim();
-  if (!query) return;
-
-  try {
-    // Chama sua API com o nome do produto
-    const response = await api.get(`/product/name/${encodeURIComponent(query)}`);
-
-    // Redireciona pra página de produtos passando os resultados
-    navigate("/product/name/" + encodeURIComponent(query), { state: { results: response.data } });
-  } catch (error) {
-    console.error("Erro ao buscar produto:", error);
-    alert("Produto não encontrado ou erro na busca.");
-  }
-};
+    e.preventDefault();
+    const query = search.trim();
+    if (!query) return;
+    try {
+      const response = await api.get(`/product/name/${encodeURIComponent(query)}`);
+      navigate("/search", { state: { results: response.data } });
+    } catch (error) {
+      console.error("Erro ao buscar produto:", error);
+      alert("Produto não encontrado ou erro na busca.");
+    }
+  };
 
   const scrollToPromotions = () =>
     promoSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToPartners = () =>
     partnersSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  // =========================
+  // RENDERIZAÇÃO RECURSIVA
+  // =========================
+  // componente recursivo para categorias/subcategorias
+  const CategoryList = ({ cats, level = 0 }: { cats: Category[]; level?: number }) => {
+    if (!cats || cats.length === 0) return null;
+    return (
+      <ul className={`dropdown-menu level-${level}`}>
+        {cats.map((cat) => (
+          <li key={cat.id} className="dropdown-item">
+            {/* clique na categoria principal */}
+            <Link to={`/products?category=${cat.id}`} className="cat-link">
+              {cat.name}
+            </Link>
+
+            {/* subcategorias: geram ?subcategory=id e também suportam níveis */}
+            {cat.subCategories && cat.subCategories.length > 0 && (
+              <div className="submenu">
+                <CategoryList cats={cat.subCategories} level={level + 1} />
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <>
@@ -192,7 +217,9 @@ const Header = () => {
                   alt={user.name}
                   className="user-avatar"
                 />
-                <span>Bem-vindo, <br></br> {user.name.split(" ")[0]}</span>
+                <span>
+                  Bem-vindo, <br /> {user.name.split(" ")[0]}
+                </span>
               </Link>
             ) : (
               <Link to="/login" className="login-btn">
@@ -212,8 +239,20 @@ const Header = () => {
               <FaBars />
               Categorias
             </button>
-            {isOpen && categories.length > 0 && renderCategories(categories)}
+
+            {/* mostra o menu apenas quando aberto */}
+            {isOpen && categories.length > 0 && (
+              <div className="dropdown-root">
+                {/* CategoryList renderiza todos os níveis */}
+                <CategoryList cats={categories} />
+              </div>
+            )}
           </div>
+
+          <Link to="/products" className="nav-btn">
+            <FaBoxOpen />
+            Todos os Produtos
+          </Link>
 
           <button className="nav-btn" onClick={scrollToPromotions}>
             <FaTags />
@@ -225,10 +264,15 @@ const Header = () => {
             Fornecedores
           </button>
 
-          <button className="nav-btn">
+          <a
+            href="https://ikommercylanding.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-btn"
+          >
             <FaGift />
-            <a href="https://ikommercylanding.netlify.app/" target="_blank">Sobre Nós</a>
-          </button>
+            Sobre Nós
+          </a>
 
           <Link to="/support" className="nav-btn">
             <FaHeadphones />

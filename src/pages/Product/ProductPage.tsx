@@ -52,6 +52,9 @@ function ProductPage() {
                 category: mockProduct.categories?.[0]?.name || "Sem categoria",
               };
               setProduct(productConverted);
+            } else {
+              
+
             }
           }
         } catch (err) {

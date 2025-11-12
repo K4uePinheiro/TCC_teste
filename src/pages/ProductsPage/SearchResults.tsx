@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import type { Product } from "../types";
+import type { Product } from "../../types";
 import ProductCard from "../../components/common/ProductCard/ProductCard";
 import "./SearchResults.css";
 

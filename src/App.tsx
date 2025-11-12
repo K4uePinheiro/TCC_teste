@@ -20,6 +20,7 @@ import PoliticaDevolucao from "./pages/Politicas/PoliticaDevolucao";
 import PoliticaPrivacidade from "./pages/Politicas/PoliticaPrivacidade";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContex";
+import SearchResults from "./pages/ProductsPage/SearchResults.tsx";
 import "./App.css";
 
 
@@ -41,6 +42,7 @@ const App: React.FC = () => {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/product/:id" element={<ProductPage />} />
+               <Route path="/search" element={<SearchResults />} />
               <Route path="/login" element={<LoginForm />} />
               <Route path="/cadastro" element={<RegisterForm />} />
               <Route path="/favorites" element={<FavoritesPage />} />

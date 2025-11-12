@@ -37,16 +37,7 @@ const Footer: FC = () => {
                     </ul>
                 </div>
 
-                {/*fornecedores8*/}
-                <div>
-                    <h2 className="footer-title">Fornecedores</h2>
-                    <ul className="footer-list">
-                        <li><Link to="/fornecedor/fornecedor1">fornecedor1</Link></li>
-                        <li><Link to="/fornecedor/fornecedor2">fornecedor2</Link></li>
-                        <li><Link to="/fornecedor/fornecedor3">fornecedor3</Link></li>
-                        <li><Link to="/fornecedor/fornecedor4">fornecedor4</Link></li>
-                    </ul>
-                </div>
+                
                 {/* Formas de Pagamento e Segurança */}
                 <div className="payment-security">
                     <div>
