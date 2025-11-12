@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../../services/api";
 import ProductCard from "../../components/common/ProductCard/ProductCard";
-import { productsMock } from "../../mocks/productsMocks";
 import type { Product } from "../../types";
 import "./ProductsPage.css";
 
@@ -17,15 +16,11 @@ const ProductsPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await api.get("/products");
+        const res = await api.get("http://localhost:8080/product");
         setProducts(res.data);
-      } catch {
-        // fallback para mock local se API falhar
-        const mockData = productsMock.map((p) => ({
-          ...p,
-          oldPrice: p.price,
-        }));
-        setProducts(mockData);
+      } catch (error){
+        console.error("Erro ao buscar produtos", error);
+        alert("Erro ao buscar produtos.");
       }
     };
     fetchProducts();

@@ -14,6 +14,8 @@
     "@react-oauth/google": "^0.12.2",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "firebase": "^12.4.0",
     "framer-motion": "^12.23.18",
     "jwt-decode": "^4.0.0",
@@ -26,6 +28,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
@@ -36,6 +40,7 @@
     "globals": "^16.3.0",
     "json": "^11.0.0",
     "json-server": "^1.0.0-beta.3",
+    "ts-node": "^10.9.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.6"

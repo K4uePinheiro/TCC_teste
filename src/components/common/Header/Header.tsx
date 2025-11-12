@@ -17,6 +17,7 @@ import { useState, useEffect, useRef } from "react";
 import { useCart } from "../../../context/CartContext";
 import { useAuth } from "../../../context/AuthContext";
 import { productsMock, type Category, } from "../../../mocks/productsMocks";
+import api from "../../../services/api";
 
 const Header = () => {
   const [search, setSearch] = useState("");
@@ -121,12 +122,23 @@ const Header = () => {
   };
 
   // 🔎 Busca
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (search.trim()) {
-      navigate(`/produtos?q=${encodeURIComponent(search.trim())}`);
-    }
-  };
+  const handleSearch = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const query = search.trim();
+  if (!query) return;
+
+  try {
+    // Chama sua API com o nome do produto
+    const response = await api.get(`/product/name/${encodeURIComponent(query)}`);
+
+    // Redireciona pra página de produtos passando os resultados
+    navigate("/product/name/" + encodeURIComponent(query), { state: { results: response.data } });
+  } catch (error) {
+    console.error("Erro ao buscar produto:", error);
+    alert("Produto não encontrado ou erro na busca.");
+  }
+};
 
   const scrollToPromotions = () =>
     promoSectionRef.current?.scrollIntoView({ behavior: "smooth" });
