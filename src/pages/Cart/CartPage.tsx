@@ -3,6 +3,9 @@ import { useAuth } from "../../context/AuthContext";
 import { FiTrash2 } from "react-icons/fi"; // ícone de lixeira
 import "./CartPage.css";
 import { useNavigate } from "react-router-dom";
+import { getAllAddresses } from "../../services/userService";
+
+
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -108,9 +111,19 @@ const CartPage: React.FC = () => {
             <button
               type="button"
               className="continue-btn"
-              onClick={
-                () => navigate("/address", { state: { total } }) // 👈 envia o total
-              }
+              onClick={async () => {
+                const addresses = await getAllAddresses();
+                if (addresses.length === 0) {
+                  navigate("/address", {
+                    state: { total, newAddress: true },
+                  });
+                } else {
+
+                  navigate("/address", {
+                    state: { total, autoSelect: true },
+                  });
+                }
+              }}
             >
               Continuar
             </button>

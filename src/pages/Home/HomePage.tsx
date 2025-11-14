@@ -13,7 +13,7 @@ interface Supplier {
 }
 
 // muda para false para usar a API real
-const USE_LOCAL_DATA = false;
+const USE_LOCAL_DATA = true;
 
 const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);

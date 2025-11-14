@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { doc, updateDoc, arrayUnion, arrayRemove, serverTimestamp, getDoc, setDoc} from "firebase/firestore"
+import { doc, updateDoc, arrayUnion, arrayRemove, serverTimestamp, getDoc, getDocs, setDoc, addDoc, deleteDoc, collection} from "firebase/firestore"
 import type { Product } from "../context/CartContext";
 
 export const addToCart = async ( uid: string, product: any) => {
@@ -50,4 +50,30 @@ export async function saveUserCart(uid:string, cart:Product[]) {
     const ref = doc(db,"users", uid);
     await setDoc(ref, {cart }, {merge:true});
     
+}
+
+export async function saveAdress(address: any) {
+    try {
+        const docRef =await addDoc(collection(db, "addresses"), {
+            ...address,
+        created: new Date(),
+        });
+        return docRef.id;
+    }   catch (error) {
+        console.error("Erro ao salvar endereço: ", error);  
+        throw error;
+    }
+}
+
+export async function getAllAddresses() {
+    const snapshot = await getDocs(collection(db, "addresses"));
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data()}));
+
+}
+
+export async function deleteAddress(Id: string) {    
+    return await deleteDoc(doc(db, "addresses", Id));
+}
+export async function updateAddress(Id: string, newData: any) {
+    return await updateDoc(doc(db, "addresses", Id), newData);
 }
