@@ -23,7 +23,9 @@ import PoliticaDevolucao from "./pages/Politicas/PoliticaDevolucao";
 import PoliticaPrivacidade from "./pages/Politicas/PoliticaPrivacidade";
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContex";
+import SupplierPage from './pages/Supplier/SupplierPage';
 import SearchResults from "./pages/ProductsPage/SearchResults.tsx";
+
 import "./App.css";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -73,6 +75,7 @@ const App: React.FC = () => {
                   <Route path="/favorites" element={<FavoritesPage />} />
                   <Route path="/orders" element={<OrdersPage />} />
                   <Route path="/support" element={<SupportPage />} />
+                  <Route path="/supplier" element={<SupplierPage />} />
                   <Route path="/privacy" element={<PrivacyPage />} />
                   <Route path="/TermoUso" element={<TermoUso />} />
                   <Route

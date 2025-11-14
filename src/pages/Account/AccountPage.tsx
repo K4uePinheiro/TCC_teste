@@ -1,8 +1,8 @@
 import { type FC, type JSX } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";            // ✅ ADICIONADO
-import { auth } from "../../services/firebase";     // ✅ ADICIONADO
+import { signOut } from "firebase/auth";
+import { auth } from "../../services/firebase";
 import "./AccountPage.css";
 import {
   ShoppingCart,
@@ -11,6 +11,7 @@ import {
   Headphones,
   Shield,
   LogOut,
+  Store,
 } from "lucide-react";
 
 interface Card {
@@ -26,9 +27,9 @@ const AccountPage: FC = () => {
 
   const handleLogout = () => {
     signOut(auth).then(() => {
-      localStorage.removeItem("cart");       // limpa carrinho local
-      localStorage.removeItem("favorites");  // limpa favoritos local
-      window.location.reload();              // atualiza tudo
+      localStorage.removeItem("cart");
+      localStorage.removeItem("favorites");
+      window.location.reload();
     });
   };
 
@@ -36,6 +37,7 @@ const AccountPage: FC = () => {
     { icon: <ShoppingCart size={36} />, title: "Carrinho", path: "/cart" },
     { icon: <Heart size={36} />, title: "Favoritos", path: "/favorites" },
     { icon: <Package size={36} />, title: "Seus Pedidos", path: "/orders" },
+    { icon: <Store size={36} />, title: "Área do Fornecedor", path: "/supplier" },
     { icon: <Headphones size={36} />, title: "Atendimento", path: "/support" },
     { icon: <Shield size={36} />, title: "Privacidade", path: "/privacy" },
     { icon: <LogOut size={36} />, title: "Sair da conta", action: handleLogout },

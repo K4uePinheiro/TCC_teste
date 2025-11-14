@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import AddressForm from "./AddressForm";
 import ConfirmScreen from "./ConfirmScreen";
 import { saveAdress, getAllAddresses, updateAddress } from "../../services/userService";
+import './Checkout/CheckoutProgress.css';
+import CheckoutProgress from "./Checkout/CheckoutProgress";
 
 export default function AddressPage() {
   const location = useLocation();
@@ -105,6 +107,7 @@ export default function AddressPage() {
 
   return (
     <>
+    <CheckoutProgress currentStep="entrega" />
       {step === "form" ? (
         <AddressForm onConfirm={handleConfirm} initialData={editingAddress}
         />

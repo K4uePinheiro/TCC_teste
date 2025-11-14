@@ -36,6 +36,8 @@ export default function ConfirmScreen({
   const navigate = useNavigate();
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
+  const [ativo, setAtivo] = useState("");
+
   const handleDelete = async (id: string) => {
     if (!confirm("Deseja excluir este endereço?")) return;
 
@@ -57,8 +59,9 @@ export default function ConfirmScreen({
   const valorParcelado = totalComFrete / 12;
 
   return (
+    <>
+    
     <div className="confirm-screen" id="tela2">
-
       <div className="address-summary">
         <div className="cabeca">
           <h2>
@@ -74,13 +77,23 @@ export default function ConfirmScreen({
           <p>Nenhum endereço cadastrado ainda.</p>
         ) : (
           addressList.map((address) => (
-            <div key={address.id} className="address-card" onClick={() => setSelectedAddress(address)}>
+            <div
+              key={address.id}
+              className={`address-card ${ativo === address.id ? "ativo" : ""}`}
+              onClick={() => {
+                setAtivo(address.id);
+                setSelectedAddress(address);
+              }}
+            >
               <div className="address-info">
-                <span className="check-icon">✔</span>
                 <div className="details">
                   <h3>{address.nome}</h3>
-                  <p>{address.rua}, {address.numero} - {address.estado}</p>
-                  <p>{address.bairro} - {address.cidade} - {address.cep}</p>
+                  <p>
+                    {address.rua}, {address.numero} - {address.estado}
+                  </p>
+                  <p>
+                    {address.bairro} - {address.cidade} - {address.cep}
+                  </p>
                 </div>
               </div>
 
@@ -108,8 +121,7 @@ export default function ConfirmScreen({
       <div className="payment-card">
         <p>
           <strong>
-            12x de{" "}
-            <span>R$ {valorParcelado.toFixed(2).replace(".", ",")}</span>
+            12x de <span>R$ {valorParcelado.toFixed(2).replace(".", ",")}</span>
           </strong>
         </p>
 
@@ -129,14 +141,13 @@ export default function ConfirmScreen({
 
         <div className="total">
           <p>Frete</p>
-          <p>R$ {frete.toFixed(2).replace(".", ",")}</p>
+          <p><span>R$ {frete.toFixed(2).replace(".", ",")}</span></p>
         </div>
 
         <div className="total">
           <p>Total</p>
-          <p>R$ {totalComFrete.toFixed(2).replace(".", ",")}</p>
+          <p><span>R$ {totalComFrete.toFixed(2).replace(".", ",")}</span></p>
         </div>
-
 
         <button
           className="continue-btn"
@@ -149,12 +160,15 @@ export default function ConfirmScreen({
             navigate("/pagamento", {
               state: {
                 cartTotal,
-                address: selectedAddress
-              }
+                address: selectedAddress,
+              },
             });
           }}
-        ></button>
+        >
+          Continuar
+        </button>
       </div>
     </div>
+    </>
   );
 }

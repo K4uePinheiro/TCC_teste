@@ -4,8 +4,7 @@ import { FiTrash2 } from "react-icons/fi"; // ícone de lixeira
 import "./CartPage.css";
 import { useNavigate } from "react-router-dom";
 import { getAllAddresses } from "../../services/userService";
-
-
+import CheckoutProgress from "./Checkout/CheckoutProgress";
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -31,6 +30,8 @@ const CartPage: React.FC = () => {
 
   return (
     <div className="cart-container">
+      <CheckoutProgress currentStep="carrinho" />
+
       <div className="cart-header">
         <h1>
           <img src="/shoppingcart.png" alt="shopping_cart" />
@@ -118,7 +119,6 @@ const CartPage: React.FC = () => {
                     state: { total, newAddress: true },
                   });
                 } else {
-
                   navigate("/address", {
                     state: { cartTotal: total, autoSelect: true },
                   });

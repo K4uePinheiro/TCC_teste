@@ -17,7 +17,7 @@
   justify-content: space-around;
   width: 100%;
   padding: 40px;
-  
+  margin-bottom: 5rem;
 }
 
 /* ===== Container principal ===== */
@@ -44,6 +44,12 @@ button {
   padding: 10px 15px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.confirm-btn,
+.cancel-btn {
+  width: 10rem;
+  width: 100%;
 }
 
 button:hover {
@@ -99,13 +105,17 @@ button:active {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 35rem;
+  gap: 25px;
+  width: 100%;
+  max-width: 700px;
+  height: fit-content;
 }
 
 .form-left,
@@ -118,9 +128,8 @@ button:active {
 
 .form-right .botoes {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-evenly;
   gap: 15px;
-  margin-top: 3px;
 }
 
 .form input {
@@ -172,10 +181,10 @@ input:focus::placeholder {
   display: flex;
   justify-content: space-between;
   gap: 50px;
-  width: 100%;
-  max-width: 1000px;
+  width: 65%;
+  max-width: 100vw;
   margin: 100px auto;
-  margin-bottom: 15rem;
+  margin-bottom: 10rem;
 }
 
 /* Container do endereço selecionado */
@@ -219,13 +228,21 @@ input:focus::placeholder {
 
 /* Card do endereço */
 .address-card {
-  border: 1px solid #ff6600;
+  border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #fff;
   padding: 12px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.address-card.ativo {
+  border: 2px solid #ff6600;
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
 }
 
 .address-info {
@@ -278,7 +295,7 @@ input:focus::placeholder {
 
 /* ====== Card de pagamento ====== */
 .payment-card {
-  width: 300px;
+  width: 24rem;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -330,4 +347,9 @@ input:focus::placeholder {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.total span {
+  font-size: 20px;
+  color: #ff6600;
 }

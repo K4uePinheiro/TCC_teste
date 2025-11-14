@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./pagamento.css";
+import CheckoutProgress from "../Checkout/CheckoutProgress";
 
 
 export default function Pagamento() {
@@ -25,6 +26,7 @@ export default function Pagamento() {
 
     return (
         <>
+          <CheckoutProgress currentStep="pagamento" />
             <div className="conteiner">
                 {/* MÉTODOS DE PAGAMENTO */}
                 <div className="metodos">

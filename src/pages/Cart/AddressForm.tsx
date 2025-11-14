@@ -176,7 +176,7 @@ export default function AddressForm({ onConfirm }: Props) {
                     <button className="cancel-btn" onClick={handleCancel}>
                       Cancelar
                     </button>
-                    <button id="confirmBtn" type="submit">
+                    <button className="confirm-btn" id="confirmBtn" type="submit">
                       Confirmar
                     </button>
                   </div>
