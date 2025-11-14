@@ -45,7 +45,7 @@ const Header = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const useApi = import.meta.env.VITE_USE_API === "true";
+        const useApi = import.meta.env.VITE_USE_API === "false";
         if (useApi) {
           console.log("📡 Buscando categorias da API...");
           const res = await api.get("/categories"); // endpoint do backend
