@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./pagamento.css";
+import 'src/pages/Cart/pagamento/pagamento.css'
 import CheckoutProgress from "../Checkout/CheckoutProgress";
 
 
