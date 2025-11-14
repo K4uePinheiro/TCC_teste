@@ -7,7 +7,10 @@ import { saveAdress, getAllAddresses, updateAddress } from "../../services/userS
 export default function AddressPage() {
   const location = useLocation();
 
-  const cartTotal = Number(location.state?.total) || 0;
+  const cartTotal =
+  location.state?.cartTotal ??
+  location.state?.total ??
+  0;
   const autoSelect = location.state?.autoSelect || false;
   const newAddress = location.state?.newAddress || false;
 
@@ -114,6 +117,7 @@ export default function AddressPage() {
           addressList={addressList}
           setAddressList={setAddressList}
         />
+
       )}
     </>
   );

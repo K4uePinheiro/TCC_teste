@@ -105,8 +105,7 @@ button:active {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 0;
-  height: 4rem;
+  height: 35rem;
 }
 
 .form-left,

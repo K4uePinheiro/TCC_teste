@@ -80,3 +80,14 @@ export async function updateAddress(Id: string, newData: any) {
         updated: new Date(), // Adiciona timestamp de atualização
     });
 }
+
+export interface Address {
+  id?: string;
+  nome: string;
+    rua: string;
+    numero: string;
+    estado: string;
+    bairro: string;
+    cidade: string;
+    cep: string;
+}

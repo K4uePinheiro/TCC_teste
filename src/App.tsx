@@ -11,6 +11,7 @@ import Footer from "./components/common/Footer/Footer";
 import CartPage from "./pages/Cart/CartPage";
 import AddressPage from "./pages/Cart/AddressPage";
 import ConfirmScreen from "./pages/Cart/ConfirmScreen";
+import Pagamento from "./pages/Cart/pagamento/Pagamento.tsx";
 import AccountPage from "./pages/Account/AccountPage";
 import PrivateRoute from "./Routes/PrivateRoute";
 import OrdersPage from "./pages/Orders/OrdersPage";
@@ -46,6 +47,7 @@ const App: React.FC = () => {
                     element={
                       <ConfirmScreen
                         address={{
+                          id: "",
                           nome: "",
                           rua: "",
                           numero: "",
@@ -54,9 +56,15 @@ const App: React.FC = () => {
                           cidade: "",
                           cep: "",
                         }}
-                        onNewAddress={() => { } } cartTotal={0}                      />
+                        onNewAddress={() => { }}
+                        onEditAddress={() => { }}   // ← ADICIONE ISSO
+                        cartTotal={0}
+                        addressList={[]}
+                        setAddressList={() => { }}
+                      />  
                     }
                   />
+                  <Route path="/pagamento" element={<Pagamento />} />
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/product/:id" element={<ProductPage />} />
                   <Route path="/search" element={<SearchResults />} />

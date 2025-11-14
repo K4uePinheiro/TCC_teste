@@ -1,5 +1,8 @@
 import "./AddressPage.css";
 import { deleteAddress } from "../../services/userService";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
 
 interface Address {
   id: string;
@@ -30,6 +33,8 @@ export default function ConfirmScreen({
   addressList,
   setAddressList,
 }: ConfirmScreenProps) {
+  const navigate = useNavigate();
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Deseja excluir este endereço?")) return;
@@ -53,7 +58,7 @@ export default function ConfirmScreen({
 
   return (
     <div className="confirm-screen" id="tela2">
-      
+
       <div className="address-summary">
         <div className="cabeca">
           <h2>
@@ -69,7 +74,7 @@ export default function ConfirmScreen({
           <p>Nenhum endereço cadastrado ainda.</p>
         ) : (
           addressList.map((address) => (
-            <div key={address.id} className="address-card">
+            <div key={address.id} className="address-card" onClick={() => setSelectedAddress(address)}>
               <div className="address-info">
                 <span className="check-icon">✔</span>
                 <div className="details">
@@ -132,7 +137,23 @@ export default function ConfirmScreen({
           <p>R$ {totalComFrete.toFixed(2).replace(".", ",")}</p>
         </div>
 
-        <button className="continue-btn">Continuar</button>
+
+        <button
+          className="continue-btn"
+          onClick={() => {
+            if (!selectedAddress) {
+              alert("Selecione um endereço antes de continuar.");
+              return;
+            }
+
+            navigate("/pagamento", {
+              state: {
+                cartTotal,
+                address: selectedAddress
+              }
+            });
+          }}
+        ></button>
       </div>
     </div>
   );

@@ -157,7 +157,7 @@ const FormAtendimento: React.FC = () => {
   };
 
   return (
-    <section className="form">
+    <section className="form-support">
       <div className="form-content">
         <h2>Solicite um atendimento:</h2>
         <form onSubmit={handleSubmit}>

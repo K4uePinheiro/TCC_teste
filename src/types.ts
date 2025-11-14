@@ -16,3 +16,13 @@ export interface Product {
   stock?: number;
   categories?: Category[];
 }
+export type Address = {
+  id: string;
+  nome: string;
+  rua: string;
+  numero: string;
+  estado: string;
+  bairro: string;
+  cidade: string;
+  cep: string;
+};

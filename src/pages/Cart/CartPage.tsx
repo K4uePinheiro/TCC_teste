@@ -120,7 +120,7 @@ const CartPage: React.FC = () => {
                 } else {
 
                   navigate("/address", {
-                    state: { total, autoSelect: true },
+                    state: { cartTotal: total, autoSelect: true },
                   });
                 }
               }}
