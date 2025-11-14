@@ -2,25 +2,24 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import AddressForm from "./AddressForm";
 import ConfirmScreen from "./ConfirmScreen";
-import { saveAdress, getAllAddresses } from "../../services/userService";
+import { saveAdress, getAllAddresses, updateAddress } from "../../services/userService";
 
 export default function AddressPage() {
   const location = useLocation();
 
   const cartTotal = Number(location.state?.total) || 0;
-
   const autoSelect = location.state?.autoSelect || false;
   const newAddress = location.state?.newAddress || false;
 
   const [step, setStep] = useState<"loading" | "form" | "confirm">("loading");
-  const [, setAddressList] = useState<any[]>([]);
+  const [addressList, setAddressList] = useState<any[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
+  const [editingAddress, setEditingAddress] = useState<any>(null);
 
   // 🔥 Ao abrir a página, buscar endereços do Firebase
   useEffect(() => {
     async function load() {
-      const addresses = await getAllAddresses(); // ← pega todos endereços
-
+      const addresses = await getAllAddresses();
       setAddressList(addresses);
 
       // 🟦 Carrinho pediu para cadastrar um novo endereço
@@ -37,7 +36,7 @@ export default function AddressPage() {
 
       // 🟩 Já tem endereço e carrinho pediu autoSelect
       if (autoSelect) {
-        setSelectedAddress(addresses[0]); // pega o primeiro
+        setSelectedAddress(addresses[0]);
         setStep("confirm");
         return;
       }
@@ -48,28 +47,52 @@ export default function AddressPage() {
     }
 
     load();
-  }, []);
+  }, [autoSelect, newAddress]);
+
+
 
   const handleConfirm = async (data: any) => {
     try {
-      const id = await saveAdress(data); // salva no Firebase
+      // 🔥 EDITANDO
+      if (editingAddress?.id) {
 
-      const newAddress = { id, ...data };
+        const updatedData = { ...data, id: editingAddress.id };
 
-      // adiciona na lista local
-      setAddressList((prev) => [...prev, newAddress]);
+        await updateAddress(editingAddress.id, updatedData);
 
-      // seleciona para confirmar
-      setSelectedAddress(newAddress);
+        setAddressList((prev) =>
+          prev.map((addr) => (addr.id === editingAddress.id ? updatedData : addr))
+        );
+
+        setSelectedAddress(updatedData);
+        setEditingAddress(null);
+
+      } else {
+        // 🔥 NOVO ENDEREÇO
+        const id = await saveAdress(data);
+        const newAddressObj = { id, ...data };
+
+        setAddressList((prev) => [...prev, newAddressObj]);
+        setSelectedAddress(newAddressObj);
+      }
 
       setStep("confirm");
+
     } catch (error) {
       console.error("Erro ao salvar endereço:", error);
+      alert("Erro ao salvar endereço. Tente novamente.");
     }
   };
 
+
   const handleNewAddress = () => {
+    setEditingAddress(null);
     setSelectedAddress(null);
+    setStep("form");
+  };
+
+  const handleEditAddress = (address: any) => {
+    setEditingAddress(address);
     setStep("form");
   };
 
@@ -80,12 +103,16 @@ export default function AddressPage() {
   return (
     <>
       {step === "form" ? (
-        <AddressForm onConfirm={handleConfirm} />
+        <AddressForm onConfirm={handleConfirm} initialData={editingAddress}
+        />
       ) : (
         <ConfirmScreen
           address={selectedAddress}
           onNewAddress={handleNewAddress}
+          onEditAddress={handleEditAddress}
           cartTotal={cartTotal}
+          addressList={addressList}
+          setAddressList={setAddressList}
         />
       )}
     </>

@@ -17,7 +17,8 @@ type Address = {
 };
 
 interface Props {
-  onConfirm: (data: Address) => void;
+  onConfirm: (data: any) => void;
+  initialData?: any; // ← ADICIONE ISTO
 }
 
 export default function AddressForm({ onConfirm }: Props) {

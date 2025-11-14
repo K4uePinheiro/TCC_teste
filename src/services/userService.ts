@@ -75,5 +75,8 @@ export async function deleteAddress(Id: string) {
     return await deleteDoc(doc(db, "addresses", Id));
 }
 export async function updateAddress(Id: string, newData: any) {
-    return await updateDoc(doc(db, "addresses", Id), newData);
+    return await updateDoc(doc(db, "addresses", Id), {
+        ...newData,
+        updated: new Date(), // Adiciona timestamp de atualização
+    });
 }

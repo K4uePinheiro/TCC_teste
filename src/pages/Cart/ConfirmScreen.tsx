@@ -1,6 +1,5 @@
 import "./AddressPage.css";
-import { useEffect, useState } from "react";
-import { getAllAddresses, deleteAddress } from "../../services/userService";
+import { deleteAddress } from "../../services/userService";
 
 interface Address {
   id: string;
@@ -15,45 +14,37 @@ interface Address {
 
 interface ConfirmScreenProps {
   onNewAddress: () => void;
+  onEditAddress: (address: Address) => void;
   cartTotal: number;
   frete?: number;
   address?: Address;
+  addressList: Address[];
+  setAddressList: React.Dispatch<React.SetStateAction<Address[]>>;
 }
 
 export default function ConfirmScreen({
   onNewAddress,
+  onEditAddress,
   cartTotal,
   frete = 32.9,
+  addressList,
+  setAddressList,
 }: ConfirmScreenProps) {
-
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Carregar endereços do Firebase
-  useEffect(() => {
-    async function load() {
-      const list = await getAllAddresses();
-      setAddresses(list as Address[]);
-      setLoading(false);
-    }
-    load();
-  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Deseja excluir este endereço?")) return;
 
-    await deleteAddress(id);
-
-    // atualiza lista
-    setAddresses((prev) => prev.filter((addr) => addr.id !== id));
+    try {
+      await deleteAddress(id);
+      setAddressList((prev) => prev.filter((addr) => addr.id !== id));
+    } catch (error) {
+      console.error("Erro ao excluir endereço:", error);
+      alert("Erro ao excluir endereço. Tente novamente.");
+    }
   };
 
   const handleEdit = (address: Address) => {
-    // Pode abrir o form carregando este endereço
-    // Passa para o AddressPage
-    onNewAddress(); // abre o formulário
-    // Aqui você deve ajustar o AddressPage para aceitar "editingAddress"
-    localStorage.setItem("editAddress", JSON.stringify(address));
+    onEditAddress(address);
   };
 
   const totalComFrete = cartTotal + frete;
@@ -74,13 +65,10 @@ export default function ConfirmScreen({
           </button>
         </div>
 
-        {/* 📌 LISTA DE ENDEREÇOS */}
-        {loading ? (
-          <p>Carregando endereços...</p>
-        ) : addresses.length === 0 ? (
+        {addressList.length === 0 ? (
           <p>Nenhum endereço cadastrado ainda.</p>
         ) : (
-          addresses.map((address) => (
+          addressList.map((address) => (
             <div key={address.id} className="address-card">
               <div className="address-info">
                 <span className="check-icon">✔</span>
