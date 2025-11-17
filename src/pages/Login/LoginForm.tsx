@@ -1,4 +1,9 @@
-import { useState, type ChangeEvent, type FormEvent, type FC } from "react";
+import {
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+  type FC,
+} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./login.css";
@@ -9,120 +14,174 @@ const LoginForm: FC = () => {
   const [senha, setSenha] = useState<string>("");
   const [errors, setErrors] = useState({ email: "", senha: "", auth: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordAnimating, setPasswordAnimating] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
-
-  const togglePassword = () => {
-    setPasswordAnimating(true);
-    setTimeout(() => {
-      setShowPassword(!showPassword);
-      setPasswordAnimating(false);
-    }, 150);
-  };
 
   const validateForm = () => {
     const newErrors = { email: "", senha: "", auth: "" };
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailRegex.test(email)) newErrors.email = "Digite um email válido.";
-    if (senha.trim() === "") newErrors.senha = "A senha não pode estar vazia.";
+    if (!emailRegex.test(email))
+      newErrors.email = "Digite um email válido.";
+
+    if (senha.trim() === "")
+      newErrors.senha = "A senha não pode estar vazia.";
 
     setErrors(newErrors);
-    return Object.values(newErrors).every(err => err === "");
+    return Object.values(newErrors).every((err) => err === "");
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const success = login(email, senha);
-    if (success) {
-      navigate("/account");
-    } else {
-      setErrors(prev => ({ ...prev, auth: "Email ou senha incorretos" }));
+    setLoading(true);
+
+    try {
+      const success = await login(email, senha);
+      if (success) navigate("/account");
+      else setErrors((prev) => ({ ...prev, auth: "Email ou senha incorretos" }));
+    } catch (err) {
+      console.error(err);
+      setErrors((prev) => ({ ...prev, auth: "Erro ao fazer login" }));
     }
+
+    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
     try {
       await loginWithGoogle();
       navigate("/account");
     } catch (err) {
       console.error(err);
-      setErrors(prev => ({ ...prev, auth: "Erro ao fazer login com Google" }));
+      setErrors((prev) => ({
+        ...prev,
+        auth: "Erro ao fazer login com Google",
+      }));
     }
+    setLoading(false);
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        {/* Formulário */}
+
+        {/* FORM */}
         <div className="login-form">
-          <h2>Acesse sua <span className="highlight">Conta</span></h2>
+          <h2>
+            Acesse sua <span className="highlight">Conta</span>
+          </h2>
 
           <form onSubmit={handleSubmit}>
+            {/* EMAIL */}
             <div>
               <input
                 type="email"
                 placeholder="Digite seu Email"
                 value={email}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setEmail(e.target.value);
+                  setErrors((prev) => ({ ...prev, email: "", auth: "" }));
+                }}
                 required
               />
-              {errors.email && <p className="error-message">{errors.email}</p>}
+              {errors.email && (
+                <p className="error-message">{errors.email}</p>
+              )}
             </div>
 
+            {/* PASSWORD */}
             <div className="password-field-container">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Digite sua senha"
                 value={senha}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setSenha(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setSenha(e.target.value);
+                  setErrors((prev) => ({ ...prev, senha: "", auth: "" }));
+                }}
                 required
                 style={{ paddingRight: "40px" }}
               />
+
               <button
                 type="button"
-                onClick={togglePassword}
-                className={`password-toggle-btn ${passwordAnimating ? 'animating' : ''}`}
+                onClick={() => setShowPassword((p) => !p)}
+                className="password-toggle-btn"
               >
-                {showPassword ? <img src="/olhos2.png" alt="Show password" /> : <img src="/olhos1.png" alt="Show password" />}
+                {showPassword ? (
+                  <img src="/olhos2.png" alt="show" />
+                ) : (
+                  <img src="/olhos1.png" alt="hide" />
+                )}
               </button>
-              {errors.senha && <p className="error-message">{errors.senha}</p>}
+
+              {errors.senha && (
+                <p className="error-message">{errors.senha}</p>
+              )}
             </div>
 
-            {errors.auth && <p className="error-message auth-error">{errors.auth}</p>}
+            {/* AUTH ERROR */}
+            {errors.auth && (
+              <p className="error-message auth-error">{errors.auth}</p>
+            )}
 
-            <button type="submit" className="btn-login">Entrar</button>
+            {/* LOGIN BUTTON */}
+            <button
+              type="submit"
+              className="btn-login"
+              disabled={loading}
+            >
+              {loading ? "Entrando..." : "Entrar"}
+            </button>
           </form>
 
-          <div className="divider"><span>Continuar com</span></div>
+          <div className="divider">
+            <span>Continuar com</span>
+          </div>
 
-          <button type="button" className="google-btn" onClick={handleGoogleLogin}>
-             <FcGoogle size={24} />Entrar com Google
+          {/* GOOGLE LOGIN */}
+          <button
+            type="button"
+            className="google-btn"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+          >
+            <FcGoogle size={24} />
+            {loading ? "Carregando..." : "Entrar com Google"}
           </button>
 
           <p className="forgot-password">
             Esqueceu sua Senha? <a href="#">Clique aqui.</a>
           </p>
 
+          {/* LINKS AJUSTADOS */}
           <p className="terms text-sm">
-            <a href="#" className="text-orange-500">Termos de Uso</a> | 
-            <a href="/src/pdfs/Política de Privacidade.pdf" className="text-orange-500"> Política de privacidade</a>
+            <a href="#" className="text-orange-500">Termos de Uso</a> |
+            <a href="/Política de Privacidade.pdf" className="text-orange-500">
+              {" "}
+              Política de Privacidade
+            </a>
           </p>
         </div>
 
-        {/* Banner */}
+        {/* BANNER */}
         <div className="login-banner">
           <div className="banner-content">
-            <h2>Não Possui <span>Conta?</span></h2>
+            <h2>
+              Não Possui <span>Conta?</span>
+            </h2>
+
             <Link to="/cadastro">
               <button className="btn-cadastrar">CADASTRAR-SE</button>
             </Link>
           </div>
         </div>
+
       </div>
     </div>
   );
