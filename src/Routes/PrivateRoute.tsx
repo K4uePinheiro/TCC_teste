@@ -6,7 +6,7 @@ import type { JSX } from "react";
 export default function PrivateRoute({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
 
-  // Enquanto o Firebase + API verificam login → evita piscar
+  // Evita piscar a tela enquanto verifica o estado de autenticação
   if (loading) {
     return (
       <div className="w-full h-screen flex items-center justify-center text-lg">
@@ -15,7 +15,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     );
   }
 
-  // Se não estiver logado
+  // Se não estiver logado, redireciona para login
   if (!user) {
     return <Navigate to="/login" replace />;
   }

@@ -5,44 +5,58 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Intercepta requisições e adiciona o token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// --- INTERCEPTOR DE REQUISIÇÃO (Adiciona Bearer Token) ---
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-// Intercepta respostas para renovar o token automaticamente
+// --- INTERCEPTOR DE RESPOSTA (Renova o token automaticamente) ---
 api.interceptors.response.use(
   (response) => response,
+
   async (error) => {
     const originalRequest = error.config;
 
+    // Se o backend retornar 401, tentamos renovar o token
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) {
+        localStorage.clear();
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
 
-      if (refreshToken) {
-        try {
-          const res = await api.post("/auth/refresh", { refreshToken });
+      try {
+        // Chama sua API de refresh token
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/auth/refresh`,
+          { refreshToken },
+          { withCredentials: true }
+        );
 
-          const newAccess = res.data.accessToken;
-          const newRefresh = res.data.refreshToken;
+        const { accessToken, refreshToken: newRefreshToken } = res.data;
 
-          localStorage.setItem("access_token", newAccess);
-          localStorage.setItem("refresh_token", newRefresh);
+        // Atualiza tokens
+        localStorage.setItem("access_token", accessToken);
+        localStorage.setItem("refresh_token", newRefreshToken);
 
-          api.defaults.headers.Authorization = `Bearer ${newAccess}`;
+        // Adiciona o novo token no header da nova request
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
-          return api(originalRequest);
-        } catch (refreshError) {
-          console.error("Erro ao renovar token:", refreshError);
-          localStorage.clear();
-          window.location.href = "/login";
-        }
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error("Erro ao renovar token:", refreshError);
+        localStorage.clear();
+        window.location.href = "/login";
       }
     }
 

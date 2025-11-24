@@ -9,29 +9,23 @@ import {
 import { auth, provider } from "../services/firebase";
 import {
   signInWithPopup,
-  signOut,
+  signOut as firebaseSignOut,
   onAuthStateChanged,
   setPersistence,
   browserLocalPersistence,
-  browserSessionPersistence
 } from "firebase/auth";
-import { db } from "../services/firebase";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+
 import api from "../services/api";
 
-// -------------------
-// Tipos
-// -------------------
+// ========================================
+// TIPOS
+// ========================================
 export interface User {
-  uid?: string;
+  id: string;
   name: string;
   email: string;
   picture?: string;
   email_verified?: boolean;
-  loginDate?: string;
-  cart?: any[];
-  favorites?: any[];
-  orders?: any[];
 }
 
 interface AuthContextType {
@@ -44,96 +38,70 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-// -------------------
-// Helpers LocalStorage
-// -------------------
-const USER_STORAGE_KEY = "user";
+// ========================================
+// LOCALSTORAGE
+// ========================================
+const USER_KEY = "user";
 
-const saveUserToStorage = (userData: User) => {
-  try {
-    const merged = {
-      ...userData,
-      loginDate: new Date().toISOString(),
-      cart: userData.cart || [],
-      favorites: userData.favorites || [],
-      orders: userData.orders || [],
-    };
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(merged));
-  } catch {}
-};
+const saveUser = (user: User) =>
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
 
-const getUserFromStorage = (): User | null => {
+const getUser = (): User | null => {
   try {
-    const saved = localStorage.getItem(USER_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : null;
+    const data = localStorage.getItem(USER_KEY);
+    return data ? JSON.parse(data) : null;
   } catch {
     return null;
   }
 };
 
-const clearUserFromStorage = () => localStorage.removeItem(USER_STORAGE_KEY);
+const clearUser = () => localStorage.removeItem(USER_KEY);
 
-// -------------------
-// Provider
-// -------------------
+// ========================================
+// PROVIDER
+// ========================================
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => getUserFromStorage());
+  const [user, setUser] = useState<User | null>(() => getUser());
   const [loading, setLoading] = useState(true);
 
+  // ------------------------------------------------
+  // VERIFICA LOGIN AUTOMÁTICO
+  // ------------------------------------------------
   useEffect(() => {
-    let mounted = true;
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      const access = localStorage.getItem("access_token");
 
-    // Define persistência
-    (async () => {
-      try {
-        await setPersistence(auth, browserLocalPersistence);
-      } catch {
-        try {
-          await setPersistence(auth, browserSessionPersistence);
-        } catch {}
-      }
-    })();
-
-    // Firebase Observer
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (!mounted) return;
-
-      // ❗ IMPORTANTE:
-      // Se o usuário logou via API, NÃO sobrescrever.
-      const accessToken = localStorage.getItem("access_token");
-      if (accessToken && !firebaseUser) {
+      // Se existe token da API, NÃO sobrescreve com Firebase
+      if (access) {
         setLoading(false);
         return;
       }
 
-      if (firebaseUser) {
-        const userData: User = {
-          uid: firebaseUser.uid,
-          name: firebaseUser.displayName || "",
-          email: firebaseUser.email || "",
-          picture: firebaseUser.photoURL || "",
-          email_verified: firebaseUser.emailVerified,
-        };
-
-        setUser(userData);
-        saveUserToStorage(userData);
-      } else {
+      // Se não há token da API e não existe usuário Firebase → desloga tudo
+      if (!firebaseUser) {
         setUser(null);
-        clearUserFromStorage();
+        clearUser();
+        setLoading(false);
+        return;
       }
+
+      // Firebase logou, MAS você precisa de um user real da API
+      // Aqui NÃO vamos criar o user automaticamente,
+      // apenas avisar que precisa implementar o endpoint /auth/firebase
+      console.warn(
+        "%cATENÇÃO: Firebase logou, mas não existe token da API. É necessário implementar a rota POST /auth/firebase no backend.",
+        "color: yellow; font-weight: bold"
+      );
 
       setLoading(false);
     });
 
-    return () => {
-      mounted = false;
-      unsubscribe();
-    };
+    return () => unsub();
   }, []);
 
-  // --------------------------
-  // LOGIN COM GOOGLE (Firebase)
-  // --------------------------
+  // ------------------------------------------------
+  // LOGIN COM GOOGLE  (Firebase + API DEPOIS)
+  // ------------------------------------------------
   const loginWithGoogle = async () => {
     try {
       await setPersistence(auth, browserLocalPersistence);
@@ -141,80 +109,75 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const result = await signInWithPopup(auth, provider);
       const firebaseUser = result.user;
 
-      const userData: User = {
-        uid: firebaseUser.uid,
-        name: firebaseUser.displayName || "",
-        email: firebaseUser.email || "",
-        picture: firebaseUser.photoURL || "",
-        email_verified: firebaseUser.emailVerified,
-        cart: [],
-        favorites: [],
-        orders: [],
-      };
+      // 1) Pega ID token do Firebase
+      const idToken = await firebaseUser.getIdToken();
 
-      await setDoc(
-        doc(db, "users", firebaseUser.uid),
-        {
-          name: firebaseUser.displayName,
-          email: firebaseUser.email,
-          picture: firebaseUser.photoURL,
-          email_verified: firebaseUser.emailVerified,
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
+      // 2) Envia para sua API (PRECISA CRIAR ESSA ROTA)
+      // -----------------------------------------------
+      // ❗❗❗
+      // Aqui você ainda NÃO tem essa rota.
+      // Depois eu escrevo pra você o endpoint completo em Java.
+      // ❗❗❗
+      // -----------------------------------------------
+      const res = await api.post("/auth/firebase", { idToken });
 
-      setUser(userData);
-      saveUserToStorage(userData);
-    } catch (err) {
-      console.error("Erro no loginWithGoogle:", err);
-      throw err;
+      const { accessToken, refreshToken, user: apiUser } = res.data;
+
+      localStorage.setItem("access_token", accessToken);
+      localStorage.setItem("refresh_token", refreshToken);
+
+      setUser(apiUser);
+      saveUser(apiUser);
+    } catch (e) {
+      console.error("Erro no loginWithGoogle:", e);
+      throw e;
     }
   };
 
-  // --------------------------
+  // ------------------------------------------------
   // LOGIN TRADICIONAL (API)
-  // --------------------------
+  // ------------------------------------------------
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Altere aqui se sua rota for "/user/login"
-      const response = await api.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", { email, password });
 
-      const access = response.data.accessToken;
-      const refresh = response.data.refreshToken;
-      const userData = response.data.user;
+      const { accessToken, refreshToken, user: apiUser } = res.data;
 
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
+      localStorage.setItem("access_token", accessToken);
+      localStorage.setItem("refresh_token", refreshToken);
 
-      setUser(userData);
-      saveUserToStorage(userData);
+      setUser(apiUser);
+      saveUser(apiUser);
 
       return true;
     } catch (err) {
-      console.error("Erro ao fazer login:", err);
       return false;
     }
   };
 
-  // --------------------------
+  // ------------------------------------------------
   // LOGOUT
-  // --------------------------
+  // ------------------------------------------------
   const logout = async () => {
     try {
-      await signOut(auth);
+      await firebaseSignOut(auth);
     } catch {}
 
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    clearUserFromStorage();
-
+    clearUser();
     setUser(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, loginWithGoogle, login, logout }}
+      value={{
+        user,
+        loading,
+        login,
+        loginWithGoogle,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
