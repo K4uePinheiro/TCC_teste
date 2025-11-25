@@ -8,12 +8,11 @@ import {
 import api from "../services/api";
 
 export interface User {
-  [x: string]: any;
-  roles: never[];
   id: string;
   name: string;
   email: string;
   picture?: string;
+  roles?: any[];
 }
 
 interface AuthContextType {
@@ -26,74 +25,75 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 const USER_KEY = "user";
 
+// Helpers -------------------------------------
 const saveUser = (user: User) =>
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+
 const getUser = (): User | null => {
   try {
-    const data = localStorage.getItem("user");
-    if (!data) return null; // protege caso seja null ou undefined
+    const data = localStorage.getItem(USER_KEY);
+    if (!data) return null;
     return JSON.parse(data);
   } catch (e) {
     console.error("Erro ao ler user do localStorage:", e);
     return null;
   }
 };
+
 const clearUser = () => localStorage.removeItem(USER_KEY);
 
+// Provider -------------------------------------
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => getUser());
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(getUser());
+  const [loading, setLoading] = useState(!getUser()); // carrega só se não tiver user salvo
 
-  // -------------------------------
-  // RESTAURA USUÁRIO LOGADO
-  // -------------------------------
+  // Função extraída: carrega user pela API
+  const loadUserFromApi = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+      const res = await api.get("/auth/me");
+      const apiUser = res.data.user || res.data;
+
+      setUser(apiUser);
+      saveUser(apiUser);
+    } catch (err) {
+      console.error("Erro ao carregar usuário:", err);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      clearUser();
+      setUser(null);
+    }
+  };
+
+  // Carrega usuário quando a aplicação abre
   useEffect(() => {
-    const loadUser = async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await api.get("/auth/me");
-        const apiUser = res.data.user || res.data; // fallback
-        setUser(apiUser);
-        saveUser(apiUser);
-        console.log("Usuário carregado:", apiUser);
-      } catch (err) {
-        console.error("Erro ao carregar usuário:", err);
-        localStorage.removeItem("access_token");
-        clearUser();
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
+    const init = async () => {
+      await loadUserFromApi();
+      setLoading(false);
     };
 
-    loadUser();
+    init();
   }, []);
 
-  // -------------------------------
-  // LOGIN COM API
-  // -------------------------------
+  // Login --------------------------------------
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const res = await api.post("/auth/login", { email, password });
 
-      // caso o backend não retorne user dentro de res.data
-      const accessToken = res.data.accessToken;
-      const refreshToken = res.data.refreshToken;
-      const apiUser = res.data.user || res.data; // fallback seguro
+      const { accessToken, refreshToken } = res.data;
+      const apiUser = res.data.user || res.data;
 
       if (!accessToken || !apiUser)
-        throw new Error("Resposta do backend inválida");
+        throw new Error("Resposta inválida do backend");
 
       localStorage.setItem("access_token", accessToken);
       localStorage.setItem("refresh_token", refreshToken);
 
-      setUser(apiUser);
-      saveUser(apiUser);
+      // Agora carregamos o usuário corretamente
+      await loadUserFromApi();
+
       return true;
     } catch (err) {
       console.error("Erro no login:", err);
@@ -101,9 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // -------------------------------
-  // LOGOUT
-  // -------------------------------
+  // Logout -------------------------------------
   const logout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");

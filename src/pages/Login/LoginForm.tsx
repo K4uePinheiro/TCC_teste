@@ -16,7 +16,7 @@ const LoginForm: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login,} = useAuth();
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -51,20 +51,20 @@ const LoginForm: FC = () => {
     setLoading(false);
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      await loginWithGoogle();
-      navigate("/account");
-    } catch (err) {
-      console.error(err);
-      setErrors((prev) => ({
-        ...prev,
-        auth: "Erro ao fazer login com Google",
-      }));
-    }
-    setLoading(false);
-  };
+  // const handleGoogleLogin = async () => {
+  //   setLoading(true);
+  //   try {
+  //     await loginWithGoogle();
+  //     navigate("/account");
+  //   } catch (err) {
+  //     console.error(err);
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       auth: "Erro ao fazer login com Google",
+  //     }));
+  //   }
+  //   setLoading(false);
+  // };
 
   return (
     <div className="login-container">
@@ -151,7 +151,7 @@ const LoginForm: FC = () => {
           <button
             type="button"
             className="google-btn"
-            onClick={handleGoogleLogin}
+            // onClick={handleGoogleLogin}
             disabled={loading}
           >
             <FcGoogle size={24} />

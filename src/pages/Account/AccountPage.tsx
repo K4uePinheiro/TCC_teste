@@ -1,8 +1,8 @@
 import { type FC, type JSX } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { auth } from "../../services/firebase";
+// import { signOut } from "firebase/auth";
+// import { auth } from "../../services/firebase";
 import "./AccountPage.css";
 import {
   ShoppingCart,
@@ -13,6 +13,7 @@ import {
   LogOut,
   Store,
 } from "lucide-react";
+import api from "../../services/api";
 
 interface Card {
   icon: JSX.Element;
@@ -25,13 +26,21 @@ const AccountPage: FC = () => {
   const { user, loading } = useAuth(); // supondo que você tenha um loading
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    signOut(auth).then(() => {
-      localStorage.removeItem("cart");
-      localStorage.removeItem("favorites");
-      window.location.reload();
-    });
-  };
+  const handleLogout = async () => {
+  try {
+    await api.post("/auth/logout");
+
+    // Remove o JWT do storage
+    localStorage.removeItem("token");
+
+    // Se você usa context de user
+    setUser(null);
+
+    navigate("/login");
+  } catch (error) {
+    console.error("Erro no logout:", error);
+  }
+};
 
   // Se o usuário ainda não carregou, exibe loading
   if (loading || !user) {
@@ -85,3 +94,7 @@ const AccountPage: FC = () => {
 };
 
 export default AccountPage;
+function setUser(_arg0: null) {
+  throw new Error("Function not implemented.");
+}
+
