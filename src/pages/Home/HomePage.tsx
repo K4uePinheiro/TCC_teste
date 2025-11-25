@@ -5,7 +5,6 @@ import "./HomePage.css";
 import { productsMock } from "../../mocks/productsMocks";
 import type { Product } from "../../types";
 import { suppliersMock } from "../../mocks/suppliers";
-import { div } from "framer-motion/client";
 
 interface Supplier {
   id: number;

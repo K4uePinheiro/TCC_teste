@@ -17,6 +17,10 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Flag global para evitar várias chamadas de refresh ao mesmo tempo
+let isRefreshing = false;
+let failedRequestsQueue: any[] = [];
+
 // --- INTERCEPTOR DE RESPOSTA (Renova o token automaticamente) ---
 api.interceptors.response.use(
   (response) => response,
@@ -24,7 +28,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Se o backend retornar 401, tentamos renovar o token
+    // Se o token expirou (401)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -35,8 +39,24 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      // Evitar múltiplas chamadas de refresh ao mesmo tempo
+      if (isRefreshing) {
+        return new Promise<string>((resolve, reject) => {
+          failedRequestsQueue.push({
+            resolve,
+            reject,
+          });
+        })
+          .then((token: string) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      isRefreshing = true;
+
       try {
-        // Chama sua API de refresh token
         const res = await axios.post(
           `${import.meta.env.VITE_API_URL}/auth/refresh`,
           { refreshToken },
@@ -45,18 +65,25 @@ api.interceptors.response.use(
 
         const { accessToken, refreshToken: newRefreshToken } = res.data;
 
-        // Atualiza tokens
         localStorage.setItem("access_token", accessToken);
         localStorage.setItem("refresh_token", newRefreshToken);
 
-        // Adiciona o novo token no header da nova request
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        api.defaults.headers.Authorization = `Bearer ${accessToken}`;
+
+        // libera as requisições que estavam esperando
+        failedRequestsQueue.forEach((req) => req.resolve(accessToken));
+        failedRequestsQueue = [];
 
         return api(originalRequest);
-      } catch (refreshError) {
-        console.error("Erro ao renovar token:", refreshError);
+      } catch (err) {
+        failedRequestsQueue.forEach((req) => req.reject(err));
+        failedRequestsQueue = [];
+
         localStorage.clear();
         window.location.href = "/login";
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 
