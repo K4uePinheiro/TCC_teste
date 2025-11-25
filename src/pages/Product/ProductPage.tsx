@@ -5,10 +5,10 @@ import "./ProductPage.css";
 import { useCart } from "../../context/CartContext";
 import { productsMock } from "../../mocks/productsMocks";
 import type { ProductMock } from "../../mocks/productsMocks";
-import { addToCart as addToCartFirestore } from "../../services/userService";
+// import { addToCart as addToCartFirestore } from "../../services/userService";
 import { useAuth } from "../../context/AuthContext";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // ❤️ Ícones
-import { useFavorites } from "../../context/FavoritesContex"; 
+import { useFavorites } from "../../context/FavoritesContex";
 
 interface Product extends ProductMock {
   displayPrice: number;
@@ -36,16 +36,21 @@ function ProductPage() {
           if (useApi) {
             const res = await api.get(`/product/id/${id}`);
             const data = res.data;
-            const finalPrice = data.price - (data.price * (data.discount ?? 0)) / 100;
+            const finalPrice =
+              data.price - (data.price * (data.discount ?? 0)) / 100;
             setProduct({
               ...data,
               displayPrice: finalPrice,
               category: data.categories?.[0]?.name || "Sem categoria",
             });
           } else {
-            const mockProduct = productsMock.find((p: ProductMock) => p.id === Number(id));
+            const mockProduct = productsMock.find(
+              (p: ProductMock) => p.id === Number(id)
+            );
             if (mockProduct) {
-              const finalPrice = mockProduct.price - (mockProduct.price * (mockProduct.discount ?? 0)) / 100;
+              const finalPrice =
+                mockProduct.price -
+                (mockProduct.price * (mockProduct.discount ?? 0)) / 100;
               const productConverted: Product = {
                 ...mockProduct,
                 displayPrice: finalPrice,
@@ -53,8 +58,6 @@ function ProductPage() {
               };
               setProduct(productConverted);
             } else {
-              
-
             }
           }
         } catch (err) {
@@ -79,7 +82,9 @@ function ProductPage() {
       if (data.erro) {
         setFrete("CEP não encontrado.");
       } else {
-        setFrete(`Entrega para ${data.localidade} - ${data.uf}: R$ 20,00 (5 dias úteis)`);
+        setFrete(
+          `Entrega para ${data.localidade} - ${data.uf}: R$ 20,00 (5 dias úteis)`
+        );
       }
     } catch {
       setFrete("Erro ao buscar o CEP.");
@@ -88,7 +93,10 @@ function ProductPage() {
 
   if (!product) return <h2>Produto não encontrado</h2>;
 
-  const oldPrice = product.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const oldPrice = product.price.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
   const newPriceFormatted = product.displayPrice.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -103,7 +111,9 @@ function ProductPage() {
           <span>Você está em:</span>
           <Link to="/"> Página Inicial</Link>
           <span> &gt; </span>
-          <Link to={`/product?category=${product.category}`}>{product.category}</Link>
+          <Link to={`/product?category=${product.category}`}>
+            {product.category}
+          </Link>
           <span> &gt; </span>
           <span className="current">{product.name}</span>
         </div>
@@ -150,22 +160,11 @@ function ProductPage() {
         <button
           className="cart-btn"
           onClick={async () => {
-            if (!user?.uid) return alert("Você precisa estar logado!");
-            addToCart({
-              id: product.id,
-              name: product.name,
-              price: product.displayPrice,
-              oldPrice: product.oldPrice ?? product.price,
-              discount: product.discount,
-              image: product.imgUrl,
-              seller: product.seller ?? "Desconhecido",
-            });
+            if (!user) return alert("Você precisa estar logado!");
 
-            if (user?.uid) {
-              await addToCartFirestore(user.uid, product);
-            }
+            await addToCart(product.id);
 
-            alert("✅ Adicionado ao carrinho!");
+            alert("Adicionado ao carrinho!");
           }}
         >
           Adicionar ao carrinho
@@ -183,6 +182,14 @@ function ProductPage() {
           {frete && <p className="frete-result">{frete}</p>}
         </div>
       </div>
+      <div className="description-section">
+        <h3 className="desc-title">Descrição</h3>
+
+        <div className="desc-box">
+          <p>{product.description || "Nenhuma descrição disponível."}</p>
+        </div>
+      </div>
+      
     </div>
   );
 }

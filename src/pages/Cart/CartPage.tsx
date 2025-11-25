@@ -1,16 +1,30 @@
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
-import { FiTrash2 } from "react-icons/fi"; // ícone de lixeira
+import { FiTrash2 } from "react-icons/fi";
 import "./CartPage.css";
 import { useNavigate } from "react-router-dom";
 import { getAllAddresses } from "../../services/userService";
 import CheckoutProgress from "./Checkout/CheckoutProgress";
 
 const CartPage: React.FC = () => {
-  const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
+  const { cart, updateQuantity } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // ========================================================
+  // 1. Proteção contra cart undefined (fix do erro)
+  // ========================================================
+  if (!cart) {
+    return (
+      <div className="cart-container">
+        <h1>Carregando carrinho...</h1>
+      </div>
+    );
+  }
+
+  // ========================================================
+  // 2. Se o usuário não estiver logado
+  // ========================================================
   if (!user) {
     return (
       <div className="cart-containera">
@@ -20,13 +34,17 @@ const CartPage: React.FC = () => {
         </h1>
         <p>Você precisa estar logado para acessar o carrinho.</p>
         <button onClick={() => navigate("/login")} className="continuer-btn">
-          <p>Fazer login</p>
+          Fazer login
         </button>
       </div>
     );
   }
 
-  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // ========================================================
+  // 3. Cálculo seguro do total (previne erro do reduce)
+  // ========================================================
+  const total =
+    cart?.reduce((acc, item) => acc + item.price * item.quantity, 0) ?? 0;
 
   return (
     <div className="cart-container">
@@ -37,20 +55,22 @@ const CartPage: React.FC = () => {
           <img src="/shoppingcart.png" alt="shopping_cart" />
           Produtos no carrinho
         </h1>
+
         {cart.length > 0 && (
-          <button className="clear-btn" onClick={clearCart}>
+          <button className="clear-btn" disabled>
             <FiTrash2 /> Remover todos os produtos
           </button>
         )}
       </div>
 
       <div className="linhas">
+        {/* Carrinho vazio */}
         {cart.length === 0 ? (
           <p>Seu carrinho está vazio.</p>
         ) : (
           <div className="cart-items">
             {cart.map((item) => (
-              <div key={item.id} className="cart-item">
+              <div key={item.productId} className="cart-item">
                 <img
                   src={item.image}
                   alt={item.name}
@@ -61,10 +81,13 @@ const CartPage: React.FC = () => {
                   <h3>{item.name}</h3>
                   <p>
                     Preço à vista:{" "}
-                    <span className="price">R$ {item.price.toFixed(2)}</span>
+                    <span className="price">
+                      R$ {item.price.toFixed(2)}
+                    </span>
                   </p>
                   <p>
-                    Parcelas de 12x sem juros de {(item.price / 12).toFixed(2)}
+                    Parcelas de 12x sem juros de{" "}
+                    {(item.price / 12).toFixed(2)}
                   </p>
                   <p className="seller">
                     Fornecedor: <span>{item.seller}</span>
@@ -77,20 +100,26 @@ const CartPage: React.FC = () => {
                 <div className="cart-actions">
                   <p>Quantidade</p>
                   <div className="quantity-control">
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="trash-btn"
-                    >
+                    {/* BOTÃO DE REMOVER ITEM — deixado desabilitado */}
+                    <button className="trash-btn" disabled>
                       <FiTrash2 />
                     </button>
+
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity - 1)
+                      }
+                      disabled={item.quantity <= 1}
                     >
                       -
                     </button>
+
                     <span>{item.quantity}</span>
+
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity + 1)
+                      }
                     >
                       +
                     </button>
@@ -101,6 +130,7 @@ const CartPage: React.FC = () => {
           </div>
         )}
 
+        {/* Resumo */}
         {cart.length > 0 && (
           <div className="cart-summary">
             <h2>Resumo</h2>
@@ -109,11 +139,13 @@ const CartPage: React.FC = () => {
               Total a pagar:{" "}
               <span className="price">R$ {total.toFixed(2)}</span>
             </p>
+
             <button
               type="button"
               className="continue-btn"
               onClick={async () => {
                 const addresses = await getAllAddresses();
+
                 if (addresses.length === 0) {
                   navigate("/address", {
                     state: { total, newAddress: true },

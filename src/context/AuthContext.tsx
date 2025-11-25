@@ -8,6 +8,7 @@ import {
 import api from "../services/api";
 
 export interface User {
+  uid: any;
   id: string;
   name: string;
   email: string;
@@ -16,6 +17,7 @@ export interface User {
 }
 
 interface AuthContextType {
+  token: string | null;
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
@@ -110,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ token: localStorage.getItem("access_token"), user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

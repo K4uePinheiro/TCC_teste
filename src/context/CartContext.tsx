@@ -1,125 +1,106 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../services/api";
+import { useAuth } from "./AuthContext";
 
-import { useAuth } from "../context/AuthContext"; // ✅ pega usuário logado
-import { db } from "../services/firebase"; // ✅ seu firebase config
-import { doc, setDoc, getDoc } from "firebase/firestore";
-
-export interface Product {
-  id: number;
+interface CartItem {
+  productId: number;
+  quantity: number;
   name: string;
   price: number;
-  oldPrice: number;
-  discount: number;
   image: string;
   seller: string;
 }
 
-interface CartItem extends Product {
-  quantity: number;
+interface OrderResponse {
+  id: number;
+  items: CartItem[];
 }
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (id: number) => void;
-  clearCart: () => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  orderId: number | null;
+  fetchCart: () => Promise<void>;
+  addToCart: (productId: number) => Promise<void>;
+  updateQuantity: (productId: number, quantity: number) => Promise<void>;
+  removeItem: (productId: number) => Promise<void>;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<CartContextType>({} as CartContextType);
 
-export const CartProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const { user } = useAuth();
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { token } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [orderId, setOrderId] = useState<number | null>(null);
 
-  // ✅ Função para salvar no Firestore
-  const saveCartToFirebase = async (updatedCart: CartItem[]) => {
-    if (!user?.uid) return; // se não estiver logado, não salva
-    await setDoc(doc(db, "carts", user.uid), { items: updatedCart });
-  };
+  // Carregar carrinho da API
+  async function fetchCart() {
+    if (!token) return;
 
-  // ✅ Carrega carrinho quando o usuário loga
+    try {
+      const res = await api.get("/orders/shopping-cart");
+      const order: OrderResponse = res.data;
+
+      setCart(order.items);
+      setOrderId(order.id);
+    } catch (err) {
+      console.log("Carrinho vazio.");
+      setCart([]);
+      setOrderId(null);
+    }
+  }
+
+  // Adicionar produto ao carrinho
+  async function addToCart(productId: number) {
+    const payload = [
+      {
+        productId,
+        quantity: 1,
+      },
+    ];
+
+    const res = await api.post("/orders", payload);
+    const order: OrderResponse = res.data;
+
+    setCart(order.items);
+    setOrderId(order.id);
+  }
+
+  async function updateQuantity(productId: number, quantity: number) {
+    if (!orderId) return;
+
+    const payload = [
+      {
+        productId,
+        quantity,
+      },
+    ];
+
+    const res = await api.patch(`/orders/${orderId}`, payload);
+    const order: OrderResponse = res.data;
+
+    setCart(order.items);
+  }
+
+  async function removeItem(productId: number) {
+    if (!orderId) return;
+
+    await api.delete(`/orders/${orderId}/item/${productId}`);
+    fetchCart();
+  }
+
   useEffect(() => {
-    const loadCart = async () => {
-      if (!user?.uid) return; // se não estiver logado, não carrega
-
-      const ref = doc(db, "carts", user.uid);
-      const snap = await getDoc(ref);
-
-      if (snap.exists()) {
-        setCart(snap.data().items);
-      }
-    };
-
-    loadCart();
-  }, [user]);
-
-  // ✅ Adicionar ao carrinho
-  const addToCart = (product: Product) => {
-    setCart((prev) => {
-      const exists = prev.find((item) => item.id === product.id);
-      const updated = exists
-        ? prev.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        : [...prev, { ...product, quantity: 1 }];
-
-      saveCartToFirebase(updated);
-      return updated;
-    });
-  };
-
-  // ✅ Remover item
-  const removeFromCart = (id: number) => {
-    setCart((prev) => {
-      const updated = prev.filter((item) => item.id !== id);
-      saveCartToFirebase(updated);
-      return updated;
-    });
-  };
-
-  // ✅ Limpar carrinho
-  const clearCart = () => {
-    setCart([]);
-    saveCartToFirebase([]);
-  };
-
-  // ✅ Atualizar quantidade
-  const updateQuantity = (id: number, quantity: number) => {
-    setCart((prev) => {
-      const updated = prev
-        .map((item) =>
-          item.id === id ? { ...item, quantity: Math.max(0, quantity) } : item
-        )
-        .filter((item) => item.quantity > 0); // remove item zerado
-
-      saveCartToFirebase(updated);
-      return updated;
-    });
-  };
+    if (token) fetchCart();
+  }, [token]);
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, updateQuantity }}
+      value={{ cart, orderId, fetchCart, addToCart, updateQuantity, removeItem }}
     >
       {children}
     </CartContext.Provider>
   );
-};
+}
 
-export const useCart = (): CartContextType => {
-  const context = useContext(CartContext);
-  if (!context)
-    throw new Error("useCart deve ser usado dentro do CartProvider");
-  return context;
-};
+export function useCart() {
+  return useContext(CartContext);
+}
