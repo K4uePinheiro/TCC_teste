@@ -36,7 +36,7 @@ export default function RegisterForm() {
     useState(false);
 
   const navigate = useNavigate();
-  const { loginWithGoogle } = useAuth(); // ✅ usa o mesmo método do login
+  // const { loginWithGoogle } = useAuth(); // ✅ usa o mesmo método do login
 
   const togglePassword = () => {
     setPasswordAnimating(true);
@@ -176,16 +176,16 @@ export default function RegisterForm() {
     }
   };
 
-  // ✅ botão de login com Google igual ao LoginForm
-  const handleGoogleRegister = async () => {
-    try {
-      await loginWithGoogle(); // usa o mesmo método Firebase
-      navigate("/account");
-    } catch (err) {
-      console.error("Erro no login com Google:", err);
-      setError("Erro ao criar conta com o Google. Tente novamente.");
-    }
-  };
+  // // ✅ botão de login com Google igual ao LoginForm
+  // const handleGoogleRegister = async () => {
+  //   try {
+  //     await loginWithGoogle(); // usa o mesmo método Firebase
+  //     navigate("/account");
+  //   } catch (err) {
+  //     console.error("Erro no login com Google:", err);
+  //     setError("Erro ao criar conta com o Google. Tente novamente.");
+  //   }
+  // };
 
   return (
     <div className="register-container">
@@ -305,7 +305,7 @@ export default function RegisterForm() {
         <button
           type="button"
           className="googlee-btn"
-          onClick={handleGoogleRegister}
+          // onClick={handleGoogleRegister}
         >
           <FcGoogle size={24} />
           Criar conta com Google

@@ -139,6 +139,9 @@ const LoginForm: FC = () => {
               {loading ? "Entrando..." : "Entrar"}
             </button>
           </form>
+          <p className="forgot-password">
+            Esqueceu sua Senha? <a href="#">Clique aqui.</a>
+          </p>
 
           <div className="divider">
             <span>Continuar com</span>
@@ -155,9 +158,6 @@ const LoginForm: FC = () => {
             {loading ? "Carregando..." : "Entrar com Google"}
           </button>
 
-          <p className="forgot-password">
-            Esqueceu sua Senha? <a href="#">Clique aqui.</a>
-          </p>
 
           {/* LINKS AJUSTADOS */}
           <p className="terms text-sm">
@@ -173,7 +173,7 @@ const LoginForm: FC = () => {
         <div className="login-banner">
           <div className="banner-content">
             <h2>
-              Não Possui <span>Conta?</span>
+              Não Possui Conta?
             </h2>
 
             <Link to="/cadastro">

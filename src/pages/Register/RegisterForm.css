@@ -56,7 +56,7 @@
 
 /* Botão do olhinho - Senha */
 .password-toggle-btn {
-  position: absolute;
+
   top: 45%;
   right: 12px;
   transform: translateY(-50%);
@@ -71,35 +71,29 @@
   line-height: 1;
   font-size: 18px;
   color: #666;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
 }
 
-.password-toggle-btn:hover {
-  color: #333;
-}
 
-.password-toggle-btn.animating {
-  transform: translateY(-50%) scale(0.8);
-}
+
+
 
 .password-toggle-icon {
   display: inline-block;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.password-toggle-icon.showing {
-  transform: rotateY(180deg) scale(1.2);
-  filter: hue-rotate(30deg) brightness(1.1);
+.confirm-password-toggle-btn {
+  display: inline-block;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.password-toggle-icon.animating {
-  text-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
-}
+
+
+
 
 /* Botão do olhinho - Confirmar Senha */
 .confirm-password-toggle-btn {
-  position: absolute;
-  top: 45%;
+   top: 45%;
   right: 12px;
   transform: translateY(-50%);
   background: none;
@@ -113,30 +107,8 @@
   line-height: 1;
   font-size: 18px;
   color: #666;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.confirm-password-toggle-btn:hover {
-  color: #333;
-}
-
-.confirm-password-toggle-btn.animating {
-  transform: translateY(-50%) scale(0.8);
-}
-
-.confirm-password-toggle-icon {
-  display: inline-block;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.confirm-password-toggle-icon.showing {
-  transform: rotateY(180deg) scale(1.2);
-  filter: hue-rotate(30deg) brightness(1.1);
-}
-
-.confirm-password-toggle-icon.animating {
-  text-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
-}
 
 /* Divisor "Continue com" */
 .register-divider {
@@ -289,16 +261,19 @@ body.dark-mode .register-submit-btn:not(:disabled):hover {
     padding: 10px 15px;
     border: 1px solid #ddd;
     border-radius: 6px;
-    background: white;
+    background: #ff7300;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
     transition: 0.3s;
     width: 27vw;
 }
+.googlee-btn button{
+  color: #000000;
+}
 
 .googlee-btn:hover {
-    background: #f5f5f5;
+    background: #ea580c;
 }
 
 .googlee-btn img {

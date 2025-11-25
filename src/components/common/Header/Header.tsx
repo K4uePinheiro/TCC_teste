@@ -24,7 +24,6 @@ const Header = () => {
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
-
   const { cart } = useCart();
   const { user } = useAuth();
 
@@ -36,24 +35,23 @@ const Header = () => {
   const promoSectionRef = useRef<HTMLDivElement>(null);
   const partnersSectionRef = useRef<HTMLDivElement>(null);
 
-  // DEBUG: ver estrutura vinda da API
-  useEffect(() => {
-    console.log("Header: categorias atuais:", categories);
-  }, [categories]);
+  // =========================
+  // UTILIDADES
+  // =========================
+  const getFirstName = (fullName?: string) => fullName?.split(" ")[0] || "Usuário";
 
-  // Buscar categorias — API ou fallback mock
+  // =========================
+  // BUSCA CATEGORIAS
+  // =========================
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const useApi = import.meta.env.VITE_USE_API === "false";
+        const useApi = import.meta.env.VITE_USE_API !== "false"; // default false
         if (useApi) {
-          console.log("📡 Buscando categorias da API...");
-          const res = await api.get("/categories"); // endpoint do backend
-          console.log("📦 Resposta /categories:", res.data);
-          setCategories(res.data);
+          const res = await api.get("/categories");
+          setCategories(res.data || []);
         } else {
-          console.log("🧩 Usando categorias do mock...");
-          // monta a lista a partir do mock (igual ao seu)
+          // fallback mock
           const allCategories: Category[] = [];
           productsMock.forEach((product) => {
             product.categories?.forEach((cat) => {
@@ -81,13 +79,16 @@ const Header = () => {
           setCategories(allCategories);
         }
       } catch (error) {
-        console.error("❌ Erro ao buscar categorias:", error);
+        console.error("Erro ao buscar categorias:", error);
+        setCategories([]);
       }
     };
     fetchCategories();
   }, []);
 
-  // Tema escuro
+  // =========================
+  // TEMA ESCURO
+  // =========================
   const toggleTheme = () => {
     setIsAnimating(true);
     setTimeout(() => {
@@ -95,12 +96,15 @@ const Header = () => {
       setIsAnimating(false);
     }, 300);
   };
+
   useEffect(() => {
     if (isDarkMode) document.body.classList.add("dark-mode");
     else document.body.classList.remove("dark-mode");
   }, [isDarkMode]);
 
-  // Responsividade
+  // =========================
+  // RESPONSIVIDADE
+  // =========================
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -108,7 +112,9 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // hover/clique menu
+  // =========================
+  // MENU HOVER/CLICK
+  // =========================
   const handleMouseEnter = () => {
     if (!isMobile) {
       if (timeoutId.current) clearTimeout(timeoutId.current);
@@ -124,41 +130,42 @@ const Header = () => {
     if (isMobile) setIsOpen((prev) => !prev);
   };
 
-  // Busca por texto
+  // =========================
+  // BUSCA PRODUTO
+  // =========================
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     const query = search.trim();
     if (!query) return;
     try {
       const response = await api.get(`/product/name/${encodeURIComponent(query)}`);
-      navigate("/search", { state: { results: response.data } });
+      navigate("/search", { state: { results: response.data || [] } });
     } catch (error) {
       console.error("Erro ao buscar produto:", error);
       alert("Produto não encontrado ou erro na busca.");
     }
   };
 
+  // =========================
+  // SCROLL SECTIONS
+  // =========================
   const scrollToPromotions = () =>
     promoSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   const scrollToPartners = () =>
     partnersSectionRef.current?.scrollIntoView({ behavior: "smooth" });
 
   // =========================
-  // RENDERIZAÇÃO RECURSIVA
+  // COMPONENTE RECURSIVO
   // =========================
-  // componente recursivo para categorias/subcategorias
   const CategoryList = ({ cats, level = 0 }: { cats: Category[]; level?: number }) => {
     if (!cats || cats.length === 0) return null;
     return (
       <ul className={`dropdown-menu level-${level}`}>
         {cats.map((cat) => (
           <li key={cat.id} className="dropdown-item">
-            {/* clique na categoria principal */}
             <Link to={`/products?category=${cat.id}`} className="cat-link">
-              {cat.name}
+              {cat.name || "Sem Nome"}
             </Link>
-
-            {/* subcategorias: geram ?subcategory=id e também suportam níveis */}
             {cat.subCategories && cat.subCategories.length > 0 && (
               <div className="submenu">
                 <CategoryList cats={cat.subCategories} level={level + 1} />
@@ -207,18 +214,18 @@ const Header = () => {
 
             <Link to="/cart" className="icon-btn">
               <FaShoppingCart className="icon" />
-              {cart.length > 0 && <span>{cart.length}</span>}
+              {cart?.length > 0 && <span>{cart.length}</span>}
             </Link>
 
             {user ? (
               <Link to="/account" className="profile-btn">
                 <img
                   src={user.picture || "/default-avatar.png"}
-                  alt={user.name}
+                  alt={user.name || "Usuário"}
                   className="user-avatar"
                 />
                 <span>
-                  Bem-vindo, <br /> {user.name.split(" ")[0]}
+                  Bem-vindo, <br /> {getFirstName(user?.name)}
                 </span>
               </Link>
             ) : (
@@ -240,10 +247,8 @@ const Header = () => {
               Categorias
             </button>
 
-            {/* mostra o menu apenas quando aberto */}
             {isOpen && categories.length > 0 && (
               <div className="dropdown-root">
-                {/* CategoryList renderiza todos os níveis */}
                 <CategoryList cats={categories} />
               </div>
             )}

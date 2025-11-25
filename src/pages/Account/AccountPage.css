@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 50px 20px;
+  padding: 50px 30px;
   background-color: #f9f9f9;
-  min-height: calc(100vh - 80px);
+  min-height: calc(110vh - 80px);
 }
 
 .account-header {
