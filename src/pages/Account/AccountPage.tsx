@@ -22,7 +22,7 @@ interface Card {
 }
 
 const AccountPage: FC = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth(); // supondo que você tenha um loading
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -33,12 +33,26 @@ const AccountPage: FC = () => {
     });
   };
 
+  // Se o usuário ainda não carregou, exibe loading
+  if (loading || !user) {
+    return <div className="account-container">Carregando perfil...</div>;
+  }
+
+  const roles: string[] = user.roles ?? [];
+
+  const isSupplier = roles.includes("ROLE_SUPPLIER") || roles.includes("ROLE_SUPPLIER_PRIMARY");
+  const isRegularUser = roles.includes("ROLE_USER") && !isSupplier;
+
   const cards: Card[] = [
     { icon: <ShoppingCart size={36} />, title: "Carrinho", path: "/cart" },
     { icon: <Heart size={36} />, title: "Favoritos", path: "/favorites" },
     { icon: <Package size={36} />, title: "Seus Pedidos", path: "/orders" },
-    { icon: <Store size={36} />, title: "Área do Fornecedor", path: "/supplier" },
-    { icon: <Store size={36} />, title: "Sou Um fornecedor", path: "/supplier" },
+    ...(isSupplier
+      ? [{ icon: <Store size={36} />, title: "Área do Fornecedor", path: "/supplier" }]
+      : []),
+    ...(isRegularUser
+      ? [{ icon: <Store size={36} />, title: "Sou um fornecedor", path: "/supplier/register" }]
+      : []),
     { icon: <Headphones size={36} />, title: "Atendimento", path: "/support" },
     { icon: <Shield size={36} />, title: "Privacidade", path: "/privacy" },
     { icon: <LogOut size={36} />, title: "Sair da conta", action: handleLogout },
@@ -48,7 +62,7 @@ const AccountPage: FC = () => {
     <div className="account-container">
       <div className="account-header">
         <h2>Sua conta</h2>
-        <p>Bem vindo ao seu perfil {user?.name || user?.email || "Usuário"}</p>
+        <p>Bem vindo ao seu perfil {user.name || user.email || "Usuário"}</p>
       </div>
 
       <div className="account-grid">

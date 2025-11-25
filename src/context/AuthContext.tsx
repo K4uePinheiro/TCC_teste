@@ -8,6 +8,8 @@ import {
 import api from "../services/api";
 
 export interface User {
+  [x: string]: any;
+  roles: never[];
   id: string;
   name: string;
   email: string;
