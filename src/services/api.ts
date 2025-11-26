@@ -17,7 +17,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ CORREÇÃO 1: Usar uma Promise ao invés de flag booleana
 let refreshTokenPromise: Promise<string> | null = null;
 
 // --- INTERCEPTOR DE RESPOSTA (Renova o token automaticamente) ---
@@ -27,8 +26,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // ✅ CORREÇÃO 2: Verificar se a requisição falhou é do próprio refresh
-    // Evita loop infinito se o refresh falhar
+    // Se a requisição falhou é do próprio refresh, desloga
     if (originalRequest.url?.includes('/auth/refresh')) {
       localStorage.clear();
       window.location.href = "/login";
@@ -46,7 +44,7 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      // ✅ CORREÇÃO 3: Se já existe um refresh em andamento, aguarda ele
+      // Se já existe um refresh em andamento, aguarda ele
       if (refreshTokenPromise) {
         try {
           const newAccessToken = await refreshTokenPromise;
@@ -57,17 +55,19 @@ api.interceptors.response.use(
         }
       }
 
-      // ✅ CORREÇÃO 4: Criar uma Promise compartilhada para o refresh
+      // Criar uma Promise compartilhada para o refresh
       refreshTokenPromise = (async () => {
         try {
-          // ✅ CORREÇÃO 5: Enviar refreshToken no body ou header conforme sua API espera
+          // ✅ CORREÇÃO ALTERNATIVA: Enviar o refreshToken no HEADER Authorization
+          // Isso é mais seguro e comum. Se sua API espera no body, use a versão anterior.
           const res = await axios.post(
             `${import.meta.env.VITE_API_URL}/auth/refresh`,
-            { refreshToken }, // Se sua API espera no body
+            {}, // Body vazio, pois o token está no header
             { 
               withCredentials: true,
-              // ✅ Alternativa: Se sua API espera no header, use:
-              // headers: { Authorization: `Bearer ${refreshToken}` }
+              headers: { 
+                Authorization: `Bearer ${refreshToken}` // Enviando o refresh token no header
+              }
             }
           );
 
@@ -79,12 +79,10 @@ api.interceptors.response.use(
 
           localStorage.setItem("access_token", accessToken);
           
-          // ✅ CORREÇÃO 6: Só atualiza o refreshToken se vier um novo
           if (newRefreshToken) {
             localStorage.setItem("refresh_token", newRefreshToken);
           }
 
-          // ✅ CORREÇÃO 7: Atualizar o header padrão do axios
           api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
 
           return accessToken;
@@ -94,7 +92,6 @@ api.interceptors.response.use(
           window.location.href = "/login";
           throw err;
         } finally {
-          // ✅ CORREÇÃO 8: Limpar a Promise após conclusão
           refreshTokenPromise = null;
         }
       })();
