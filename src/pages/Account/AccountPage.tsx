@@ -50,7 +50,6 @@ const AccountPage: FC = () => {
   const roles: string[] = user.roles ?? [];
 
   const isSupplier = roles.includes("ROLE_SUPPLIER") || roles.includes("ROLE_SUPPLIER_PRIMARY");
-  const isRegularUser = roles.includes("ROLE_USER") && !isSupplier;
 
   const cards: Card[] = [
     { icon: <ShoppingCart size={36} />, title: "Carrinho", path: "/cart" },
@@ -58,9 +57,6 @@ const AccountPage: FC = () => {
     { icon: <Package size={36} />, title: "Seus Pedidos", path: "/orders" },
     ...(isSupplier
       ? [{ icon: <Store size={36} />, title: "Área do Fornecedor", path: "/supplier" }]
-      : []),
-    ...(isRegularUser
-      ? [{ icon: <Store size={36} />, title: "Sou um fornecedor", path: "/supplier/register" }]
       : []),
     { icon: <Headphones size={36} />, title: "Atendimento", path: "/support" },
     { icon: <Shield size={36} />, title: "Privacidade", path: "/privacy" },

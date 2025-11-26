@@ -8,7 +8,7 @@ export interface OrderItemRequest {
 
 // 🔹 Buscar carrinho pendente
 export async function getShoppingCart() {
-  const res = await api.get("/orders/shopping-cart");
+  const res = await api.get("/orders");
   return res.data;
 }
 
@@ -19,7 +19,7 @@ export async function createCart(items: OrderItemRequest[]) {
 }
 
 // 🔹 Atualizar carrinho pendente
-export async function updateCart(orderId: number, items: OrderItemRequest[]) {
-  const res = await api.patch(`/orders/${orderId}`, items);
+export async function updateCart(Id: number, items: OrderItemRequest[]) {
+  const res = await api.patch(`/orders/${Id}`, items);
   return res.data;
 }
