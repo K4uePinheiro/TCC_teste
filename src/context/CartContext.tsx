@@ -92,77 +92,97 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // 🔹 Adicionar produto ao carrinho
   async function addToCart(productId: number) {
-  if (!orderId) {
-    const res = await api.post("/orders", [{ productId, quantity: 1 }]);
-    const order: OrderResponse = res.data;
-    setCart(order.orderItems.map(item => ({
-      productId: item.product.id,
-      quantity: item.quantity,
-      name: item.product.name,
-      price: item.product.price,
-      image: item.product.imgUrl,
-      seller: item.product.supplierName,
-    })));
-    setOrderId(order.id);
-    return;
+    try {
+      // ✅ CORREÇÃO 1: Se não existe pedido pendente, criar um novo
+      if (!orderId) {
+        const res = await api.post("/orders", [{ productId, quantity: 1 }]);
+        const order: OrderResponse = res.data;
+        setCart(order.orderItems.map(item => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+          name: item.product.name,
+          price: item.product.price,
+          image: item.product.imgUrl,
+          seller: item.product.supplierName,
+        })));
+        setOrderId(order.id);
+        return;
+      }
+
+      // ✅ CORREÇÃO 2: Usar o estado local do carrinho ao invés de buscar da API
+      // Isso evita race conditions e melhora a performance
+      const payload = cart.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
+
+      const existing = payload.find(p => p.productId === productId);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        payload.push({ productId, quantity: 1 });
+      }
+
+      // ✅ CORREÇÃO 3: Atualizar o pedido com o payload correto
+      const updateRes = await api.patch(`/orders/${orderId}`, payload);
+      const updatedOrder: OrderResponse = updateRes.data;
+
+      // ✅ CORREÇÃO 4: Atualizar o estado do carrinho com a resposta da API
+      setCart(updatedOrder.orderItems.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        name: item.product.name,
+        price: item.product.price,
+        image: item.product.imgUrl,
+        seller: item.product.supplierName,
+      })));
+    } catch (err) {
+      console.error("Erro ao adicionar produto ao carrinho:", err);
+      // ✅ CORREÇÃO 5: Recarregar o carrinho em caso de erro para sincronizar
+      await fetchCart();
+    }
   }
-
-  const res = await api.get(`/orders/${orderId}`);
-  const order: OrderResponse = res.data;
-
-  const payload = order.orderItems.map(item => ({
-    productId: item.product.id,
-    quantity: item.quantity,
-  }));
-
-  const existing = payload.find(p => p.productId === productId);
-  if (existing) existing.quantity += 1;
-  else payload.push({ productId, quantity: 1 });
-
-  const updateRes = await api.patch(`/orders/${orderId}`, payload);
-  const updatedOrder: OrderResponse = updateRes.data;
-
-  setCart(updatedOrder.orderItems.map(item => ({
-    productId: item.product.id,
-    quantity: item.quantity,
-    name: item.product.name,
-    price: item.product.price,
-    image: item.product.imgUrl,
-    seller: item.product.supplierName,
-  })));
-}
-
 
   // 🔹 Atualizar quantidade
   async function updateQuantity(productId: number, quantity: number) {
     if (!orderId) return;
 
-    const payload = cart.map(item => ({
-      productId: item.productId,
-      quantity: item.productId === productId ? quantity : item.quantity,
-    }));
+    try {
+      const payload = cart.map(item => ({
+        productId: item.productId,
+        quantity: item.productId === productId ? quantity : item.quantity,
+      }));
 
-    const res = await api.patch(`/orders/${orderId}`, payload);
-    const order: OrderResponse = res.data;
+      const res = await api.patch(`/orders/${orderId}`, payload);
+      const order: OrderResponse = res.data;
 
-    const mappedCart: CartItem[] = order.orderItems.map(item => ({
-      productId: item.product.id,
-      quantity: item.quantity,
-      name: item.product.name,
-      price: item.product.price,
-      image: item.product.imgUrl,
-      seller: item.product.supplierName,
-    }));
+      const mappedCart: CartItem[] = order.orderItems.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        name: item.product.name,
+        price: item.product.price,
+        image: item.product.imgUrl,
+        seller: item.product.supplierName,
+      }));
 
-    setCart(mappedCart);
+      setCart(mappedCart);
+    } catch (err) {
+      console.error("Erro ao atualizar quantidade:", err);
+      await fetchCart();
+    }
   }
 
   // 🔹 Remover item do carrinho
   async function removeItem(productId: number) {
     if (!orderId) return;
 
-    await api.delete(`/orders/${orderId}/item/${productId}`);
-    fetchCart();
+    try {
+      await api.delete(`/orders/${orderId}/item/${productId}`);
+      await fetchCart();
+    } catch (err) {
+      console.error("Erro ao remover item:", err);
+      await fetchCart();
+    }
   }
 
   useEffect(() => {
