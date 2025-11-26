@@ -16,7 +16,7 @@ const LoginForm: FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { login,} = useAuth();
+  const { login, } = useAuth();
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -172,13 +172,27 @@ const LoginForm: FC = () => {
         {/* BANNER */}
         <div className="login-banner">
           <div className="banner-content">
-            <h2>
-              Não Possui Conta?
-            </h2>
+            <img src="/ikommerce.png" alt="Logo" className="logo" />
+           
+            <div className="cimabanner">
+              <h2>
+                Torne-se um Fornecedor do nosso site.
+              </h2>
+              <Link to="/supplier-register">
+                <button className="btn-cadastrarsu">Cadastrar uma conta</button>
+              </Link>
+            </div>
 
-            <Link to="/cadastro">
-              <button className="btn-cadastrar">CADASTRAR-SE</button>
-            </Link>
+            <div className="baixobanner">
+              <h2>
+                Não Possui Conta?
+              </h2>
+              <Link to="/cadastro">
+                <button className="btn-cadastrar">CADASTRE-SE</button>
+              </Link>
+            </div>
+
+
           </div>
         </div>
 

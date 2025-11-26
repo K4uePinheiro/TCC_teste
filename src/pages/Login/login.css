@@ -185,13 +185,8 @@ input:focus::placeholder {
     align-items: center;
     text-align: center;
     color: #ffffff;
-}
-
-.banner-content h2 {
-    font-size: 32px;
-    font-weight: 500;
-    margin-bottom: 30px;
-    line-height: 1.3;
+    gap: 20px;
+    margin-top: 30px;
 }
 
 .banner-content h2 span {
@@ -201,10 +196,26 @@ input:focus::placeholder {
 }
 
 .btn-cadastrar {
+background-color: transparent;
+text-decoration: underline;
+}
+.cimabanner {
+  font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    line-height: 1.3;
+    gap: 20px;
+}
+.cimabanner h2{
+
+    margin-bottom: 20px;    
+}
+
+.btn-cadastrarsu {
     background-color: #fff;
     color: #ff6600;
     border: none;
-    padding: 14px 60px;
+    padding: 14px 90px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 700;
@@ -212,6 +223,18 @@ input:focus::placeholder {
     letter-spacing: 0.5px;
     transition: all 0.3s;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+
+.baixobanner {
+ font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    line-height: 1.3;
+}
+.baixobanner h2{
+    font-weight: 500;
+    margin-bottom: 10px;
 }
 
 .btn-cadastrar:hover {

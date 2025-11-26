@@ -25,11 +25,14 @@ import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContex";
 import SupplierPage from './pages/Supplier/SupplierPage';
 import SearchResults from "./pages/ProductsPage/SearchResults.tsx";
+import SupplierRegister from "./pages/Register/SupplierRegister.tsx";
+
 
 import "./App.css";
 
 import { AuthProvider } from "./context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+
 
 const App: React.FC = () => {
   return (
@@ -71,6 +74,7 @@ const App: React.FC = () => {
                   <Route path="/product/:id" element={<ProductPage />} />
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/login" element={<LoginForm />} />
+                  <Route path="/supplier-register" element={<SupplierRegister />} />
                   <Route path="/cadastro" element={<RegisterForm />} />
                   <Route path="/favorites" element={<FavoritesPage />} />
                   <Route path="/orders" element={<OrdersPage />} />
