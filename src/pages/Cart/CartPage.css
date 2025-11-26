@@ -38,22 +38,23 @@ body {
   height: 28px;
 }
 
+/* ✅ CORREÇÃO 1: Estilo para o botão de remover todos (clear-btn) */
 .clear-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: white;
-  border: 1px solid #ddd;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #999;
+  background: none; /* Removendo o fundo branco para parecer mais um link/ação */
+  border: none; /* Removendo a borda */
+  padding: 0; /* Removendo o padding */
+  font-size: 14px; /* Aumentando um pouco o tamanho */
+  color: #ff4d4d; /* Cor vermelha para indicar exclusão */
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .clear-btn:hover {
-  background: #fafafa;
+  color: #cc0000; /* Vermelho mais escuro no hover */
+  background: none;
 }
 
 /* Layout de duas colunas */
@@ -172,14 +173,31 @@ body {
   text-align: center;
 }
 
+/* ✅ CORREÇÃO 2: Estilo para o botão de lixeira individual (trash-btn) */
 .trash-btn {
-  color: #ff6b35 !important;
-  font-size: 16px !important;
+  /* Sobrescrevendo os estilos de button do quantity-control */
+  background: none !important;
+  border: none !important;
+  color: #ff4d4d !important; /* Cor vermelha para o ícone */
+  font-size: 1.2rem !important; /* Tamanho do ícone */
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin-right: 10px; /* Espaço entre o ícone e o controle de quantidade */
+  transition: color 0.2s;
+}
 
+.trash-btn:hover {
+  color: #cc0000 !important;
+  background: none !important;
 }
+
 .trash-btn svg {
- width: 20px;
+  width: 20px;
+  height: 20px;
+  display: block; /* Garante que o ícone seja exibido corretamente */
 }
+
 /* Resumo lateral */
 .cart-summary {
   background: white;

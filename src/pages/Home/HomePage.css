@@ -111,6 +111,8 @@
 
 .carousel {
   display: grid;
+  /* ✅ CORREÇÃO: Garante que o grid se estique para a altura do maior item */
+  align-items: stretch; 
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   width: 100%;
@@ -162,11 +164,144 @@
   right: -10px;
 }
 
+/* ===== ProductCard Styles (Integrado e Corrigido) ===== */
+
 .product-card {
-  flex: 1 1 auto;
-  border-radius: 20px;
-  
+  display: flex;
+  flex-direction: column;
+  /* ✅ CORREÇÃO PRINCIPAL: Garante que o card ocupe toda a altura da célula do grid */
+  height: 100%; 
+  position: relative;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 18px;
+  padding: 10px;
+  align-items: center;
+  justify-content: flex-start; /* Alinha o conteúdo ao topo */
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.product-img {
+  padding: 3px;
+  height: 18rem;
+  max-height: 180px; /* Limita a altura da imagem */
+  width: 100%;
+  object-fit: contain;
+  margin-bottom: 16px;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.05);
+}
+
+.product-info {
+  text-align: left; /* Alinhamento à esquerda como na imagem */
+  width: 100%;
+  padding: 0 10px;
+  /* ✅ CORREÇÃO: Faz o bloco de informações ocupar o espaço restante */
+  margin-top: auto; 
+}
+
+.product-rating {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.product-rating .review-count {
+  color: #999;
+  margin-left: 5px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #222;
+  transition: color 0.2s ease;
+  line-height: 1.3;
+}
+
+.old-price {
+  font-size: 14px;
+  text-decoration: line-through;
+  color: #999;
+  margin: 6px 0 2px 0;
+}
+
+.price-row {
+  display: flex;
+  justify-content: flex-start; /* Alinhamento à esquerda como na imagem */
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  color: #e65500;
+}
+
+.discount {
+  background: #ffe6d5;
+  color: #e65500;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.payment-info, .payment-info-installments {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.payment-info-installments {
+  margin-bottom: 10px;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  border-radius: 50%;
+}
+
+.favorite-button:hover {
+  transform: scale(1.1);
+  background-color: #fff7f2;
+}
+
+.favorite-button svg {
+  font-size: 20px;
+  color: #aaa;
+  transition: color 0.2s ease;
+}
+
+.favorite-button.active svg {
+  color: #e65500;
+}
+
+/* Fim dos estilos do ProductCard */
 
 .no-products-message {
   font-size: 1.2rem;
@@ -200,27 +335,14 @@
   margin: 0 auto;
 }
 
+/* ✅ CORREÇÃO: Aplicando o grid do carrossel também para a seção Promoções */
 .promotions-section .carousel {
-  display: flex;
-  overflow-x: auto;
-  scroll-behavior: smooth;
+  display: grid;
+  align-items: stretch; 
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-}
-
-.promotions-section .promo-card {
-  flex: 0 0 auto;
-  width: 250px;
-  height: 150px;
-  background-color: #ffffff;
-  border: 1px solid #ffffff;
-  border-radius: 8px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #333;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  padding: 10px 0;
 }
 
 /* ===== Fornecedores ===== */
@@ -496,179 +618,5 @@ body.dark-mode .carousel-btn:hover {
   .partner-card img {
     max-width: 120px;
     height: 100px;
-  }
-}
-
-/* Mobile (480px - 600px) */
-@media (max-width: 600px) {
-  .promo-left,
-  .promo-center,
-  .promo-right {
-    padding: 1.5rem;
-  }
-
-  .promo-left h2 {
-    font-size: 1.3rem;
-  }
-
-  .promo-left p {
-    font-size: 0.85rem;
-  }
-
-  .promo-center {
-    font-size: 1.5rem;
-  }
-
-  .products-section h2,
-  .promotions-section h2 {
-    font-size: 1.3rem;
-    margin-left: 0;
-    text-align: center;
-  }
-
-  .carousel > * {
-    max-width: 350px;
-  }
-
-  .partners-section h2 {
-    font-size: 1.5rem;
-  }
-
-  .partners-grid {
-    gap: 15px;
-  }
-
-  .partner-card {
-    padding: 15px 10px;
-  }
-
-  .partner-card img {
-    max-width: 100px;
-    height: 80px;
-  }
-
-  .partner-card h3 {
-    font-size: 1rem;
-  }
-}
-
-/* Mobile pequeno (até 480px) */
-@media (max-width: 480px) {
-  .promo-banner {
-    margin: 0;
-  }
-
-  .promo-left {
-    padding: 1.5rem 1rem;
-  }
-
-  .promo-left h2 {
-    font-size: 1.2rem;
-  }
-
-  .promo-left span {
-    font-size: 0.9rem;
-  }
-
-  .promo-left p {
-    font-size: 0.8rem;
-  }
-
-  .promo-center {
-    font-size: 1.3rem;
-    padding: 1.5rem 1rem;
-  }
-
-  .promo-right {
-    padding: 1rem;
-  }
-
-  .promo-box-a,
-  .promo-box-b {
-    padding: 0.8rem 1rem;
-    font-size: 0.9rem;
-  }
-
-  .products-section,
-  .promotions-section {
-    padding: 10px;
-  }
-
-  .products-section h2,
-  .promotions-section h2 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-  }
-
-  .carousel-container {
-    padding: 0;
-  }
-
-  .carousel {
-    gap: 10px;
-    padding: 5px 0;
-  }
-
-  .carousel > * {
-    max-width: 100%;
-  }
-
-  .carousel-btn {
-    width: 30px;
-    height: 30px;
-  }
-
-  .carousel-btn img {
-    width: 15px;
-    height: 15px;
-  }
-
-  .partners-section {
-    padding: 30px 10px;
-  }
-
-  .partners-section h2 {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-  }
-
-  .partners-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .partner-card {
-    padding: 20px 15px;
-  }
-
-  .partner-card img {
-    max-width: 120px;
-    height: 90px;
-  }
-
-  .partner-card h3 {
-    font-size: 0.95rem;
-  }
-
-  .no-products-message,
-  .no-suppliers-message {
-    font-size: 1rem;
-  }
-}
-
-/* Ajustes para telas muito pequenas */
-@media (max-width: 360px) {
-  .carousel > * {
-    max-width: 100%;
-  }
-
-  .promo-left h2 {
-    font-size: 1.1rem;
-  }
-
-  .products-section h2,
-  .promotions-section h2,
-  .partners-section h2 {
-    font-size: 1.1rem;
   }
 }

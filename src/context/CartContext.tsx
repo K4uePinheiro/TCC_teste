@@ -48,6 +48,7 @@ interface CartContextType {
   addToCart: (productId: number) => Promise<void>;
   updateQuantity: (productId: number, quantity: number) => Promise<void>;
   removeItem: (productId: number) => Promise<void>;
+  deleteOrder: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType>({} as CartContextType);
@@ -90,10 +91,65 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // 🔹 Deletar pedido inteiro
+  async function deleteOrder() {
+    if (!orderId) return;
+
+    try {
+      await api.delete(`/orders/${orderId}`);
+      setCart([]);
+      setOrderId(null);
+    } catch (err) {
+      console.error("Erro ao deletar pedido:", err);
+      await fetchCart();
+    }
+  }
+
+  // 🔹 Remover item do carrinho (usando PATCH)
+  async function removeItem(productId: number) {
+    if (!orderId) return;
+
+    try {
+      // 1. Filtra o carrinho local para remover o item
+      const newCart = cart.filter(item => item.productId !== productId);
+
+      // 2. Se o carrinho ficar vazio, deleta o pedido inteiro
+      if (newCart.length === 0) {
+        await deleteOrder();
+        return;
+      }
+
+      // 3. Mapeia o novo carrinho para o payload da API
+      const payload = newCart.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
+
+      // 4. Envia o payload via PATCH
+      const res = await api.patch(`/orders/${orderId}`, payload);
+      const updatedOrder: OrderResponse = res.data;
+
+      // 5. Atualiza o estado do carrinho com a resposta da API
+      const mappedCart: CartItem[] = updatedOrder.orderItems.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        name: item.product.name,
+        price: item.product.price,
+        image: item.product.imgUrl,
+        seller: item.product.supplierName,
+      }));
+      setCart(mappedCart);
+
+    } catch (err) {
+      console.error("Erro ao remover item:", err);
+      await fetchCart();
+    }
+  }
+
   // 🔹 Adicionar produto ao carrinho
   async function addToCart(productId: number) {
     try {
-      // ✅ CORREÇÃO 1: Se não existe pedido pendente, criar um novo
+      // Se não existe pedido pendente, criar um novo
       if (!orderId) {
         const res = await api.post("/orders", [{ productId, quantity: 1 }]);
         const order: OrderResponse = res.data;
@@ -109,8 +165,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // ✅ CORREÇÃO 2: Usar o estado local do carrinho ao invés de buscar da API
-      // Isso evita race conditions e melhora a performance
+      // Usar o estado local do carrinho
       const payload = cart.map(item => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -123,11 +178,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         payload.push({ productId, quantity: 1 });
       }
 
-      // ✅ CORREÇÃO 3: Atualizar o pedido com o payload correto
+      // Atualizar o pedido com o payload correto
       const updateRes = await api.patch(`/orders/${orderId}`, payload);
       const updatedOrder: OrderResponse = updateRes.data;
 
-      // ✅ CORREÇÃO 4: Atualizar o estado do carrinho com a resposta da API
+      // Atualizar o estado do carrinho com a resposta da API
       setCart(updatedOrder.orderItems.map(item => ({
         productId: item.product.id,
         quantity: item.quantity,
@@ -138,7 +193,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       })));
     } catch (err) {
       console.error("Erro ao adicionar produto ao carrinho:", err);
-      // ✅ CORREÇÃO 5: Recarregar o carrinho em caso de erro para sincronizar
       await fetchCart();
     }
   }
@@ -147,7 +201,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   async function updateQuantity(productId: number, quantity: number) {
     if (!orderId) return;
 
+    // ✅ CORREÇÃO: Se a quantidade for 0, chama a função de remover item
+    if (quantity <= 0) {
+      await removeItem(productId);
+      return;
+    }
+
     try {
+      // Mapeia o carrinho local para o payload, atualizando a quantidade
       const payload = cart.map(item => ({
         productId: item.productId,
         quantity: item.productId === productId ? quantity : item.quantity,
@@ -172,26 +233,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // 🔹 Remover item do carrinho
-  async function removeItem(productId: number) {
-    if (!orderId) return;
-
-    try {
-      await api.delete(`/orders/${orderId}/item/${productId}`);
-      await fetchCart();
-    } catch (err) {
-      console.error("Erro ao remover item:", err);
-      await fetchCart();
-    }
-  }
-
   useEffect(() => {
     if (token) fetchCart();
   }, [token]);
 
   return (
     <CartContext.Provider
-      value={{ cart, orderId, fetchCart, addToCart, updateQuantity, removeItem }}
+      value={{ cart, orderId, fetchCart, addToCart, updateQuantity, removeItem, deleteOrder }}
     >
       {children}
     </CartContext.Provider>

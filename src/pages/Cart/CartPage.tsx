@@ -7,7 +7,8 @@ import { getAllAddresses } from "../../services/userService";
 import CheckoutProgress from "./Checkout/CheckoutProgress";
 
 const CartPage: React.FC = () => {
-  const { cart, updateQuantity } = useCart();
+  // ✅ ATUALIZAÇÃO: Adicionando removeItem e deleteOrder
+  const { cart, updateQuantity, removeItem, deleteOrder } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -57,7 +58,8 @@ const CartPage: React.FC = () => {
         </h1>
 
         {cart.length > 0 && (
-          <button className="clear-btn" disabled>
+          // ✅ CORREÇÃO: Habilitando e conectando o botão de remover todos
+          <button className="clear-btn" onClick={deleteOrder}>
             <FiTrash2 /> Remover todos os produtos
           </button>
         )}
@@ -100,8 +102,8 @@ const CartPage: React.FC = () => {
                 <div className="cart-actions">
                   <p>Quantidade</p>
                   <div className="quantity-control">
-                    {/* BOTÃO DE REMOVER ITEM — deixado desabilitado */}
-                    <button className="trash-btn" disabled>
+                    {/* ✅ CORREÇÃO: Habilitando e conectando o botão de remover item */}
+                    <button className="trash-btn" onClick={() => removeItem(item.productId)}>
                       <FiTrash2 />
                     </button>
 
