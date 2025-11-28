@@ -1,7 +1,6 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
-import './SupplierPage.css';
 
-// --- DEFINIÇÕES DE TIPOS ---
+// --- TYPE DEFINITIONS ---
 
 interface DashboardMetrics {
   activeProducts: number;
@@ -18,8 +17,9 @@ interface Product {
   status: 'Ativo' | 'Inativo' | 'Pendente';
 }
 
-// --- UTILITÁRIOS E MOCKS ---
+// --- UTILITIES AND MOCKS ---
 
+// Mock API data fetch to simulate finding metrics
 const mockApiFetchMetrics = (): Promise<DashboardMetrics> => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -28,10 +28,11 @@ const mockApiFetchMetrics = (): Promise<DashboardMetrics> => {
         monthlyRevenue: 42500,
         totalSales: 896,
       });
-    }, 500);
+    }, 500); // Simulates network latency
   });
 };
 
+// Mock API data fetch to simulate finding products
 const mockApiFetchProducts = (): Promise<Product[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -46,8 +47,9 @@ const mockApiFetchProducts = (): Promise<Product[]> => {
   });
 };
 
-// --- COMPONENTES DA UI ---
+// --- UI COMPONENTS ---
 
+// DashboardLayout Component
 const DashboardLayout: React.FC<{ children: ReactNode; activePath: string }> = ({ children, activePath }) => {
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '📊' },
@@ -58,34 +60,42 @@ const DashboardLayout: React.FC<{ children: ReactNode; activePath: string }> = (
   ];
 
   return (
-    <div className="dashboard-container">
-      <aside className="sidebar">
-        <div className="sidebar-logo">Fornecedor PRO</div>
-        <nav className="sidebar-nav">
-          <ul>
+    <div className="flex h-screen bg-gray-50 font-sans">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-xl flex flex-col p-4">
+        <div className="text-2xl font-bold text-orange-500 mb-8">Fornecedor PRO</div>
+        <nav className="flex-grow">
+          <ul className="space-y-2">
             {navItems.map((item) => (
               <li key={item.path}>
                 <a
                   href={item.path}
-                  className={`sidebar-nav-item ${activePath === item.path ? 'active' : ''}`}
-                  onClick={(e) => e.preventDefault()}
+                  className={`flex items-center p-3 rounded-xl transition-all duration-200 ${
+                    activePath === item.path
+                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 font-semibold'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                  onClick={(e) => e.preventDefault()} // Prevents real navigation
                 >
-                  <span className="sidebar-nav-icon">{item.icon}</span>
+                  <span className="mr-3">{item.icon}</span>
                   {item.name}
                 </a>
               </li>
             ))}
           </ul>
         </nav>
-        <div className="sidebar-footer">
-          <button className="sidebar-logout">Sair</button>
+        <div className="mt-auto pt-4 border-t border-gray-200">
+          <button className="w-full p-3 text-sm rounded-xl text-gray-500 hover:bg-gray-100 transition-colors">
+            Sair
+          </button>
         </div>
       </aside>
 
-      <main className="main-content">
-        <header className="main-header">
-          <h1 className="main-title">Dashboard de Fornecedor</h1>
-          <p className="main-subtitle">Bem-vindo de volta ao seu painel de controle.</p>
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto p-6 md:p-10">
+        <header className="mb-8">
+          <h1 className="text-3xl font-extrabold text-gray-800">Dashboard de Fornecedor</h1>
+          <p className="text-gray-500">Bem-vindo de volta ao seu painel de controle.</p>
         </header>
         {children}
       </main>
@@ -93,6 +103,7 @@ const DashboardLayout: React.FC<{ children: ReactNode; activePath: string }> = (
   );
 };
 
+// MetricCard Component
 interface MetricCardProps {
   icon: string;
   label: string;
@@ -102,25 +113,32 @@ interface MetricCardProps {
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, trend, trendType = 'neutral' }) => {
+  const trendColor = trendType === 'positive' ? 'text-green-500' : trendType === 'negative' ? 'text-red-500' : 'text-gray-500';
+  const shadowColor = trendType === 'positive' ? 'shadow-green-500/10' : trendType === 'negative' ? 'shadow-red-500/10' : 'shadow-gray-500/10';
+
   return (
-    <div className="metric-card">
-      <div className="metric-card-header">
-        <span className="metric-icon">{icon}</span>
-        <span className="metric-period">Últimos 30 dias</span>
+    <div className={`bg-white p-6 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${shadowColor}`}>
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-3xl p-2 bg-gray-100 rounded-lg">{icon}</span>
+        <span className="text-xs font-medium text-gray-400">Últimos 30 dias</span>
       </div>
-      <p className="metric-label">{label}</p>
-      <h3 className="metric-value">{value}</h3>
+      <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
+      <h3 className="text-3xl font-bold text-gray-800 mb-3">
+        {value}
+      </h3>
       {trend && (
-        <p className={`metric-trend ${trendType}`}>
+        <p className={`text-sm ${trendColor} font-semibold flex items-center`}>
           {trendType === 'positive' ? '▲' : trendType === 'negative' ? '▼' : '—'}
-          <span className="trend-detail">{trend}</span>
+          <span className="ml-1 text-xs font-normal text-gray-500">{trend}</span>
         </p>
       )}
     </div>
   );
 };
 
+// SalesChart - Bar Chart (Sales vs Month)
 const SalesChart: React.FC = () => {
+  // Mock data for the bar chart
   const salesData = [
     { month: 'Jan', value: 30 },
     { month: 'Fev', value: 45 },
@@ -139,26 +157,33 @@ const SalesChart: React.FC = () => {
   const maxValue = Math.max(...salesData.map(d => d.value));
 
   return (
-    <div className="chart-card" style={{ gridColumn: 'span 2' }}>
-      <div className="chart-header">
-        <h3 className="chart-title">Vendas x Mês (Últimos 12)</h3>
-        <div className="chart-filters">
-          <button className="chart-filter-btn active">7 dias</button>
-          <button className="chart-filter-btn">30 dias</button>
+    <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-col col-span-2">
+      <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+        <h3 className="text-xl font-semibold text-gray-800">Vendas x Mês (Últimos 12)</h3>
+        <div className="flex space-x-2">
+          <button className="px-3 py-1 text-sm rounded-full bg-orange-500 text-white font-medium shadow-md">
+            7 dias
+          </button>
+          <button className="px-3 py-1 text-sm rounded-full text-gray-500 bg-gray-100 hover:bg-gray-200">
+            30 dias
+          </button>
         </div>
       </div>
-      <div className="sales-chart-container">
+      <div className="flex-1 flex items-end h-72 space-x-1 sm:space-x-2 p-2">
         {salesData.map((data, index) => (
-          <div key={index} className="sales-bar-wrapper">
-            <div className="sales-bar-tooltip">
-              {data.month}: {data.value}k
+          <div key={index} className="flex flex-col items-center justify-end h-full flex-grow group relative">
+            {/* Tooltip (displayed on hover) */}
+            <div className="absolute bottom-full mb-2 p-1 px-2 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                {data.month}: {data.value}k
             </div>
+            {/* Bar */}
             <div
-              className="sales-bar"
+              className="w-full bg-orange-400 rounded-t-lg transition-all duration-500 hover:bg-orange-500"
               style={{ height: `${(data.value / maxValue) * 90}%` }}
               aria-label={`${data.month}: ${data.value} mil`}
             ></div>
-            <span className="sales-bar-label">{data.month}</span>
+            {/* Label */}
+            <span className="text-xs text-gray-500 mt-1">{data.month}</span>
           </div>
         ))}
       </div>
@@ -166,47 +191,56 @@ const SalesChart: React.FC = () => {
   );
 };
 
+// ProfitChart - Donut Chart (Net Profit)
 const ProfitChart: React.FC = () => {
+  // Simulating 75% profit
   const percentage = 75;
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const dashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="chart-card">
-      <div className="chart-header">
-        <h3 className="chart-title">Margem de Lucro Líquido</h3>
-        <div className="chart-filters">
-          <button className="chart-filter-btn active">7 dias</button>
-          <button className="chart-filter-btn">30 dias</button>
+    <div className="bg-white p-6 rounded-2xl shadow-lg flex flex-col items-center">
+      <div className="flex justify-between w-full items-center mb-6 border-b border-gray-100 pb-4">
+        <h3 className="text-xl font-semibold text-gray-800">Margem de Lucro Líquido</h3>
+        <div className="flex space-x-2">
+          <button className="px-3 py-1 text-xs rounded-full bg-orange-500 text-white font-medium shadow-md">
+            7 dias
+          </button>
+          <button className="px-3 py-1 text-xs rounded-full text-gray-500 bg-gray-100 hover:bg-gray-200">
+            30 dias
+          </button>
         </div>
       </div>
-      <div className="profit-chart-container">
-        <div className="profit-donut-wrapper">
-          <svg viewBox="0 0 100 100" className="profit-donut-svg">
-            <circle 
-              cx="50" cy="50" r={radius} fill="none" 
-              stroke="#f0f0f0" strokeWidth="12"
-            />
-            <circle
-              cx="50" cy="50" r={radius} fill="none"
-              stroke="#ff6b35" strokeWidth="12"
-              strokeDasharray={`${circumference} ${circumference}`}
-              strokeDashoffset={dashoffset}
-              strokeLinecap="round"
-            />
-          </svg>
-          <div className="profit-donut-center">
-            <div className="profit-percentage">{percentage}%</div>
-            <div className="profit-label">Lucro Total</div>
-          </div>
+      <div className="flex items-center justify-center w-48 h-48 relative">
+        <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+          {/* Gray Background */}
+          <circle 
+            cx="50" cy="50" r={radius} fill="none" 
+            stroke="#f0f0f0" strokeWidth="12" 
+            className="shadow-inner"
+          />
+          {/* Profit (Orange) */}
+          <circle
+            cx="50" cy="50" r={radius} fill="none"
+            stroke="#ff6b35" strokeWidth="12"
+            strokeDasharray={`${circumference} ${circumference}`}
+            strokeDashoffset={dashoffset}
+            strokeLinecap="round"
+            className="transition-all duration-1000 ease-out"
+          />
+        </svg>
+        <div className="absolute flex flex-col items-center">
+          <div className="text-4xl font-extrabold text-gray-800">{percentage}%</div>
+          <div className="text-sm text-gray-500">Lucro Total</div>
         </div>
-        <p className="profit-goal">Meta: 80%</p>
       </div>
+      <p className="text-sm text-center text-gray-500 mt-4">Meta: 80%</p>
     </div>
   );
 };
 
+// ProductTable Component
 const ProductTable: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -225,44 +259,67 @@ const ProductTable: React.FC = () => {
     }).format(value);
   };
 
+  const getStatusClasses = (status: Product['status']) => {
+    switch (status) {
+      case 'Ativo':
+        return 'bg-green-100 text-green-700';
+      case 'Inativo':
+        return 'bg-red-100 text-red-700';
+      case 'Pendente':
+        return 'bg-yellow-100 text-yellow-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
   if (loading) {
-    return <div className="loading-message">Carregando produtos...</div>;
+    return (
+      <div className="bg-white p-6 rounded-2xl shadow-lg text-center text-gray-500">
+        Carregando produtos...
+      </div>
+    );
   }
 
   return (
-    <div className="product-table-wrapper">
-      <div className="product-table-header">
-        <h3 className="product-table-title">Lista de Produtos</h3>
-        <button className="add-product-btn">+ Adicionar Produto</button>
+    <div className="bg-white p-6 rounded-2xl shadow-lg overflow-x-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-semibold text-gray-800">Lista de Produtos</h3>
+        <button className="px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors shadow-md text-sm">
+          + Adicionar Produto
+        </button>
       </div>
-      <table className="product-table">
+      <table className="min-w-full divide-y divide-gray-200">
         <thead>
-          <tr>
-            <th>Produto</th>
-            <th>Categoria</th>
-            <th style={{ textAlign: 'center' }}>Estoque</th>
-            <th style={{ textAlign: 'right' }}>Preço</th>
-            <th style={{ textAlign: 'center' }}>Status</th>
-            <th>Ações</th>
+          <tr className="text-left text-sm font-semibold text-gray-500 uppercase tracking-wider">
+            <th className="py-3 px-4">Produto</th>
+            <th className="py-3 px-4">Categoria</th>
+            <th className="py-3 px-4 text-center">Estoque</th>
+            <th className="py-3 px-4 text-right">Preço</th>
+            <th className="py-3 px-4 text-center">Status</th>
+            <th className="py-3 px-4">Ações</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="bg-white divide-y divide-gray-100">
           {products.map((product) => (
-            <tr key={product.id}>
-              <td className="product-name">{product.name}</td>
-              <td className="product-category">{product.category}</td>
-              <td className={`product-stock ${product.stock === 0 ? 'out-of-stock' : ''}`}>
+            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+              <td className="py-4 px-4 text-sm font-medium text-gray-900">
+                {product.name}
+              </td>
+              <td className="py-4 px-4 text-sm text-gray-500">{product.category}</td>
+              <td className={`py-4 px-4 text-sm font-semibold text-center ${product.stock === 0 ? 'text-red-500' : 'text-gray-700'}`}>
                 {product.stock}
               </td>
-              <td className="product-price">{formatCurrency(product.price)}</td>
-              <td className="product-status">
-                <span className={`status-badge ${product.status.toLowerCase()}`}>
+              <td className="py-4 px-4 text-sm text-gray-700 text-right">
+                {formatCurrency(product.price)}
+              </td>
+              <td className="py-4 px-4 text-sm text-center">
+                <span className={`inline-flex items-center px-3 py-1.5 rounded-full font-medium text-xs ${getStatusClasses(product.status)}`}>
                   {product.status}
                 </span>
               </td>
-              <td className="product-actions">
-                <button className="action-btn edit">Editar</button>
-                <button className="action-btn delete">Excluir</button>
+              <td className="py-4 px-4 text-sm text-gray-500 space-x-3">
+                <button className="text-blue-500 hover:text-blue-700 text-sm">Editar</button>
+                <button className="text-red-500 hover:text-red-700 text-sm">Excluir</button>
               </td>
             </tr>
           ))}
@@ -272,73 +329,78 @@ const ProductTable: React.FC = () => {
   );
 };
 
+// ProductForm - Form to Add Products
 const ProductForm: React.FC = () => {
   return (
-    <div className="product-form-wrapper">
-      <h3 className="form-title">Adicionar Produtos</h3>
-      <form className="product-form">
-        <div className="form-grid">
-          <div className="form-field">
-            <label htmlFor="product-name" className="form-label">Nome do Produto:</label>
+    <div className="bg-white p-6 rounded-2xl shadow-lg mb-10">
+      <h3 className="text-2xl font-bold text-gray-700 mb-6">Adicionar Produtos</h3>
+      <form className="space-y-6">
+        {/* Input Grid (Name, Category, Price, Stock) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label htmlFor="product-name" className="text-sm font-medium text-gray-700">Nome do Produto:</label>
             <input 
               type="text" 
               id="product-name" 
               placeholder="Ex: Smartwatch Ultra X"
-              className="form-input"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-orange-500 focus:border-orange-500 transition duration-150"
             />
           </div>
-          <div className="form-field">
-            <label htmlFor="product-category" className="form-label">Categoria:</label>
+          <div className="space-y-2">
+            <label htmlFor="product-category" className="text-sm font-medium text-gray-700">Categoria:</label>
             <input 
               type="text" 
               id="product-category" 
               placeholder="Ex: Eletrônicos"
-              className="form-input"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-orange-500 focus:border-orange-500 transition duration-150"
             />
           </div>
-          <div className="form-field">
-            <label htmlFor="product-price" className="form-label">Preço:</label>
+          <div className="space-y-2">
+            <label htmlFor="product-price" className="text-sm font-medium text-gray-700">Preço:</label>
             <input 
               type="number" 
               id="product-price" 
               placeholder="Ex: 599.99"
-              className="form-input"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-orange-500 focus:border-orange-500 transition duration-150"
             />
           </div>
-          <div className="form-field">
-            <label htmlFor="product-stock" className="form-label">Quantidade no Estoque:</label>
+          <div className="space-y-2">
+            <label htmlFor="product-stock" className="text-sm font-medium text-gray-700">Quantidade no Estoque:</label>
             <input 
               type="number" 
               id="product-stock" 
               placeholder="Ex: 120"
-              className="form-input"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-orange-500 focus:border-orange-500 transition duration-150"
             />
           </div>
         </div>
 
-        <div className="form-field">
-          <label htmlFor="product-description" className="form-label">Descrição:</label>
+        {/* Description */}
+        <div className="space-y-2">
+          <label htmlFor="product-description" className="text-sm font-medium text-gray-700">Descrição:</label>
           <textarea
             id="product-description"
             rows={4}
             placeholder="Detalhes completos sobre o produto..."
-            className="form-input form-textarea"
+            className="w-full p-3 border border-gray-300 rounded-xl focus:ring-orange-500 focus:border-orange-500 transition duration-150"
           ></textarea>
         </div>
 
-        <div className="file-upload-wrapper">
-          <label htmlFor="file-upload" className="file-upload-label">
-            <div className="file-upload-content">
-              <span className="file-upload-icon">📄</span>
-              <p className="file-upload-text">Faça upload das imagens dos produtos</p>
+        {/* Image Upload */}
+        <div className="flex items-center justify-center w-full">
+          <label htmlFor="file-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition duration-150">
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <span className="text-2xl mb-1">📄</span>
+              <p className="mb-2 text-sm text-gray-500 font-semibold">Faça upload das imagens dos produtos</p>
             </div>
-            <input id="file-upload" type="file" multiple className="file-input-hidden" />
+            <input id="file-upload" type="file" multiple className="hidden" />
           </label>
         </div>
 
+        {/* Add Button */}
         <button
           type="submit"
-          className="submit-btn"
+          className="w-full py-4 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-lg shadow-orange-300/50"
           onClick={(e) => e.preventDefault()}
         >
           Adicionar produtos
@@ -348,6 +410,7 @@ const ProductForm: React.FC = () => {
   );
 };
 
+// SubsidiaryAccountCard - Subsidiary Account Card
 interface SubsidiaryUser {
   id: number;
   name: string;
@@ -356,22 +419,26 @@ interface SubsidiaryUser {
 
 const SubsidiaryAccountCard: React.FC<SubsidiaryUser> = ({ name, memberSince }) => {
   return (
-    <div className="subsidiary-card">
-      <div className="subsidiary-user-info">
-        <span className="subsidiary-avatar">👤</span> 
+    <div className="bg-white p-4 rounded-xl shadow-md border border-gray-100 flex flex-col justify-between">
+      <div className="flex items-center mb-3">
+        {/* User Icon (simulated with emoji) */}
+        <span className="text-2xl mr-3">👤</span> 
         <div>
-          <p className="subsidiary-name">{name}</p>
-          <div className="subsidiary-status">
-            <span className="status-indicator"></span>
+          <p className="font-semibold text-gray-800">{name}</p>
+          <div className="flex items-center text-xs text-gray-500 mt-0.5">
+            <span className="h-2 w-2 bg-green-500 rounded-full mr-1"></span>
             Membro desde {memberSince}
           </div>
         </div>
       </div>
-      <button className="edit-permissions-btn">Editar Permissões</button>
+      <button className="w-full py-2 text-sm text-orange-500 border border-orange-400 rounded-lg hover:bg-orange-50 transition-colors font-medium">
+        Editar Permissões
+      </button>
     </div>
   );
 };
 
+// SubsidiaryAccounts - Subsidiary Accounts Section
 const SubsidiaryAccounts: React.FC = () => {
   const mockUsers: SubsidiaryUser[] = [
     { id: 1, name: 'João Maciel', memberSince: '24/03/2025' },
@@ -381,21 +448,23 @@ const SubsidiaryAccounts: React.FC = () => {
   ];
 
   return (
-    <div className="subsidiary-accounts-section">
-      <h2 className="section-title">Contas Subsidiárias</h2>
+    <div className="mb-10">
+      <h2 className="text-2xl font-bold text-gray-700 mb-6">Contas Subsidiárias</h2>
       
-      <div className="subsidiary-grid">
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {mockUsers.map(user => (
           <SubsidiaryAccountCard key={user.id} {...user} />
         ))}
       </div>
 
-      <div className="add-subsidiary-wrapper">
+      {/* Add Accounts Button */}
+      <div className="flex justify-center mt-6">
         <button
-          className="add-subsidiary-btn"
+          className="w-full max-w-md py-3 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-lg shadow-orange-300/50 flex items-center justify-center space-x-2"
           onClick={(e) => e.preventDefault()}
         >
-          <span className="btn-icon">🧑‍💻</span> 
+          <span className="text-xl">🧑‍💻</span> 
           <span>Adicionar contas subsidiárias</span>
         </button>
       </div>
@@ -403,7 +472,8 @@ const SubsidiaryAccounts: React.FC = () => {
   );
 };
 
-// --- COMPONENTE PRINCIPAL ---
+
+// --- MAIN COMPONENT (App) ---
 
 const App: React.FC = () => {
   const [metrics, setMetrics] = useState<DashboardMetrics>({
@@ -413,13 +483,14 @@ const App: React.FC = () => {
   });
   const [loadingMetrics, setLoadingMetrics] = useState(true);
 
+  // Function to fetch metrics (simulated)
   const fetchMetrics = async () => {
     setLoadingMetrics(true);
     try {
       const data = await mockApiFetchMetrics();
       setMetrics(data);
     } catch (err) {
-      console.error('Erro ao buscar métricas:', err);
+      console.error('Error fetching metrics:', err);
     } finally {
       setLoadingMetrics(false);
     }
@@ -429,6 +500,7 @@ const App: React.FC = () => {
     fetchMetrics();
   }, []);
 
+  // Format value to R$ 42.500 (without cents) for the main metric
   const formatRevenueForCard = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -437,12 +509,22 @@ const App: React.FC = () => {
     }).format(value);
   };
 
+
   return (
     <DashboardLayout activePath="/dashboard">
-      <section className="section">
-        <h2 className="section-title">Visão Geral</h2>
+      {/* The only external CSS is the font import, which must remain in a <style> block due to the single-file constraint. */}
+      <style>{`
+        /* Imports the Inter font for the body */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+      `}</style>
+      
+      {/* Overview Section */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-bold text-gray-700 mb-6">Visão Geral</h2>
         
-        <div className="metrics-grid">
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <MetricCard
             icon="📦"
             label="Produtos Ativos"
@@ -468,22 +550,28 @@ const App: React.FC = () => {
           />
         </div>
 
-        <div className="charts-grid">
+        {/* Charts Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <SalesChart />
-          <ProfitChart />
+          <div className="col-span-1">
+            <ProfitChart />
+          </div>
         </div>
       </section>
 
-      <section className="section">
-        <h2 className="section-title">Gestão dos Produtos</h2>
+      {/* Product Management Section */}
+      <section className="products-management-section mb-10">
+        <h2 className="text-2xl font-bold text-gray-700 mb-6">Gestão dos Produtos</h2>
         <ProductTable />
       </section>
       
-      <section className="section">
+      {/* Add Products Section */}
+      <section className="add-products-section mb-10">
         <ProductForm />
       </section>
       
-      <section className="section">
+      {/* Subsidiary Accounts Section */}
+      <section className="subsidiary-accounts-section">
         <SubsidiaryAccounts />
       </section>
     </DashboardLayout>
