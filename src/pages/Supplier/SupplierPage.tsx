@@ -1,289 +1,493 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, type ReactNode } from 'react';
 import './SupplierPage.css';
 
-const SupplierPage: React.FC = () => {
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Smartphone XYZ', price: 'R$ 2.499,00', category: 'Eletrônicos', quantity: 15, code: 'ELE001' },
-    { id: 2, name: 'Notebook ABC', price: 'R$ 3.999,00', category: 'Informática', quantity: 8, code: 'INF002' },
-    { id: 3, name: 'Fone Bluetooth', price: 'R$ 299,00', category: 'Acessórios', quantity: 50, code: 'ACE003' },
-    { id: 4, name: 'Smart Watch', price: 'R$ 899,00', category: 'Wearables', quantity: 12, code: 'WEA004' },
-    { id: 5, name: 'Mouse Gamer', price: 'R$ 199,00', category: 'Periféricos', quantity: 30, code: 'PER005' },
-    { id: 6, name: 'Teclado Mecânico', price: 'R$ 599,00', category: 'Periféricos', quantity: 20, code: 'PER006' },
-    { id: 7, name: 'Câmera Digital', price: 'R$ 2.199,00', category: 'Fotografia', quantity: 5, code: 'FOT007' },
-  ]);
+// --- DEFINIÇÕES DE TIPOS ---
 
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    price: '',
-    description: '',
-    category: ''
+interface DashboardMetrics {
+  activeProducts: number;
+  monthlyRevenue: number;
+  totalSales: number;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  stock: number;
+  price: number;
+  status: 'Ativo' | 'Inativo' | 'Pendente';
+}
+
+// --- UTILITÁRIOS E MOCKS ---
+
+const mockApiFetchMetrics = (): Promise<DashboardMetrics> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        activeProducts: 128,
+        monthlyRevenue: 42500,
+        totalSales: 896,
+      });
+    }, 500);
   });
+};
 
-  const [activeMenu, setActiveMenu] = useState('dashboard');
+const mockApiFetchProducts = (): Promise<Product[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { id: 1, name: 'Smartwatch Ultra X', category: 'Eletrônicos', stock: 45, price: 599.99, status: 'Ativo' },
+        { id: 2, name: 'Fone Bluetooth Pro V2', category: 'Acessórios', stock: 120, price: 189.50, status: 'Ativo' },
+        { id: 3, name: 'Teclado Mecânico RGB', category: 'Periféricos', stock: 15, price: 349.00, status: 'Inativo' },
+        { id: 4, name: 'Mouse Gamer Ergonômico', category: 'Periféricos', stock: 88, price: 99.90, status: 'Ativo' },
+        { id: 5, name: 'Câmera de Segurança HD', category: 'Eletrônicos', stock: 0, price: 210.00, status: 'Pendente' },
+      ]);
+    }, 500);
+  });
+};
 
-  const handleAddProduct = () => {
-    if (newProduct.name && newProduct.price) {
-      const product = {
-        id: products.length + 1,
-        name: newProduct.name,
-        price: newProduct.price,
-        category: newProduct.category || 'Sem categoria',
-        quantity: 0,
-        code: `PRD${String(products.length + 1).padStart(3, '0')}`
-      };
-      setProducts([...products, product]);
-      setNewProduct({ name: '', price: '', description: '', category: '' });
-      alert('Produto adicionado com sucesso!');
-    }
-  };
+// --- COMPONENTES DA UI ---
 
-  const subsidiaries = [
-    { name: 'João Mota', role: 'Editor Permitido' },
-    { name: 'Ana Gabriel', role: 'Editor Permitido' },
-    { name: 'João Teixes', role: 'Editor Permitido' },
-    { name: 'Julia Mendes', role: 'Editor Permitido' }
+const DashboardLayout: React.FC<{ children: ReactNode; activePath: string }> = ({ children, activePath }) => {
+  const navItems = [
+    { name: 'Dashboard', path: '/dashboard', icon: '📊' },
+    { name: 'Produtos', path: '/products', icon: '📦' },
+    { name: 'Pedidos', path: '/orders', icon: '🛒' },
+    { name: 'Relatórios', path: '/reports', icon: '📈' },
+    { name: 'Configurações', path: '/settings', icon: '⚙️' },
   ];
 
   return (
-    <div className="supplier-layout">
-      {/* Sidebar */}
+    <div className="dashboard-container">
       <aside className="sidebar">
-        <div className="sidebar-header">
-          <h1 className="logo">Logo</h1>
-        </div>
-        
+        <div className="sidebar-logo">Fornecedor PRO</div>
         <nav className="sidebar-nav">
-          <button
-            onClick={() => setActiveMenu('dashboard')}
-            className={`nav-item ${activeMenu === 'dashboard' ? 'active' : ''}`}
-          >
-            <span className="nav-icon">🏠</span>
-            <span>Dashboard</span>
-          </button>
-          
-          <button
-            onClick={() => setActiveMenu('products')}
-            className={`nav-item ${activeMenu === 'products' ? 'active' : ''}`}
-          >
-            <span className="nav-icon">📦</span>
-            <span>Produtos</span>
-          </button>
-          
-          <button
-            onClick={() => setActiveMenu('add')}
-            className={`nav-item ${activeMenu === 'add' ? 'active' : ''}`}
-          >
-            <span className="nav-icon">➕</span>
-            <span>Adicionar</span>
-          </button>
-          
-          <button
-            onClick={() => setActiveMenu('subsidiaries')}
-            className={`nav-item ${activeMenu === 'subsidiaries' ? 'active' : ''}`}
-          >
-            <span className="nav-icon">👥</span>
-            <span>Contas Subsidiárias</span>
-          </button>
+          <ul>
+            {navItems.map((item) => (
+              <li key={item.path}>
+                <a
+                  href={item.path}
+                  className={`sidebar-nav-item ${activePath === item.path ? 'active' : ''}`}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <span className="sidebar-nav-icon">{item.icon}</span>
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
         </nav>
+        <div className="sidebar-footer">
+          <button className="sidebar-logout">Sair</button>
+        </div>
       </aside>
 
-      {/* Main Content */}
       <main className="main-content">
-        {/* Visão Geral */}
-        <section className="overview-section">
-          <h2 className="section-title">Visão geral</h2>
-          
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-header">
-                <span className="stat-icon">📦</span>
-                <span className="stat-label">Produtos Ativos</span>
-              </div>
-              <div className="stat-value">128</div>
-              <div className="stat-trend positive">+5% vs mês anterior</div>
-            </div>
-
-            <div className="stat-card">
-              <span className="stat-label">Receita Geral</span>
-              <div className="stat-value">R$ 42.800</div>
-              <div className="stat-trend positive">+8% vs mês anterior</div>
-            </div>
-
-            <div className="stat-card">
-              <span className="stat-label">Pedidos Hoje</span>
-              <div className="stat-value">893</div>
-            </div>
-          </div>
-
-          <div className="charts-grid">
-            {/* Vendas x Mês */}
-            <div className="chart-card">
-              <div className="chart-header">
-                <h3>Vendas x Mês</h3>
-                <div className="chart-filters">
-                  <button className="filter-btn active">7 dias</button>
-                  <button className="filter-btn">30 dias</button>
-                </div>
-              </div>
-              <div className="bar-chart">
-                {[60, 75, 85, 95, 100, 90, 80].map((height, i) => (
-                  <div key={i} className="bar-container">
-                    <div className="bar" style={{ height: `${height}%` }}></div>
-                    <span className="bar-label">{i + 1}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Lucro Líquido */}
-            <div className="chart-card">
-              <div className="chart-header">
-                <h3>Lucro Líquido</h3>
-                <div className="chart-filters">
-                  <button className="filter-btn active">7 dias</button>
-                  <button className="filter-btn">30 dias</button>
-                </div>
-              </div>
-              <div className="donut-chart">
-                <svg viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#f0f0f0" strokeWidth="12" />
-                  <circle 
-                    cx="50" 
-                    cy="50" 
-                    r="40" 
-                    fill="none" 
-                    stroke="#ff6b35" 
-                    strokeWidth="12"
-                    strokeDasharray="188.4 251.2"
-                    transform="rotate(-90 50 50)"
-                  />
-                </svg>
-                <div className="donut-center">75%</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Gestão dos Produtos */}
-        <section className="products-section">
-          <div className="section-header">
-            <h2 className="section-title">Gestão dos Produtos</h2>
-            <div className="section-actions">
-              <button className="filter-button">
-                <span>🔍</span> Filtrar por
-              </button>
-              <button className="filter-button">
-                <span>📋</span> Categorias
-              </button>
-            </div>
-          </div>
-          
-          <div className="table-container">
-            <table className="products-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Preço</th>
-                  <th>Categoria</th>
-                  <th>Qtd. Estoque</th>
-                  <th>Código</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.id}>
-                    <td>{product.name}</td>
-                    <td>{product.price}</td>
-                    <td>{product.category}</td>
-                    <td>{product.quantity}</td>
-                    <td>{product.code}</td>
-                    <td>
-                      <button className="action-btn edit">✏️</button>
-                      <button className="action-btn delete">🗑️</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Adicionar Produtos */}
-        <section className="add-product-section">
-          <h2 className="section-title">Adicionar Produtos</h2>
-          <div className="form-grid">
-            <div className="form-group">
-              <label>Nome do Produto</label>
-              <input
-                type="text"
-                placeholder="Nome"
-                value={newProduct.name}
-                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Quantidade e Estoque</label>
-              <input
-                type="text"
-                placeholder="Preço"
-                value={newProduct.price}
-                onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group full-width">
-              <label>Descrição</label>
-              <textarea
-                placeholder="Descrição"
-                value={newProduct.description}
-                onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group full-width">
-              <label>Categoria</label>
-              <input
-                type="text"
-                placeholder="Categoria"
-                value={newProduct.category}
-                onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group full-width upload-area">
-              <span className="upload-icon">📎</span>
-              <span>Fazer upload das imagens dos produtos</span>
-            </div>
-          </div>
-
-          <button className="btn-primary" onClick={handleAddProduct}>
-            Adicionar produtos
-          </button>
-        </section>
-
-        {/* Contas Subsidiárias */}
-        <section className="subsidiaries-section">
-          <h2 className="section-title">Contas Subsidiárias</h2>
-          <div className="subsidiaries-grid">
-            {subsidiaries.map((sub, index) => (
-              <div key={index} className="subsidiary-card">
-                <div className="subsidiary-icon">👤</div>
-                <div className="subsidiary-info">
-                  <h4>{sub.name}</h4>
-                  <p>{sub.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <button className="btn-primary-outline">
-            ➕ Adicionar contas subsidiárias
-          </button>
-        </section>
+        <header className="main-header">
+          <h1 className="main-title">Dashboard de Fornecedor</h1>
+          <p className="main-subtitle">Bem-vindo de volta ao seu painel de controle.</p>
+        </header>
+        {children}
       </main>
     </div>
   );
 };
 
-export default SupplierPage;
+interface MetricCardProps {
+  icon: string;
+  label: string;
+  value: string | number;
+  trend?: string;
+  trendType?: 'positive' | 'negative' | 'neutral';
+}
+
+const MetricCard: React.FC<MetricCardProps> = ({ icon, label, value, trend, trendType = 'neutral' }) => {
+  return (
+    <div className="metric-card">
+      <div className="metric-card-header">
+        <span className="metric-icon">{icon}</span>
+        <span className="metric-period">Últimos 30 dias</span>
+      </div>
+      <p className="metric-label">{label}</p>
+      <h3 className="metric-value">{value}</h3>
+      {trend && (
+        <p className={`metric-trend ${trendType}`}>
+          {trendType === 'positive' ? '▲' : trendType === 'negative' ? '▼' : '—'}
+          <span className="trend-detail">{trend}</span>
+        </p>
+      )}
+    </div>
+  );
+};
+
+const SalesChart: React.FC = () => {
+  const salesData = [
+    { month: 'Jan', value: 30 },
+    { month: 'Fev', value: 45 },
+    { month: 'Mar', value: 60 },
+    { month: 'Abr', value: 75 },
+    { month: 'Mai', value: 90 },
+    { month: 'Jun', value: 100 },
+    { month: 'Jul', value: 80 },
+    { month: 'Ago', value: 70 },
+    { month: 'Set', value: 55 },
+    { month: 'Out', value: 65 },
+    { month: 'Nov', value: 85 },
+    { month: 'Dez', value: 95 },
+  ];
+
+  const maxValue = Math.max(...salesData.map(d => d.value));
+
+  return (
+    <div className="chart-card" style={{ gridColumn: 'span 2' }}>
+      <div className="chart-header">
+        <h3 className="chart-title">Vendas x Mês (Últimos 12)</h3>
+        <div className="chart-filters">
+          <button className="chart-filter-btn active">7 dias</button>
+          <button className="chart-filter-btn">30 dias</button>
+        </div>
+      </div>
+      <div className="sales-chart-container">
+        {salesData.map((data, index) => (
+          <div key={index} className="sales-bar-wrapper">
+            <div className="sales-bar-tooltip">
+              {data.month}: {data.value}k
+            </div>
+            <div
+              className="sales-bar"
+              style={{ height: `${(data.value / maxValue) * 90}%` }}
+              aria-label={`${data.month}: ${data.value} mil`}
+            ></div>
+            <span className="sales-bar-label">{data.month}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ProfitChart: React.FC = () => {
+  const percentage = 75;
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const dashoffset = circumference - (percentage / 100) * circumference;
+
+  return (
+    <div className="chart-card">
+      <div className="chart-header">
+        <h3 className="chart-title">Margem de Lucro Líquido</h3>
+        <div className="chart-filters">
+          <button className="chart-filter-btn active">7 dias</button>
+          <button className="chart-filter-btn">30 dias</button>
+        </div>
+      </div>
+      <div className="profit-chart-container">
+        <div className="profit-donut-wrapper">
+          <svg viewBox="0 0 100 100" className="profit-donut-svg">
+            <circle 
+              cx="50" cy="50" r={radius} fill="none" 
+              stroke="#f0f0f0" strokeWidth="12"
+            />
+            <circle
+              cx="50" cy="50" r={radius} fill="none"
+              stroke="#ff6b35" strokeWidth="12"
+              strokeDasharray={`${circumference} ${circumference}`}
+              strokeDashoffset={dashoffset}
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="profit-donut-center">
+            <div className="profit-percentage">{percentage}%</div>
+            <div className="profit-label">Lucro Total</div>
+          </div>
+        </div>
+        <p className="profit-goal">Meta: 80%</p>
+      </div>
+    </div>
+  );
+};
+
+const ProductTable: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    mockApiFetchProducts().then(data => {
+      setProducts(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
+  if (loading) {
+    return <div className="loading-message">Carregando produtos...</div>;
+  }
+
+  return (
+    <div className="product-table-wrapper">
+      <div className="product-table-header">
+        <h3 className="product-table-title">Lista de Produtos</h3>
+        <button className="add-product-btn">+ Adicionar Produto</button>
+      </div>
+      <table className="product-table">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th style={{ textAlign: 'center' }}>Estoque</th>
+            <th style={{ textAlign: 'right' }}>Preço</th>
+            <th style={{ textAlign: 'center' }}>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr key={product.id}>
+              <td className="product-name">{product.name}</td>
+              <td className="product-category">{product.category}</td>
+              <td className={`product-stock ${product.stock === 0 ? 'out-of-stock' : ''}`}>
+                {product.stock}
+              </td>
+              <td className="product-price">{formatCurrency(product.price)}</td>
+              <td className="product-status">
+                <span className={`status-badge ${product.status.toLowerCase()}`}>
+                  {product.status}
+                </span>
+              </td>
+              <td className="product-actions">
+                <button className="action-btn edit">Editar</button>
+                <button className="action-btn delete">Excluir</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const ProductForm: React.FC = () => {
+  return (
+    <div className="product-form-wrapper">
+      <h3 className="form-title">Adicionar Produtos</h3>
+      <form className="product-form">
+        <div className="form-grid">
+          <div className="form-field">
+            <label htmlFor="product-name" className="form-label">Nome do Produto:</label>
+            <input 
+              type="text" 
+              id="product-name" 
+              placeholder="Ex: Smartwatch Ultra X"
+              className="form-input"
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="product-category" className="form-label">Categoria:</label>
+            <input 
+              type="text" 
+              id="product-category" 
+              placeholder="Ex: Eletrônicos"
+              className="form-input"
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="product-price" className="form-label">Preço:</label>
+            <input 
+              type="number" 
+              id="product-price" 
+              placeholder="Ex: 599.99"
+              className="form-input"
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor="product-stock" className="form-label">Quantidade no Estoque:</label>
+            <input 
+              type="number" 
+              id="product-stock" 
+              placeholder="Ex: 120"
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="product-description" className="form-label">Descrição:</label>
+          <textarea
+            id="product-description"
+            rows={4}
+            placeholder="Detalhes completos sobre o produto..."
+            className="form-input form-textarea"
+          ></textarea>
+        </div>
+
+        <div className="file-upload-wrapper">
+          <label htmlFor="file-upload" className="file-upload-label">
+            <div className="file-upload-content">
+              <span className="file-upload-icon">📄</span>
+              <p className="file-upload-text">Faça upload das imagens dos produtos</p>
+            </div>
+            <input id="file-upload" type="file" multiple className="file-input-hidden" />
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          className="submit-btn"
+          onClick={(e) => e.preventDefault()}
+        >
+          Adicionar produtos
+        </button>
+      </form>
+    </div>
+  );
+};
+
+interface SubsidiaryUser {
+  id: number;
+  name: string;
+  memberSince: string;
+}
+
+const SubsidiaryAccountCard: React.FC<SubsidiaryUser> = ({ name, memberSince }) => {
+  return (
+    <div className="subsidiary-card">
+      <div className="subsidiary-user-info">
+        <span className="subsidiary-avatar">👤</span> 
+        <div>
+          <p className="subsidiary-name">{name}</p>
+          <div className="subsidiary-status">
+            <span className="status-indicator"></span>
+            Membro desde {memberSince}
+          </div>
+        </div>
+      </div>
+      <button className="edit-permissions-btn">Editar Permissões</button>
+    </div>
+  );
+};
+
+const SubsidiaryAccounts: React.FC = () => {
+  const mockUsers: SubsidiaryUser[] = [
+    { id: 1, name: 'João Maciel', memberSince: '24/03/2025' },
+    { id: 2, name: 'Kauê Gabriel', memberSince: '15/04/2025' },
+    { id: 3, name: 'Tiago Tavares', memberSince: '12/01/2025' },
+    { id: 4, name: 'Joel Matiolli', memberSince: '25/06/2025' },
+  ];
+
+  return (
+    <div className="subsidiary-accounts-section">
+      <h2 className="section-title">Contas Subsidiárias</h2>
+      
+      <div className="subsidiary-grid">
+        {mockUsers.map(user => (
+          <SubsidiaryAccountCard key={user.id} {...user} />
+        ))}
+      </div>
+
+      <div className="add-subsidiary-wrapper">
+        <button
+          className="add-subsidiary-btn"
+          onClick={(e) => e.preventDefault()}
+        >
+          <span className="btn-icon">🧑‍💻</span> 
+          <span>Adicionar contas subsidiárias</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// --- COMPONENTE PRINCIPAL ---
+
+const App: React.FC = () => {
+  const [metrics, setMetrics] = useState<DashboardMetrics>({
+    activeProducts: 0,
+    monthlyRevenue: 0,
+    totalSales: 0,
+  });
+  const [loadingMetrics, setLoadingMetrics] = useState(true);
+
+  const fetchMetrics = async () => {
+    setLoadingMetrics(true);
+    try {
+      const data = await mockApiFetchMetrics();
+      setMetrics(data);
+    } catch (err) {
+      console.error('Erro ao buscar métricas:', err);
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMetrics();
+  }, []);
+
+  const formatRevenueForCard = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 0,
+    }).format(value);
+  };
+
+  return (
+    <DashboardLayout activePath="/dashboard">
+      <section className="section">
+        <h2 className="section-title">Visão Geral</h2>
+        
+        <div className="metrics-grid">
+          <MetricCard
+            icon="📦"
+            label="Produtos Ativos"
+            value={loadingMetrics ? '...' : metrics.activeProducts}
+            trend="+5% vs mês anterior"
+            trendType="positive"
+          />
+
+          <MetricCard
+            icon="💰"
+            label="Lucro Mensal"
+            value={loadingMetrics ? '...' : formatRevenueForCard(metrics.monthlyRevenue)}
+            trend="+8% vs mês anterior"
+            trendType="positive"
+          />
+
+          <MetricCard
+            icon="📈"
+            label="Vendas Totais"
+            value={loadingMetrics ? '...' : metrics.totalSales.toLocaleString('pt-BR')}
+            trend="-2% vs mês anterior"
+            trendType="negative"
+          />
+        </div>
+
+        <div className="charts-grid">
+          <SalesChart />
+          <ProfitChart />
+        </div>
+      </section>
+
+      <section className="section">
+        <h2 className="section-title">Gestão dos Produtos</h2>
+        <ProductTable />
+      </section>
+      
+      <section className="section">
+        <ProductForm />
+      </section>
+      
+      <section className="section">
+        <SubsidiaryAccounts />
+      </section>
+    </DashboardLayout>
+  );
+};
+
+export default App;
