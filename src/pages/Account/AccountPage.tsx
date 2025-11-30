@@ -59,7 +59,7 @@ const AccountPage: FC = () => {
       ? [{ icon: <Store size={36} />, title: "Área do Fornecedor", path: "/supplier" }]
       : []),
     { icon: <Headphones size={36} />, title: "Atendimento", path: "/support" },
-    { icon: <Shield size={36} />, title: "Privacidade", path: "/privacy" },
+    { icon: <Shield size={36} />, title: "Privacidade", path: "/priv" },
     { icon: <LogOut size={36} />, title: "Sair da conta", action: handleLogout },
   ];
 

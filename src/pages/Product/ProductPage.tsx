@@ -8,7 +8,7 @@ import type { ProductMock } from "../../mocks/productsMocks";
 // import { addToCart as addToCartFirestore } from "../../services/userService";
 import { useAuth } from "../../context/AuthContext";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // ❤️ Ícones
-import { useFavorites } from "../../context/FavoritesContex";
+import { useFavorites } from "../../context/FavoritesContex"; // Importação do novo Context
 
 interface Product extends ProductMock {
   displayPrice: number;
@@ -18,15 +18,32 @@ interface Product extends ProductMock {
   oldPrice?: number;
 }
 
+// Interface para os dados de endereço da ViaCEP
+interface CepData {
+    cep: string;
+    logradouro: string;
+    complemento: string;
+    bairro: string;
+    localidade: string;
+    uf: string;
+    ibge: string;
+    gia: string;
+    ddd: string;
+    siafi: string;
+    erro?: boolean;
+}
+
 function ProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [cep, setCep] = useState("");
   const [frete, setFrete] = useState<string | null>(null);
+  const [endereco, setEndereco] = useState<string | null>(null); 
   const [selectedImage, setSelectedImage] = useState<string>("");
   const { user } = useAuth();
   const { addToCart } = useCart();
-  const { toggleFavorite, isFavorite } = useFavorites(); // ❤️ Hook
+  // O useFavorites agora fornece a lógica de API
+  const { toggleFavorite, isFavorite } = useFavorites(); 
 
   useEffect(() => {
     if (id) {
@@ -70,20 +87,30 @@ function ProductPage() {
   }, [id]);
 
   const calcularFrete = async () => {
-    if (cep.length !== 8) {
-      setFrete("Digite um CEP válido.");
+    setFrete(null);
+    setEndereco(null); 
+    
+    const cleanCep = cep.replace(/\D/g, '');
+
+    if (cleanCep.length !== 8) {
+      setFrete("Digite um CEP válido (8 dígitos).");
       return;
     }
 
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      const data = await res.json();
+      const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const data: CepData = await res.json();
 
       if (data.erro) {
         setFrete("CEP não encontrado.");
       } else {
+        // 1. Formata o endereço completo
+        const enderecoCompleto = `${data.logradouro}, ${data.bairro} - ${data.localidade}/${data.uf}`;
+        setEndereco(enderecoCompleto);
+        
+        // 2. Define a mensagem de frete
         setFrete(
-          `Entrega para ${data.localidade} - ${data.uf}: R$ 20,00 (5 dias úteis)`
+          `Frete: R$ 20,00 (5 dias úteis)`
         );
       }
     } catch {
@@ -102,6 +129,7 @@ function ProductPage() {
     currency: "BRL",
   });
 
+  // O isFavorite agora usa o ID do produto para verificar no estado do Context
   const favoriteActive = isFavorite(product.id);
 
   return (
@@ -138,10 +166,11 @@ function ProductPage() {
               className="main-image"
             />
 
-            {/* ❤️ Botão de Favorito */}
+            {/* ❤️ Botão de Favorito - Usa a função toggleFavorite do Context */}
             <button
               className={`favorite-button ${favoriteActive ? "active" : ""}`}
-              onClick={() => toggleFavorite(product)}
+              // A função toggleFavorite agora recebe o objeto product completo
+              onClick={() => toggleFavorite(product)} 
             >
               {favoriteActive ? <AiFillHeart /> : <AiOutlineHeart />}
             </button>
@@ -179,6 +208,11 @@ function ProductPage() {
             onChange={(e) => setCep(e.target.value)}
           />
           <button onClick={calcularFrete}>Calcular</button>
+          
+          {/* NOVO: Exibe o endereço completo */}
+          {endereco && <p className="endereco-result">{endereco}</p>}
+          
+          {/* Exibe a mensagem de frete/erro */}
           {frete && <p className="frete-result">{frete}</p>}
         </div>
       </div>
