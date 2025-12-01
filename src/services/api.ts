@@ -1,112 +1,110 @@
-import axios from "axios";
+import axios, { type AxiosInstance, AxiosError, type AxiosRequestConfig } from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
+// Variáveis de ambiente
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const REFRESH_ENDPOINT = '/auth/refresh'; // Endpoint comum para renovação de token
+
+// Variável para controlar se o token está sendo renovado
+let isRefreshing = false;
+// Array de requisições pendentes que serão repetidas após a renovação
+let failedQueue: { resolve: (value: any) => void; reject: (reason?: any) => void; config: AxiosRequestConfig }[] = [];
+
+// Função para processar a fila de requisições pendentes
+const processQueue = (error: AxiosError | null, token: string | null = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else if (token) {
+            // Repete a requisição com o novo token
+            prom.config.headers = prom.config.headers || {};
+            prom.config.headers['Authorization'] = `Bearer ${token}`;
+            prom.resolve(axios(prom.config));
+        }
+    });
+
+    failedQueue = [];
+};
+
+// 1. Cria a instância do Axios
+const api: AxiosInstance = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
-// --- INTERCEPTOR DE REQUISIÇÃO (Adiciona Bearer Token) ---
+// 2. Interceptor de Requisição (Adiciona o Access Token)
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    (config) => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
 );
 
-let refreshTokenPromise: Promise<string> | null = null;
-
-// --- INTERCEPTOR DE RESPOSTA (Renova o token automaticamente) ---
+// 3. Interceptor de Resposta (Lida com o 401 e renova o token)
 api.interceptors.response.use(
-  (response) => response,
+    (response) => {
+        return response;
+    },
+    async (error: AxiosError) => {
+        const originalRequest = error.config;
 
-  async (error) => {
-    const originalRequest = error.config;
-
-    // Se a requisição falhou é do próprio refresh, desloga
-    if (originalRequest.url?.includes('/auth/refresh')) {
-      localStorage.clear();
-      window.location.href = "/login";
-      return Promise.reject(error);
-    }
-
-    // Se o token expirou (401) e ainda não tentamos fazer refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      const refreshToken = localStorage.getItem("refresh_token");
-      if (!refreshToken) {
-        localStorage.clear();
-        window.location.href = "/login";
-        return Promise.reject(error);
-      }
-
-      // Se já existe um refresh em andamento, aguarda ele
-      if (refreshTokenPromise) {
-        try {
-          const newAccessToken = await refreshTokenPromise;
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return api(originalRequest);
-        } catch (err) {
-          return Promise.reject(err);
-        }
-      }
-
-      // Criar uma Promise compartilhada para o refresh
-      refreshTokenPromise = (async () => {
-        try {
-          // ✅ CORREÇÃO ALTERNATIVA: Enviar o refreshToken no HEADER Authorization
-          // Isso é mais seguro e comum. Se sua API espera no body, use a versão anterior.
-          const res = await axios.post(
-            `${import.meta.env.VITE_API_URL}/auth/refresh`,
-            {}, // Body vazio, pois o token está no header
-            { 
-              withCredentials: true,
-              headers: { 
-                Authorization: `Bearer ${refreshToken}` // Enviando o refresh token no header
-              }
+        // Verifica se é um erro 401 (Unauthorized) e se não é a requisição de refresh token
+        if (error.response?.status === 401 && originalRequest && originalRequest.url !== REFRESH_ENDPOINT) {
+            // Se o token já estiver sendo renovado, adiciona a requisição à fila
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject, config: originalRequest });
+                });
             }
-          );
 
-          const { accessToken, refreshToken: newRefreshToken } = res.data;
+            isRefreshing = true;
 
-          if (!accessToken) {
-            throw new Error("AccessToken não retornado pela API");
-          }
+            const refreshToken = localStorage.getItem('refreshToken');
 
-          localStorage.setItem("access_token", accessToken);
-          
-          if (newRefreshToken) {
-            localStorage.setItem("refresh_token", newRefreshToken);
-          }
+            // Se não houver refresh token, ou se a renovação falhar, faz logout
+            if (!refreshToken) {
+                // Redireciona para o login (ou chama a função de logout do AuthContext)
+                // window.location.href = '/login'; 
+                return Promise.reject(error);
+            }
 
-          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            try {
+                // Tenta renovar o token
+                const response = await axios.post(`${API_BASE_URL}${REFRESH_ENDPOINT}`, { refreshToken });
+                const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
 
-          return accessToken;
-        } catch (err) {
-          console.error("Erro ao renovar token:", err);
-          localStorage.clear();
-          window.location.href = "/login";
-          throw err;
-        } finally {
-          refreshTokenPromise = null;
+                // Salva os novos tokens
+                localStorage.setItem('accessToken', newAccessToken);
+                localStorage.setItem('refreshToken', newRefreshToken);
+
+                // Processa a fila de requisições pendentes
+                processQueue(null, newAccessToken);
+
+                // Repete a requisição original com o novo token
+                originalRequest.headers = originalRequest.headers || {};
+                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                return axios(originalRequest);
+
+            } catch (refreshError) {
+                // Se a renovação falhar, faz logout e rejeita todas as requisições na fila
+                processQueue(refreshError as AxiosError, null);
+                // Redireciona para o login (ou chama a função de logout do AuthContext)
+                // window.location.href = '/login'; 
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
+            }
         }
-      })();
 
-      try {
-        const newAccessToken = await refreshTokenPromise;
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
-      } catch (err) {
-        return Promise.reject(err);
-      }
+        return Promise.reject(error);
     }
-
-    return Promise.reject(error);
-  }
 );
 
 export default api;
