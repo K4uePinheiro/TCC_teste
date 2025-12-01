@@ -7,12 +7,7 @@ import {
 } from "react";
 import api from "../services/api";
 import { jwtDecode } from "jwt-decode";
-import type { User, JwtPayload } from "../services/auth"; // Importando as novas interfaces
- // Importando as novas interfaces
-
-// -------------------------------------------------------------------
-// 1. Definição do Contexto e Tipos
-// -------------------------------------------------------------------
+import type { User, JwtPayload } from "../services/auth";
 
 interface AuthContextType {
   token: string | null;
@@ -23,24 +18,19 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-const USER_KEY = "user"; // Mantido para compatibilidade, mas não será mais usado para armazenar o objeto User
+const USER_KEY = "user";
 
-// -------------------------------------------------------------------
-// 2. Funções Auxiliares (Helpers)
-// -------------------------------------------------------------------
+// -------------------- Helpers --------------------
 
-// Função para extrair dados do usuário a partir do payload do JWT
 const extractUserFromToken = (token: string): User | null => {
   try {
     const decoded = jwtDecode<JwtPayload>(token);
-    
-    // Mapeia os campos do payload do JWT para a interface User
+
     const user: User = {
-      id: decoded.sub, // Assumindo que 'sub' é o ID do usuário
+      id: decoded.sub,
       name: decoded.name,
       email: decoded.email,
       roles: decoded.roles,
-      // Adicione outros campos conforme necessário
     };
 
     return user;
@@ -53,18 +43,15 @@ const extractUserFromToken = (token: string): User | null => {
 const clearAuthData = () => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
-  localStorage.removeItem(USER_KEY); // Limpa o USER_KEY por segurança/compatibilidade
+  localStorage.removeItem(USER_KEY);
 };
 
-// -------------------------------------------------------------------
-// 3. Provider
-// -------------------------------------------------------------------
+// -------------------- Provider --------------------
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Começa como true para carregar o estado inicial
+  const [loading, setLoading] = useState(true);
 
-  // NOVA LÓGICA: Carrega o usuário decodificando o token
   const loadUserFromToken = () => {
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -76,13 +63,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(userFromToken);
   };
 
-  // Carrega usuário quando a aplicação abre (substitui o loadUserFromApi)
   useEffect(() => {
     loadUserFromToken();
     setLoading(false);
   }, []);
 
-  // Login --------------------------------------
+  // ---------------- Login ----------------
+
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const res = await api.post("/auth/login", { email, password });
@@ -95,7 +82,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("access_token", accessToken);
       localStorage.setItem("refresh_token", refreshToken);
 
-      // Carrega o usuário decodificando o token recém-obtido
       loadUserFromToken();
 
       return true;
@@ -107,10 +93,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Logout -------------------------------------
-  const logout = () => {
+  // ---------------- Logout REAL (API + local) ----------------
+
+  const logout = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refresh_token");
+
+      if (refreshToken) {
+        await api.post("/auth/logout", { refreshToken });
+      }
+    } catch (err) {
+      console.error("Erro ao deslogar no servidor:", err);
+    }
+
     clearAuthData();
     setUser(null);
+
+    window.location.href = "/login";
   };
 
   const token = localStorage.getItem("access_token");

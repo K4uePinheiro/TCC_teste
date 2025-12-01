@@ -1,110 +1,146 @@
-import axios, { type AxiosInstance, AxiosError, type AxiosRequestConfig } from 'axios';
+import axios, {
+  type AxiosInstance,
+  AxiosError,
+  type AxiosRequestConfig,
+} from "axios";
 
-// Variáveis de ambiente
+// Permite usar a propriedade _retry nas configs do Axios
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    _retry?: boolean;
+  }
+}
+
+// Permite usar a propriedade _retry nas configs do Axios
+declare module "axios" {
+  export interface InternalAxiosRequestConfig {
+    _retry?: boolean;
+  }
+}
+
+// ---------------------------------------------------------
+// VARIÁVEIS DE AMBIENTE
+// ---------------------------------------------------------
 const API_BASE_URL = import.meta.env.VITE_API_URL;
-const REFRESH_ENDPOINT = '/auth/refresh'; // Endpoint comum para renovação de token
+const REFRESH_ENDPOINT = "/auth/refresh";
 
-// Variável para controlar se o token está sendo renovado
+// ---------------------------------------------------------
+// CONTROLE DE REFRESH
+// ---------------------------------------------------------
 let isRefreshing = false;
-// Array de requisições pendentes que serão repetidas após a renovação
-let failedQueue: { resolve: (value: any) => void; reject: (reason?: any) => void; config: AxiosRequestConfig }[] = [];
 
-// Função para processar a fila de requisições pendentes
-const processQueue = (error: AxiosError | null, token: string | null = null) => {
-    failedQueue.forEach(prom => {
-        if (error) {
-            prom.reject(error);
-        } else if (token) {
-            // Repete a requisição com o novo token
-            prom.config.headers = prom.config.headers || {};
-            prom.config.headers['Authorization'] = `Bearer ${token}`;
-            prom.resolve(axios(prom.config));
-        }
-    });
+let failedQueue: {
+  resolve: (value: any) => void;
+  reject: (reason?: any) => void;
+  config: AxiosRequestConfig;
+}[] = [];
 
-    failedQueue = [];
+const processQueue = (
+  error: AxiosError | null,
+  token: string | null = null
+) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else if (token) {
+      prom.config.headers = prom.config.headers || {};
+      prom.config.headers["Authorization"] = `Bearer ${token}`;
+      prom.resolve(axios(prom.config));
+    }
+  });
+
+  failedQueue = [];
 };
 
-// 1. Cria a instância do Axios
+// ---------------------------------------------------------
+// INSTÂNCIA DO AXIOS
+// ---------------------------------------------------------
 const api: AxiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// 2. Interceptor de Requisição (Adiciona o Access Token)
+// ---------------------------------------------------------
+// INTERCEPTOR DE REQUEST — ADICIONA O ACCESS TOKEN
+// ---------------------------------------------------------
 api.interceptors.request.use(
-    (config) => {
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
+  (config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
-// 3. Interceptor de Resposta (Lida com o 401 e renova o token)
+// ---------------------------------------------------------
+// INTERCEPTOR DE RESPONSE — RENOVA ACCESS TOKEN SE NECESSÁRIO
+// ---------------------------------------------------------
 api.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    async (error: AxiosError) => {
-        const originalRequest = error.config;
+  (response) => response,
 
-        // Verifica se é um erro 401 (Unauthorized) e se não é a requisição de refresh token
-        if (error.response?.status === 401 && originalRequest && originalRequest.url !== REFRESH_ENDPOINT) {
-            // Se o token já estiver sendo renovado, adiciona a requisição à fila
-            if (isRefreshing) {
-                return new Promise((resolve, reject) => {
-                    failedQueue.push({ resolve, reject, config: originalRequest });
-                });
-            }
+  async (error: AxiosError) => {
+    const originalRequest = error.config;
 
-            isRefreshing = true;
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      originalRequest.url !== REFRESH_ENDPOINT &&
+      !originalRequest._retry
+    ) {
+      const refreshToken = localStorage.getItem("refresh_token");
 
-            const refreshToken = localStorage.getItem('refreshToken');
-
-            // Se não houver refresh token, ou se a renovação falhar, faz logout
-            if (!refreshToken) {
-                // Redireciona para o login (ou chama a função de logout do AuthContext)
-                // window.location.href = '/login'; 
-                return Promise.reject(error);
-            }
-
-            try {
-                // Tenta renovar o token
-                const response = await axios.post(`${API_BASE_URL}${REFRESH_ENDPOINT}`, { refreshToken });
-                const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
-
-                // Salva os novos tokens
-                localStorage.setItem('accessToken', newAccessToken);
-                localStorage.setItem('refreshToken', newRefreshToken);
-
-                // Processa a fila de requisições pendentes
-                processQueue(null, newAccessToken);
-
-                // Repete a requisição original com o novo token
-                originalRequest.headers = originalRequest.headers || {};
-                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                return axios(originalRequest);
-
-            } catch (refreshError) {
-                // Se a renovação falhar, faz logout e rejeita todas as requisições na fila
-                processQueue(refreshError as AxiosError, null);
-                // Redireciona para o login (ou chama a função de logout do AuthContext)
-                // window.location.href = '/login'; 
-                return Promise.reject(refreshError);
-            } finally {
-                isRefreshing = false;
-            }
-        }
-
+      if (!refreshToken) {
         return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject, config: originalRequest });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const response = await axios.post(`${API_BASE_URL}${REFRESH_ENDPOINT}`, {
+          refreshToken,
+        });
+
+        const { accessToken, refreshToken: newRefresh } = response.data;
+
+        // Salva novos tokens
+        localStorage.setItem("access_token", accessToken);
+        localStorage.setItem("refresh_token", newRefresh);
+
+        processQueue(null, accessToken);
+
+        originalRequest.headers = originalRequest.headers || {};
+        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
+
+        return axios(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError as AxiosError, null);
+
+        // Logout automático caso o refresh falhe
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+
+        window.location.href = "/login";
+
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
+    return Promise.reject(error);
+  }
 );
 
 export default api;
