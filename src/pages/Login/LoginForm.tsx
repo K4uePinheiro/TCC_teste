@@ -161,11 +161,8 @@ const LoginForm: FC = () => {
 
           {/* LINKS AJUSTADOS */}
           <p className="terms text-sm">
-            <a href="#" className="text-orange-500">Termos de Uso</a> |
-            <a href="/Política de Privacidade.pdf" className="text-orange-500">
-              {" "}
-              Política de Privacidade
-            </a>
+            <Link to="/TermoUso">Termos de Uso |</Link>
+            <Link to="/PoliticaPrivacidade">Política de Privacidade</Link>
           </p>
         </div>
 

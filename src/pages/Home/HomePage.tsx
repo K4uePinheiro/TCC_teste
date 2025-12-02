@@ -189,7 +189,7 @@ const HomePage: React.FC = () => {
           ) : (
             suppliers.map((supplier) => (
               <div className="partner-card" key={supplier.id}>
-                <img src="../../../public/forncedor.png" alt={supplier.name} />
+                <img src="/forncedor.png" alt={supplier.name} />
                 <h3>{supplier.name}</h3>
               </div>
             ))
