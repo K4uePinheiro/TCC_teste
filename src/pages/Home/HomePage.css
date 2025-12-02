@@ -620,3 +620,74 @@ body.dark-mode .carousel-btn:hover {
     height: 100px;
   }
 }
+
+/* Tablets grandes e monitores pequenos (até 1200px) */
+@media (max-width: 1200px) {
+  .promotions-section .carousel {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .promotions-section h2 {
+    margin-left: 5vw;
+    font-size: 1.6rem;
+  }
+}
+
+/* Tablets (até 900px) */
+@media (max-width: 900px) {
+  .promotions-section {
+    margin-top: 30px;
+    padding: 15px;
+  }
+  
+  .promotions-section .carousel {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .promotions-section h2 {
+    margin-left: 3vw;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .promotions-section .carousel-container {
+    max-width: 95%;
+  }
+}
+
+/* Smartphones (até 600px) */
+@media (max-width: 600px) {
+  .promotions-section {
+    margin-top: 20px;
+    padding: 10px;
+  }
+  
+  .promotions-section .carousel {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .promotions-section h2 {
+    margin-left: 2vw;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+  
+  .promotions-section .carousel-container {
+    max-width: 100%;
+  }
+}
+
+/* Smartphones pequenos (até 400px) */
+@media (max-width: 400px) {
+  .promotions-section h2 {
+    font-size: 1.2rem;
+    margin-left: 1vw;
+  }
+  
+  .promotions-section .carousel {
+    gap: 10px;
+  }
+}

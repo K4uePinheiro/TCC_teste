@@ -70,7 +70,6 @@ textarea {
   font-weight: bold;
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
-
 }
 
 .mensagem-box,
@@ -101,4 +100,156 @@ textarea {
   background: #e65501;
   transform: translateY(-3px);
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+/* Tablets grandes (até 1200px) */
+@media (max-width: 1200px) {
+  .form-support {
+    padding: 8rem 4rem;
+    height: auto;
+    min-height: 70vh;
+  }
+
+  .form-content {
+    max-width: 650px;
+  }
+}
+
+/* Tablets (até 900px) */
+@media (max-width: 900px) {
+  .form-support {
+    padding: 6rem 3rem;
+  }
+
+  .form-content {
+    max-width: 600px;
+    padding: 1.8rem;
+  }
+
+  .form-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.3rem;
+  }
+
+  .input-row {
+    gap: 0.8rem;
+  }
+
+  .radio-group p {
+    font-size: 1.1rem;
+  }
+}
+
+/* Smartphones (até 600px) */
+@media (max-width: 600px) {
+  .form-support {
+    padding: 4rem 1.5rem;
+    height: auto;
+  }
+
+  .form-content {
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+  }
+
+  .form-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .input-row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .input-group {
+    width: 100%;
+  }
+
+  label {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+
+  input,
+  textarea {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .radio-group {
+    margin-top: 1.2rem;
+  }
+
+  .radio-group p {
+    font-size: 1rem;
+  }
+
+  .radio-group label {
+    font-size: 0.95rem;
+  }
+
+  .button-container {
+    margin-top: 1.3rem;
+  }
+
+  .button-container button {
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 1rem;
+  }
+}
+
+/* Smartphones pequenos (até 400px) */
+@media (max-width: 400px) {
+  .form-support {
+    padding: 3rem 1rem;
+  }
+
+  .form-content {
+    padding: 1.2rem;
+    border-radius: 0.6rem;
+  }
+
+  .form-content h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .input-row {
+    gap: 0.6rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+  }
+
+  input,
+  textarea {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .radio-group p {
+    font-size: 0.95rem;
+  }
+
+  .radio-group label {
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+  }
+
+  .mensagem-box,
+  #motivo-devolucao {
+    gap: 0.6rem;
+  }
+
+  .button-container button {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+  }
 }

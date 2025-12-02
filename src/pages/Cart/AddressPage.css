@@ -31,7 +31,6 @@
   border: 2px solid #e5e5e9;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-
 }
 
 /* ===== Botões ===== */
@@ -174,9 +173,7 @@ input:focus::placeholder {
   font-weight: 500;
 }
 
-
 /* ====== Tela 2 (endereço confirmado + pagamento) ====== */
-
 .confirm-screen {
   display: flex;
   justify-content: space-between;
@@ -190,7 +187,7 @@ input:focus::placeholder {
 /* Container do endereço selecionado */
 .address-summary {
   flex: 1;
-  width: 100%;     /* CORRETO */
+  width: 100%;
 }
 
 .address-summary .cabeca {
@@ -352,4 +349,276 @@ input:focus::placeholder {
 .total span {
   font-size: 20px;
   color: #ff6600;
+}
+
+/* ===== Promoções ===== */
+.promotions-section {
+  text-align: start;
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+.promotions-section h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 20px;
+  margin-left: 10vw;
+}
+
+.promotions-section .carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.promotions-section .carousel {
+  display: grid;
+  align-items: stretch;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+/* Tablets grandes e monitores pequenos (até 1200px) */
+@media (max-width: 1200px) {
+  .page {
+    padding: 30px;
+  }
+
+  .confirm-screen {
+    width: 80%;
+    gap: 30px;
+  }
+
+  .payment-card {
+    width: 20rem;
+  }
+
+  .promotions-section .carousel {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  .promotions-section h2 {
+    margin-left: 5vw;
+    font-size: 1.6rem;
+  }
+}
+
+/* Tablets (até 900px) */
+@media (max-width: 900px) {
+  .page {
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 100%;
+  }
+
+  .cabeca {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .cabeca .left {
+    flex-direction: column;
+  }
+
+  .confirm-screen {
+    flex-direction: column;
+    width: 90%;
+    gap: 30px;
+    margin: 50px auto;
+  }
+
+  .payment-card {
+    width: 100%;
+  }
+
+  .address-summary .cabeca {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .address-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .address-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .promotions-section {
+    margin-top: 30px;
+    padding: 15px;
+  }
+
+  .promotions-section .carousel {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .promotions-section h2 {
+    margin-left: 3vw;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  .promotions-section .carousel-container {
+    max-width: 95%;
+  }
+}
+
+/* Smartphones (até 600px) */
+@media (max-width: 600px) {
+  .page {
+    padding: 15px;
+    margin-bottom: 3rem;
+  }
+
+  .container {
+    border-radius: 8px;
+  }
+
+  .cabeca {
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .cabeca h1 {
+    font-size: 1rem;
+  }
+
+  .body {
+    padding: 20px 15px;
+  }
+
+  .form {
+    gap: 20px;
+  }
+
+  .inputs {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .form-right .botoes {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+
+  .confirm-screen {
+    width: 95%;
+    margin: 30px auto;
+    gap: 20px;
+  }
+
+  .address-summary .cabeca h2 {
+    font-size: 18px;
+  }
+
+  .address-info .details h3 {
+    font-size: 18px;
+  }
+
+  .address-info .details p {
+    font-size: 14px;
+  }
+
+  .payment-card {
+    font-size: 16px;
+  }
+
+  .total {
+    font-size: 16px;
+  }
+
+  .total span {
+    font-size: 18px;
+  }
+
+  .promotions-section {
+    margin-top: 20px;
+    padding: 10px;
+  }
+
+  .promotions-section .carousel {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .promotions-section h2 {
+    margin-left: 2vw;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+
+  .promotions-section .carousel-container {
+    max-width: 100%;
+  }
+}
+
+/* Smartphones pequenos (até 400px) */
+@media (max-width: 400px) {
+  .page {
+    padding: 10px;
+  }
+
+  .cabeca h1 {
+    font-size: 0.9rem;
+  }
+
+  .body {
+    padding: 15px 10px;
+  }
+
+  button {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+
+  .address-summary .cabeca {
+    padding: 15px;
+  }
+
+  .address-summary .cabeca h2 {
+    font-size: 16px;
+  }
+
+  .address-card {
+    padding: 10px;
+  }
+
+  .payment-card {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .promotions-section h2 {
+    font-size: 1.2rem;
+    margin-left: 1vw;
+  }
+
+  .promotions-section .carousel {
+    gap: 10px;
+  }
 }

@@ -1,8 +1,8 @@
 import UserPageLayout from "./UserPageLayout"
 
 const OrdersPage = () => (
-  <UserPageLayout title="Favoritos">
-    <p>Aqui estarão os produtos favoritos do usuário.</p>
+  <UserPageLayout title="Pedidos">
+    <p>Aqui estará o histórico de produtos do Usuário do usuário.</p>
   </UserPageLayout>
 );
 

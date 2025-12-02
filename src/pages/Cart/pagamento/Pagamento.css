@@ -1,8 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 /* Container geral: lado a lado */
 .conteiner {
@@ -74,7 +69,6 @@
   margin-top: 6px;
 }
 
-
 /* ---------- RESUMO À DIREITA ---------- */
 .resumo {
   display: flex;
@@ -131,4 +125,188 @@
 span {
   font-weight: bold;
   color: #e05700;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+/* Laptops e telas médias (até 1400px) */
+@media (max-width: 1400px) {
+  .conteiner {
+    gap: 150px;
+  }
+
+  .metodo {
+    width: 600px;
+  }
+}
+
+/* Tablets grandes (até 1200px) */
+@media (max-width: 1200px) {
+  .conteiner {
+    margin-top: 6rem;
+    margin-bottom: 6rem;
+    gap: 80px;
+  }
+
+  .metodo {
+    width: 500px;
+    padding: 20px 25px;
+  }
+
+  .cartao img {
+    height: 70px;
+  }
+
+  .pix img {
+    height: 45px;
+  }
+
+  .metodo .baixo h1 {
+    font-size: 20px;
+  }
+
+  .metodo .baixo p {
+    font-size: 15px;
+  }
+
+  .card-pagamento {
+    width: 280px;
+  }
+}
+
+/* Tablets (até 900px) */
+@media (max-width: 900px) {
+  .conteiner {
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    padding: 0 20px;
+  }
+
+  .metodos {
+    width: 100%;
+  }
+
+  .metodo {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .resumo {
+    width: 100%;
+    align-items: center;
+  }
+
+  .card-pagamento {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
+/* Smartphones (até 600px) */
+@media (max-width: 600px) {
+  .conteiner {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    padding: 0 15px;
+    gap: 30px;
+  }
+
+  .metodo {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .metodo .cima {
+    padding-bottom: 12px;
+  }
+
+  .cartao img {
+    height: 60px;
+  }
+
+  .pix img {
+    height: 40px;
+  }
+
+  .metodo .baixo {
+    margin-top: 12px;
+  }
+
+  .metodo .baixo h1 {
+    font-size: 18px;
+  }
+
+  .metodo .baixo p {
+    font-size: 14px;
+  }
+
+  .card-pagamento {
+    padding: 18px 20px;
+    border-radius: 10px;
+  }
+
+  .resumo_frete .info p {
+    font-size: 14px;
+  }
+
+  .endereco p {
+    font-size: 14px;
+  }
+
+  .btn-laranja {
+    padding: 11px;
+    font-size: 15px;
+  }
+}
+
+/* Smartphones pequenos (até 400px) */
+@media (max-width: 400px) {
+  .conteiner {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding: 0 10px;
+    gap: 25px;
+  }
+
+  .metodo {
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .cartao img {
+    height: 50px;
+  }
+
+  .pix img {
+    height: 35px;
+  }
+
+  .metodo .baixo h1 {
+    font-size: 16px;
+  }
+
+  .metodo .baixo p {
+    font-size: 13px;
+  }
+
+  .card-pagamento {
+    padding: 15px;
+  }
+
+  .resumo_frete .info p {
+    font-size: 13px;
+  }
+
+  .endereco p {
+    font-size: 13px;
+  }
+
+  .btn-laranja {
+    padding: 10px;
+    font-size: 14px;
+  }
 }
