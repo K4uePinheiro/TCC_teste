@@ -21,6 +21,7 @@ import SupportPage from "./pages/Support/SupportPage";
 import TermoUso from "./pages/Politicas/TermoUso";
 import PoliticaDevolucao from "./pages/Politicas/PoliticaDevolucao";
 import PoliticaPrivacidade from "./pages/Politicas/PoliticaPrivacidade";
+import FinalPage from "./pages/Cart/Confirm/FinalPage"
 // import ProfilePage from "./pages/Account/privacity/ProfilePage"
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContex";
@@ -79,6 +80,7 @@ const App: React.FC = () => {
                   <Route path="/cadastro" element={<RegisterForm />} />
                   <Route path="/favorites" element={<FavoritesPage />} />
                   <Route path="/orders" element={<OrdersPage />} />
+                  <Route path="/final" element={<FinalPage />} />
                   {/* <Route path="/priv" element={<ProfilePage/>} /> */}
                   <Route path="/support" element={<SupportPage />} />
                   <Route path="/supplier" element={<SupplierPage />} />

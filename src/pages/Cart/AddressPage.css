@@ -190,7 +190,7 @@ input:focus::placeholder {
 /* Container do endereço selecionado */
 .address-summary {
   flex: 1;
-  width: 100vw;
+  width: 100%;     /* CORRETO */
 }
 
 .address-summary .cabeca {
