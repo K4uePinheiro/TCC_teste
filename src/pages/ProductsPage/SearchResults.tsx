@@ -3,18 +3,10 @@ import { useLocation } from "react-router-dom";
 import api from "../../services/api";
 import ProductCard from "../../components/common/ProductCard/ProductCard";
 import "./SearchResults.css";
-import { productsMock } from "../../mocks/productsMocks";
 import type { Product } from "../../types";
+import { productsMock } from "../../mocks/productsMocks";
 
-// Função para detectar API online
-async function checkApiStatus() {
-  try {
-    await api.get("/health"); // troque caso não exista /health
-    return true;
-  } catch {
-    return false;
-  }
-}
+
 
 const SearchResults = () => {
   const location = useLocation();
@@ -22,22 +14,38 @@ const SearchResults = () => {
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 1. LÊ A VARIÁVEL DE AMBIENTE
+  const useApi = import.meta.env.VITE_USE_API === 'true';
+
   useEffect(() => {
     async function loadResults() {
       setLoading(true);
 
-      const apiOnline = await checkApiStatus();
+      const query = searchTerm.trim();
+      if (!query) {
+        setResults([]);
+        setLoading(false);
+        return;
+      }
 
-      if (apiOnline) {
-        // Busca na API
-        api
-          .get(`/product/search?query=${searchTerm}`)
-          .then((res) => setResults(res.data))
-          .catch(() => setResults([]));
+      // 2. SUBSTITUÍDO: A condição agora usa a variável 'useApi'
+      if (useApi) {
+        // Busca na API (Corrigido para /product/name/)
+        try {
+          const response = await api.get(`/product/name/${encodeURIComponent(query)}`);
+          setResults(response.data);
+        } catch (error) {
+          // Em caso de erro, caímos no mock ou mostramos erro.
+          console.error("Erro na busca da API. Tentando mock...", error);
+          
+          // 💡 SUGESTÃO: Se a API falhar, você pode optar por cair no mock, 
+          // ou simplesmente zerar os resultados (mantendo o comportamento anterior):
+          setResults([]); 
+        }
       } else {
-        // Busca no mock local
+        // Fallback no mock local (VITE_USE_API não é 'true')
         const filtered = productsMock.filter((p) =>
-          p.name.toLowerCase().includes(searchTerm.toLowerCase())
+          p.name.toLowerCase().includes(query.toLowerCase())
         );
         setResults(filtered);
       }
@@ -46,12 +54,13 @@ const SearchResults = () => {
     }
 
     loadResults();
-  }, [searchTerm]);
+  }, [searchTerm, useApi]); // 3. ADICIONADO: useApi no array de dependências (boa prática)
 
   return (
     <div className="search-results">
       <h2>Resultados da busca</h2>
 
+      {/* Exibição do status */}
       {loading ? (
         <p>Carregando...</p>
       ) : results.length === 0 ? (
@@ -63,6 +72,10 @@ const SearchResults = () => {
           ))}
         </div>
       )}
+      
+      {/* Informação extra para debug, se desejar */}
+      {/* <p>Status: {useApi ? 'API ativada' : 'Mock ativado'}</p> */}
+
     </div>
   );
 };
