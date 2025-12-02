@@ -3,7 +3,7 @@ import api from "../services/api";
 import { useAuth } from "./AuthContext";
 
 // 🔹 Tipos do backend
-interface Product {
+export interface Product {
   id: number;
   name: string;
   description: string;

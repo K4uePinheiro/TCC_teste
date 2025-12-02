@@ -98,10 +98,10 @@ const HomePage: React.FC = () => {
         </div>
         <div className="promo-right">
           <div className="promo-box-a">
-            Produtos com até <span>35%</span> de desconto
+            Produtos com até <span>70%</span> de desconto
           </div>
           <div className="promo-box-b">
-            Produtos com até <span>65%</span> de desconto
+            Produtos com até <span>20%</span> de desconto
           </div>
         </div>
       </section>
