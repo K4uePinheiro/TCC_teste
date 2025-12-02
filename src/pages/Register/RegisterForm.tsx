@@ -36,6 +36,8 @@ export default function RegisterForm() {
   const [passwordAnimating, setPasswordAnimating] = useState(false);
   const [confirmPasswordAnimating, setConfirmPasswordAnimating] = useState(false);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -150,7 +152,7 @@ export default function RegisterForm() {
 
     try {
       // Registro do usuário
-      const registerResponse = await fetch("http://localhost:8080/user", {
+      const registerResponse = await fetch(`${API_BASE_URL}/user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
