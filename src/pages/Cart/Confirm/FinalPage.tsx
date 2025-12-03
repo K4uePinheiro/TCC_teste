@@ -22,7 +22,7 @@ export default function Confirm() {
 
         <div className="ikommercy-logo-section">
           <div className="ikommercy-brand-logo">
-            <img src="../../public/logo_ik.svg" alt="Ikommercy logo" />
+            <img src="/logo_ik.svg" alt="Ikommercy logo" />
           </div>
         </div>
 
@@ -30,7 +30,7 @@ export default function Confirm() {
           <div className="order-tracking-header">
             <img
               className="order-tracking-icon"
-              src="../../public/truck.svg"
+              src="/truck.svg"
               alt="caminhãoo icon"
             />
             <span>Rastreie-já sua encomenda</span>
@@ -43,7 +43,7 @@ export default function Confirm() {
           <div className="continue-shopping-button">
              <img
             className="shopping-bag-icon"
-            src="../../public/bag.svg"
+            src="/bag.svg"
             alt="sacola de compras icon"
           />
           
