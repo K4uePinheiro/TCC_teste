@@ -185,7 +185,7 @@ function ProductPage() {
         <span className="discount">-{product.discount}%</span>
         <p className="seller">Fornecedor: {product.seller || "Desconhecido"}</p>
 
-        <Link to="/FinalPage" classname="buy-btn">Comprar </Link>
+         <button className="buy-btn">Comprar 🛒</button>
         <button
           className="cart-btn"
           onClick={async () => {
