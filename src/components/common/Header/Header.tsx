@@ -138,7 +138,7 @@ const Header = () => {
     const query = search.trim();
     if (!query) return;
     try {
-      const response = await api.get(`/product/name/${encodeURIComponent(query)}`);
+      const response = await api.get(`/product/name/${query}`);
       navigate("/search", { state: { results: response.data || [] } });
     } catch (error) {
       console.error("Erro ao buscar produto:", error);
